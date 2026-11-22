@@ -267,13 +267,13 @@ export default {
       }
 
       &::before {
-        color: var(--theme-buy-200);
+        color: var(--theme-accent-200);
         transform: translateY(-5%);
       }
     }
 
     &--done {
-      --outline-color: var(--theme-buy-base);
+      --outline-color: var(--theme-accent-base);
     }
   }
 

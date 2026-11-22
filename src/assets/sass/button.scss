@@ -38,8 +38,8 @@ button {
   line-height: 1;
   flex-shrink: 0;
   cursor: pointer;
-  background-color: var(--theme-buy-base);
-  color: var(--theme-buy-color);
+  background-color: var(--theme-accent-base);
+  color: var(--theme-accent-color);
   text-decoration: none;
 
   &__suffix {
@@ -64,8 +64,8 @@ button {
   }
 
   &:hover {
-    background-color: var(--theme-buy-100);
-    color: var(--theme-buy-color);
+    background-color: var(--theme-accent-100);
+    color: var(--theme-accent-color);
 
     &.-text {
       color: var(--theme-color-base);

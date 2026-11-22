@@ -1,8 +1,8 @@
 {
-  "name": "SignificantTrades",
-  "short_name": "AGGR",
+  "name": "Crypto",
+  "short_name": "Crypto",
   "start_url": "/",
-  "description": "Cryptocurrency market trades aggregator",
+  "description": "Real-time cryptocurrency trades aggregator",
   "display": "standalone",
   "id":"/",
   "icons":[
@@ -17,6 +17,6 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#171b29",
-  "background_color": "#171b29"
+  "theme_color": "#0f131f",
+  "background_color": "#0f131f"
 }

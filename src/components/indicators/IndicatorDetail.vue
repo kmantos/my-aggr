@@ -528,7 +528,7 @@ export default {
     margin: 0.25rem 0 0;
     font-size: 0.75rem;
     padding: 0;
-    color: var(--theme-buy-base);
+    color: var(--theme-accent-base);
 
     li {
       display: flex;
@@ -537,7 +537,7 @@ export default {
 
       #{$metadatas}-value {
         font-size: 1rem;
-        color: var(--theme-buy-200);
+        color: var(--theme-accent-200);
       }
 
       a {

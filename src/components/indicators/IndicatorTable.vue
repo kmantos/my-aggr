@@ -200,6 +200,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .icon-star-filled {
-  color: var(--theme-buy-200);
+  color: var(--theme-accent-200);
 }
 </style>

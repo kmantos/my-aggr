@@ -355,7 +355,7 @@
     <template v-slot:footer>
       <a
         class="btn -text mrauto"
-        href="https://github.com/Tucsky/aggr"
+        href="https://github.com/kmantos/my-aggr"
         target="_blank"
         v-tippy
         title="Github"
@@ -364,10 +364,6 @@
           buildDate
         }}</sup>
       </a>
-      <span>
-        <dono-dropdown class="-top -text-left" />
-      </span>
-      <i class="settings-footer__divider -center mr4">|</i>
       <span>
         <button
           type="button"
@@ -396,7 +392,6 @@ import { ago, browseFile } from '../../utils/helpers'
 
 import Dialog from '@/components/framework/Dialog.vue'
 import Exchange from './Exchange.vue'
-import DonoDropdown from './DonoDropdown.vue'
 import dialogService from '../../services/dialogService'
 import AudioSettings from './AudioSettings.vue'
 import OtherSettings from './OtherSettings.vue'
@@ -417,7 +412,6 @@ export default {
     Exchange,
     AudioSettings,
     OtherSettings,
-    DonoDropdown,
     ColorPickerControl,
     ToggableSection
   },

@@ -1,11 +1,17 @@
+<p align="center"><img src="public/logo.svg" width="96" alt="Crypto logo"></p>
 
-# SignificantTrade
+# Crypto
 
-Cryptocurrency market trades aggregator./
+Real-time cryptocurrency trades aggregator: live trades, liquidations, volume and charts streamed directly from 25+ exchanges in your browser.
 
-Currently supporting Kucoin, BitMEX, Bitfinex, Binance, Coinbase, Bitstamp, Deribit, Huobi, Okex, Hitbtc, Poloniex, Bybit, Bitget, Bitunix, Gate.io and Crypto.com ([see src/exchanges/](src/exchanges) for detail)
+Crypto is a rebranded fork of [aggr](https://github.com/Tucsky/aggr) by Tucsky. All credit for the original application goes to its authors.
 
-![screenshot](https://i.imgur.com/nHJxsdL.gif)
+### Changes from upstream aggr
+
+- New name ("Crypto"), logo, favicons and app manifest
+- Electric teal (`#00d1b2`) accent color and a deeper navy default background (`#0f131f`)
+- Removed third-party analytics (Google Tag Manager) and the donation menu
+- Source/issue links point to this repository; GitHub Pages deploys to `/my-aggr/`
 
 ## What it does
 
@@ -42,7 +48,7 @@ For development, just as any vuejs project
 1. Clone the repo
 
 ```bash
-git clone https://github.com/Tucsky/aggr
+git clone https://github.com/kmantos/my-aggr
 ```
 
 2. Install dependencies
@@ -67,7 +73,7 @@ This will start a cors proxy for your development environment
 npm run serve
 ```
 
-This will automatically open a browser window at localhost:8080
+Then open the URL Vite prints (usually http://localhost:8080)
 
 
 ```bash
@@ -78,18 +84,18 @@ and access the dist/index.html directly in the browser later without having to r
 
 ### Docker
 
-build your own aggr client docker:
+Build your own Crypto client with Docker:
 
 ```bash
-git clone https://github.com/Tucsky/aggr
-cd aggr
+git clone https://github.com/kmantos/my-aggr
+cd my-aggr
 docker-compose -f "docker\docker-compose.yml" up -d --build # prod
 ```
  If you want to use aggr-server as your local data source, load the docker-compose.dev.yml instead.
 
 ## Configuration
 
-SignificantTrades is now using Vue Cli which allows you to configure the client using .env file.
+The app uses Vite, which lets you configure it which allows you to configure the client using .env file.
 
 Create a <code>.env.local</code> or <code>.env.development</code> or <code>.env.production</code> (.env.local if you don't know) file inside root folder.
 
@@ -108,17 +114,10 @@ See [aggr-server repository](https://github.com/Tucsky/aggr-server).
 
 Let's say you have a server instance running on port 3000, start the client with an environment variable `API_URL=http://localhost:3000/ npm run serve`
 
-## Community
-
-Discord: https://discord.com/invite/MYMUEgMABs
-
 ## Disclaimer
 
 If you plan to use real money with this, USE AT YOUR OWN RISK.
 
-## Support this project!
+## License
 
-BTC bc1q3f5ndx2zww3pw5c5vctw7t4wfgv05fdsc2graj<br>
-SOL FKMNaBJqdpNA1d33hiUEjHaovQ5AiBGACqRuKuxA9q3D<br>
-ETH 0x83bBC120a998cF7dFcBa1518CDDCb68Aa0D0c158<br>
-COINBASE https://commerce.coinbase.com/checkout/c58bd003-5e47-4cfb-ae25-5292f0a0e1e8
+Crypto is licensed under the [GNU General Public License v3.0](LICENSE), the same license as the upstream aggr project. If you distribute this app or a modified version of it, you must make its source code available under the same license.

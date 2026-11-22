@@ -69,7 +69,7 @@
     font-size: 12px;
 
     &:focus {
-      border-color: var(--theme-buy-base);
+      border-color: var(--theme-accent-base);
     }
   }
 }
@@ -219,9 +219,9 @@
 
     &:checked {
       ~ div {
-        background-color: var(--theme-buy-50);
-        border-color: var(--theme-buy-100);
-        color: var(--theme-buy-color);
+        background-color: var(--theme-accent-50);
+        border-color: var(--theme-accent-100);
+        color: var(--theme-accent-color);
 
         &:before,
         &:after {

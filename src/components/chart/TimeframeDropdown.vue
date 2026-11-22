@@ -229,7 +229,7 @@ export default {
 
     &.icon-star-filled {
       display: block;
-      color: var(--theme-buy-100);
+      color: var(--theme-accent-100);
     }
   }
 

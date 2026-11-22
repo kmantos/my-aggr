@@ -104,8 +104,8 @@ export default class Exchange extends Vue {
   }
 
   &.-active {
-    background-color: var(--theme-buy-base);
-    color: var(--theme-buy-color);
+    background-color: var(--theme-accent-base);
+    color: var(--theme-accent-color);
 
     .settings-exchange__visibility {
       display: flex;

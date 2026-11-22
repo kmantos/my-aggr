@@ -376,7 +376,7 @@ export default {
   height: 100%;
 
   border-radius: 10px;
-  background-color: var(--theme-buy-base);
+  background-color: var(--theme-accent-base);
 
   pointer-events: none;
 }

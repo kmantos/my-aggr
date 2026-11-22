@@ -18,7 +18,7 @@ assignees: ''
 
 ## Description of what the bug is
 
-- **Environment:** (e.g., aggr.trade desktop)
+- **Environment:** (e.g., Crypto desktop)
 - **App version:**
 
 Steps to reproduce:

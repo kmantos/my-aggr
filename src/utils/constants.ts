@@ -4,3 +4,6 @@ export const MASTER_DOMAIN = /aggr.trade$/.test(window.location.hostname)
 export const MAX_BARS_PER_CHUNKS = 10000
 export const GRID_COLS = 24
 export const PRODUCTS_EXPIRES_AFTER = 1000 * 60 * 60 * 24 * 7
+
+// Crypto brand accent used for UI chrome (keep in sync with $brand in variables.scss)
+export const ACCENT_COLOR = 'rgb(0, 209, 178)'

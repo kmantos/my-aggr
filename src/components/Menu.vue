@@ -337,23 +337,23 @@ export default class Menu extends Vue {
     border-radius: 50%;
     justify-content: center;
     background-color: var(--theme-background-100);
-    color: var(--theme-buy-color);
+    color: var(--theme-accent-color);
     z-index: 1;
     position: relative;
 
-    background-color: var(--theme-buy-50);
-    border: 1px solid var(--theme-buy-base);
+    background-color: var(--theme-accent-50);
+    border: 1px solid var(--theme-accent-base);
 
     &:hover {
-      background-color: var(--theme-buy-base);
-      border-color: var(--theme-buy-100);
+      background-color: var(--theme-accent-base);
+      border-color: var(--theme-accent-100);
     }
   }
 
   &.-open {
     #{$self}__button {
-      background-color: var(--theme-buy-base);
-      color: var(--theme-buy-color);
+      background-color: var(--theme-accent-base);
+      color: var(--theme-accent-color);
     }
   }
 }

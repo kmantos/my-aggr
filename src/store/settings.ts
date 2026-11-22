@@ -21,6 +21,7 @@ import aggregatorService from '@/services/aggregatorService'
 import audioService from '@/services/audioService'
 import { getTimeframeForHuman } from '@/utils/helpers'
 import { isTouchSupported } from '@/utils/touchevent'
+import { ACCENT_COLOR } from '@/utils/constants'
 import { getMarketProduct, parseMarket } from '../services/productsService'
 
 export type AudioFilters = { [id: string]: boolean }
@@ -162,7 +163,7 @@ const actions = {
     )
     document.documentElement.style.setProperty(
       '--theme-base-o50',
-      joinRgba([...themeBase.slice(0, 3), 0.50])
+      joinRgba([...themeBase.slice(0, 3), 0.5])
     )
     document.documentElement.style.setProperty(
       '--theme-background-75',
@@ -265,6 +266,34 @@ const actions = {
     document.documentElement.style.setProperty(
       '--theme-buy-color',
       joinRgba(getLinearShadeText(buyRgb, 1, null, 0.125))
+    )
+
+    // UI accent (buttons, toggles, sliders, menu): independent from trade colors
+    const accentRgb = splitColorCode(ACCENT_COLOR)
+
+    document.documentElement.style.setProperty(
+      '--theme-accent-base',
+      ACCENT_COLOR
+    )
+    document.documentElement.style.setProperty(
+      '--theme-accent-100',
+      joinRgba(
+        getLogShade(accentRgb, 0.1 * backgroundScale, 0.1 * backgroundScale)
+      )
+    )
+    document.documentElement.style.setProperty(
+      '--theme-accent-200',
+      joinRgba(
+        getLogShade(accentRgb, 0.5 * backgroundScale, 0.5 * backgroundScale)
+      )
+    )
+    document.documentElement.style.setProperty(
+      '--theme-accent-50',
+      joinRgba(getLogShade(accentRgb, -0.2 * backgroundScale))
+    )
+    document.documentElement.style.setProperty(
+      '--theme-accent-color',
+      joinRgba(getLinearShadeText(accentRgb, 1, null, 0.125))
     )
 
     const sellRgb = splitColorCode(state.sellColor)

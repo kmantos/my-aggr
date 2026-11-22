@@ -152,7 +152,7 @@ export default class IndicatorControl extends Vue {
   }
 
   &__legend {
-    color: var(--theme-buy-100);
+    color: var(--theme-accent-100);
     font-family: $font-monospace;
     pointer-events: none;
     line-height: 1.75em;
@@ -179,12 +179,12 @@ export default class IndicatorControl extends Vue {
       border-radius: 0;
       padding: 0.25em;
       font-size: 1em;
-      background-color: var(--theme-buy-50);
-      border: 1px solid var(--theme-buy-base);
+      background-color: var(--theme-accent-50);
+      border: 1px solid var(--theme-accent-base);
 
       &:hover {
-        background-color: var(--theme-buy-base);
-        border-color: var(--theme-buy-100);
+        background-color: var(--theme-accent-base);
+        border-color: var(--theme-accent-100);
       }
 
       border-right-width: 0;

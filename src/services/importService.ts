@@ -215,7 +215,7 @@ class ImportService {
           !(await dialogService.confirm({
             title: 'Security Warning',
             message: `⚠️ Proceed with <strong>Caution</strong>!<br><br>
-            <p>Importing a custom script into AGGR poses security risks and AGGR is not liable for any consequences; ensure you trust the source and understand the risks before proceeding.</p>`,
+            <p>Importing a custom script into Crypto poses security risks and Crypto is not liable for any consequences; ensure you trust the source and understand the risks before proceeding.</p>`,
             ok: `Accept and Proceed`,
             requireScroll: true,
             html: true
