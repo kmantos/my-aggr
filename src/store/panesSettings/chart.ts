@@ -73,6 +73,7 @@ export interface ChartPaneState {
   showAlerts?: boolean
   showAlertsLabel?: boolean
   showLegend: boolean
+  showCountdown: boolean
   showIndicators: boolean
   fillGapsWithEmpty: boolean
   showHorizontalGridlines: boolean
@@ -112,6 +113,7 @@ const state = {
   showAlerts: true,
   showAlertsLabel: true,
   showLegend: true,
+  showCountdown: true,
   fillGapsWithEmpty: false,
   showHorizontalGridlines: false,
   horizontalGridlinesColor: 'rgba(255,255,255,.1)',
@@ -445,6 +447,9 @@ const mutations = {
   },
   TOGGLE_LEGEND(state) {
     state.showLegend = !state.showLegend
+  },
+  TOGGLE_COUNTDOWN(state) {
+    state.showCountdown = !state.showCountdown
   },
   TOGGLE_INDICATORS(state, value) {
     state.showIndicators = value

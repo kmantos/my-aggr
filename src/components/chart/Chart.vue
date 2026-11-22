@@ -319,3 +319,17 @@ body.-unselectable .chart-overlay {
   display: none !important;
 }
 </style>
+
+<style lang="scss">
+// candle close countdown (see countdown.ts), created outside of vue so not scoped
+.chart-countdown {
+  position: absolute;
+  z-index: 3;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+</style>

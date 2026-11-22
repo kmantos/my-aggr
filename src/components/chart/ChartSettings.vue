@@ -34,6 +34,23 @@
       </label>
     </div>
     <div class="form-group mb8">
+      <label class="checkbox-control">
+        <input
+          type="checkbox"
+          class="form-control"
+          :checked="showCountdown"
+          @change="$store.commit(paneId + '/TOGGLE_COUNTDOWN')"
+        />
+        <div></div>
+        <span
+          class="-inline"
+          title="Time left before the candle closes (or progress for tick, volume and bps bars), under the price label"
+          v-tippy
+          >Show candle countdown</span
+        >
+      </label>
+    </div>
+    <div class="form-group mb8">
       <div class="form-group column">
         <label
           class="checkbox-control"
@@ -253,6 +270,10 @@ export default class ChartSettings extends Vue {
 
   get showLegend() {
     return this.$store.state[this.paneId].showLegend
+  }
+
+  get showCountdown() {
+    return this.$store.state[this.paneId].showCountdown
   }
 
   get fillGapsWithEmpty() {
