@@ -121,6 +121,7 @@ class AudioService {
   }
 
   context: AudioContext
+  private releaseUserGesture: () => void
   tuna: any
 
   output: any
@@ -149,60 +150,8 @@ class AudioService {
     this.context = new ((window as any).AudioContext ||
       (window as any).webkitAudioContext)()
 
-    let checkInProgress = false
-
     if (this.context.state === 'suspended') {
-      const application = document.body
-
-      setTimeout(() => {
-        application.focus()
-      }, 500)
-
-      const resumeOnFocus = (() => {
-        if (checkInProgress) {
-          return
-        }
-
-        checkInProgress = true
-
-        console.log('[sfx] Yet another try to start AudioContext')
-
-        if (this.context && store.state.settings.useAudio) {
-          this.context.resume()
-        }
-
-        setTimeout(() => {
-          if (
-            !store.state.settings.useAudio ||
-            this.context.state !== 'suspended'
-          ) {
-            if (store.state.settings.useAudio) {
-              store.dispatch('app/showNotice', {
-                id: 'audio',
-                type: 'success',
-                title: 'Audio resumed successfully 🔊'
-              })
-            }
-
-            window.removeEventListener('focus', resumeOnFocus)
-            window.removeEventListener('blur', resumeOnFocus)
-            application.removeEventListener('click', resumeOnFocus)
-          } else if (this.context.state === 'suspended') {
-            store.dispatch('app/showNotice', {
-              id: 'audio',
-              type: 'error',
-              title:
-                'Browser prevented audio from playing\nClick somewhere to resume.'
-            })
-          }
-
-          checkInProgress = false
-        }, 500)
-      }).bind(this)
-
-      window.addEventListener('blur', resumeOnFocus)
-      window.addEventListener('focus', resumeOnFocus)
-      application.addEventListener('click', resumeOnFocus)
+      this.waitForUserGesture()
     } else {
       store.dispatch('app/showNotice', {
         id: 'audio',
@@ -509,9 +458,71 @@ class AudioService {
     this.connect()
   }
 
+  /**
+   * Browsers only allow audio after a user gesture (no permission prompt exists):
+   * ask the user to click anywhere, then resume the context on the first
+   * click / tap / key press.
+   */
+  waitForUserGesture() {
+    const events = ['pointerdown', 'touchend', 'keydown', 'click']
+
+    const release = () => {
+      for (const event of events) {
+        window.removeEventListener(event, resume, true)
+      }
+
+      this.releaseUserGesture = null
+    }
+
+    const resume = async () => {
+      if (!this.context || !store.state.settings.useAudio) {
+        release()
+        return
+      }
+
+      try {
+        await this.context.resume()
+      } catch (error) {
+        console.debug('[sfx] AudioContext resume failed', error)
+      }
+
+      if (this.context && this.context.state === 'running') {
+        release()
+
+        store.dispatch('app/showNotice', {
+          id: 'audio',
+          type: 'success',
+          title: 'Sound enabled 🔊'
+        })
+      }
+    }
+
+    if (this.releaseUserGesture) {
+      this.releaseUserGesture()
+    }
+
+    for (const event of events) {
+      window.addEventListener(event, resume, true)
+    }
+
+    this.releaseUserGesture = release
+
+    store.dispatch('app/showNotice', {
+      id: 'audio',
+      type: 'info',
+      title: 'Click anywhere to enable sound 🔊',
+      timeout: 0
+    })
+  }
+
   disconnect() {
     console.log(`[sfx] disconnect`)
-    if (this.context && this.context.state === 'running') {
+
+    if (this.releaseUserGesture) {
+      this.releaseUserGesture()
+    }
+
+    if (this.context && this.context.state !== 'closed') {
       console.debug(`[sfx] close context`)
       this.context.close()
     }

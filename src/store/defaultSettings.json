@@ -12,7 +12,7 @@
   "buyColor": "rgb(100, 157, 102)",
   "sellColor": "rgb(239, 67, 82)",
   "timezoneOffset": 0,
-  "useAudio": false,
+  "useAudio": true,
   "audioVolume": 1,
   "audioFilters": {
     "PingPongDelay": true,

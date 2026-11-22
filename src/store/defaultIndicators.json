@@ -62,7 +62,7 @@
     }
   },
   "cvd": {
-    "enabled": true,
+    "enabled": false,
     "name": "CVD",
     "description": "Cumulative Volume Delta",
     "script": "line(cum(vbuy - vsell))",

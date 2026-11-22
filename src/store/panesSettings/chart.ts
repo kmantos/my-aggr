@@ -108,7 +108,7 @@ const state = {
   },
   layouting: false,
   showIndicators: true,
-  timeframe: 5,
+  timeframe: 60,
   refreshRate: 1000,
   showAlerts: true,
   showAlertsLabel: true,
