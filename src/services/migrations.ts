@@ -92,6 +92,15 @@ export const databaseUpgrades = {
         })
       }
     }
+  },
+  8: async (db: IDBPDatabase<AggrDB>, tx: IDBPTransaction<AggrDB>) => {
+    // CVD is no longer added to new charts by default (still in the library)
+    const objectStore = tx.objectStore('indicators') as any
+    const cvd = await objectStore.get('cvd')
+
+    if (cvd && cvd.enabled) {
+      await objectStore.put({ ...cvd, enabled: false })
+    }
   }
 }
 
@@ -345,6 +354,54 @@ export const workspaceUpgrades = {
       workspace.states.settings.alertsColor === 'red'
     ) {
       workspace.states.settings.alertsColor = 'rgb(255, 0, 0)'
+    }
+  },
+  8: (workspace: Workspace) => {
+    // new chart defaults: 1m instead of 5s, no default CVD indicator
+    for (const paneId in workspace.states.panes.panes) {
+      const pane = workspace.states.panes.panes[paneId]
+      const state = workspace.states[paneId]
+
+      if (pane.type !== 'chart' || !state) {
+        continue
+      }
+
+      if (+state.timeframe === 5) {
+        state.timeframe = 60
+      }
+
+      if (!state.indicators) {
+        continue
+      }
+
+      for (const id in state.indicators) {
+        const indicator = state.indicators[id]
+
+        if (id !== 'cvd' && indicator.libraryId !== 'cvd') {
+          continue
+        }
+
+        delete state.indicators[id]
+
+        if (Array.isArray(state.indicatorOrder)) {
+          state.indicatorOrder = state.indicatorOrder.filter(
+            indicatorId => indicatorId !== id
+          )
+        }
+
+        const priceScaleId = indicator.options && indicator.options.priceScaleId
+
+        if (
+          priceScaleId &&
+          state.priceScales &&
+          !Object.values(state.indicators).some(
+            (other: any) =>
+              other.options && other.options.priceScaleId === priceScaleId
+          )
+        ) {
+          delete state.priceScales[priceScaleId]
+        }
+      }
     }
   }
 }
