@@ -118,6 +118,10 @@ Let's say you have a server instance running on port 3000, start the client with
 
 If you plan to use real money with this, USE AT YOUR OWN RISK.
 
+## Deployment (GitHub Pages)
+
+Every push to `main` builds and deploys the site to https://kmantos.github.io/my-aggr/ via [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml). It builds with `--mode github`, which loads `.env.github` (base path `/my-aggr/`). You can also re-run it manually from the repository's Actions tab ("Deploy to GitHub Pages" → Run workflow).
+
 ## License
 
 Crypto is licensed under the [GNU General Public License v3.0](LICENSE), the same license as the upstream aggr project. If you distribute this app or a modified version of it, you must make its source code available under the same license.
