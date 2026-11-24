@@ -2,7 +2,6 @@ import { MutationTree, ActionTree, GetterTree, Module } from 'vuex'
 
 import Vue from 'vue'
 import { parseAmount, randomString } from '@/utils/helpers'
-import { formatMarketPrice } from '@/services/productsService'
 import { ModulesState } from '..'
 import { getLogShade, joinRgba, splitColorCode } from '@/utils/colors'
 import defaultTresholds from '@/store/defaultThresholds.json'
@@ -39,7 +38,6 @@ export interface TradesPaneState {
   showLogos: boolean
   monochromeLogos: boolean
   multipliers: { [identifier: string]: number }
-  thresholdsMultipler: number
   showAvgPrice: boolean
 }
 
@@ -73,10 +71,9 @@ const state = {
   showLiquidations: true,
   showLogos: true,
   monochromeLogos: false,
-  showTimeAgo: true,
+  showTimeAgo: false, // clock time (10:04) instead of "5s ago"
   showPrices: true,
   showHistograms: true,
-  thresholdsMultipler: 1,
   showAvgPrice: true
 } as TradesPaneState
 
@@ -325,30 +322,6 @@ const mutations = {
   },
   SET_AUDIO_THRESHOLD(state, amount: number) {
     state.audioThreshold = amount
-  },
-  SET_THRESHOLDS_MULTIPLER(
-    state,
-    { value, market }: { value: number; market: string }
-  ) {
-    value = Math.max(value, 0.01)
-    const change =
-      (value - state.thresholdsMultipler) / state.thresholdsMultipler
-
-    state.thresholdsMultipler = value
-
-    for (const threshold of state.thresholds) {
-      threshold.amount = +formatMarketPrice(
-        threshold.amount + threshold.amount * change,
-        market
-      )
-    }
-
-    for (const threshold of state.liquidations) {
-      threshold.amount = +formatMarketPrice(
-        threshold.amount + threshold.amount * change,
-        market
-      )
-    }
   }
 } as MutationTree<TradesPaneState>
 

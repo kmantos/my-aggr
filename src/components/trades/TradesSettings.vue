@@ -1,37 +1,5 @@
 <template>
   <div>
-    <div class="form-group mb16">
-      <div class="column">
-        <div>←</div>
-        <small>Small orders</small>
-        <slider
-          :min="0.01"
-          :max="10"
-          :step="0.01"
-          :show-completion="false"
-          class="mt8 -fill -start"
-          :value="thresholdsMultipler"
-          :gradient="gradient"
-          @input="
-            $store.commit(paneId + '/SET_THRESHOLDS_MULTIPLER', {
-              value: $event,
-              market: markets[0]
-            })
-          "
-          @reset="
-            $store.commit(paneId + '/SET_THRESHOLDS_MULTIPLER', {
-              value: 1,
-              market: markets[0]
-            })
-          "
-          log
-        >
-        </slider>
-        <small class="text-left mlauto">Large orders</small>
-        <div>→</div>
-      </div>
-    </div>
-    <br />
     <ToggableSection
       class="thresholds"
       title="Thresholds"
@@ -519,11 +487,6 @@ export default class TradesSettings extends Vue {
     return volume
   }
 
-  get thresholdsMultipler() {
-    return (this.$store.state[this.paneId] as TradesPaneState)
-      .thresholdsMultipler
-  }
-
   get disableAnimations() {
     return this.$store.state.settings.disableAnimations
   }
@@ -559,15 +522,6 @@ export default class TradesSettings extends Vue {
 
   get mutipliersCount() {
     return this.multipliers.filter(market => market.multiplier !== 1).length
-  }
-
-  get gradient() {
-    return [
-      this.$store.state[this.paneId].thresholds[0].buyColor,
-      this.$store.state[this.paneId].thresholds[
-        this.$store.state[this.paneId].thresholds.length - 1
-      ].buyColor
-    ]
   }
 
   get thresholdsBuyColor() {

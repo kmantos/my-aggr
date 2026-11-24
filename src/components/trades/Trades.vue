@@ -23,45 +23,6 @@
         </button>
       </template>
       <hr />
-      <dropdown v-model="sliderDropdownTrigger" interactive no-scroll>
-        <slider
-          style="width: 100px"
-          :min="0"
-          :max="10"
-          :step="0.01"
-          label
-          :show-completion="false"
-          :gradient="gradient"
-          :value="thresholdsMultipler"
-          @input="
-            $store.commit(paneId + '/SET_THRESHOLDS_MULTIPLER', {
-              value: $event,
-              market: market
-            })
-          "
-          @reset="
-            $store.commit(paneId + '/SET_THRESHOLDS_MULTIPLER', {
-              value: 1,
-              market: market
-            })
-          "
-          log
-        >
-          <template v-slot:tooltip>
-            {{ formatAmount(thresholdsMultipler * minAmount) }}
-          </template>
-        </slider>
-      </dropdown>
-      <button
-        class="btn"
-        @click="
-          sliderDropdownTrigger = sliderDropdownTrigger
-            ? null
-            : $event.currentTarget
-        "
-      >
-        <i class="icon-gauge"></i>
-      </button>
     </pane-header>
     <ul
       ref="tradesContainer"
@@ -89,24 +50,17 @@ import gifsService from '@/services/gifsService'
 import PaneMixin from '@/mixins/paneMixin'
 import PaneHeader from '@/components/panes/PaneHeader.vue'
 import TradesPlaceholder from '@/components/trades/TradesPlaceholder.vue'
-import { formatAmount, parseMarket } from '@/services/productsService'
+import { parseMarket } from '@/services/productsService'
 import TradesFeed from '@/components/trades/tradesFeed'
-import Slider from '@/components/framework/picker/Slider.vue'
-import { TradesPaneState } from '@/store/panesSettings/trades'
 
 @Component({
-  components: { PaneHeader, TradesPlaceholder, Slider },
+  components: { PaneHeader, TradesPlaceholder },
   name: 'Trades'
 })
 export default class Trades extends Mixins(PaneMixin) {
   showPlaceholder = true
-  sliderDropdownTrigger = null
 
   private feed: TradesFeed
-
-  get market() {
-    return this.pane.markets[0]
-  }
 
   get showLogos() {
     return this.$store.state[this.paneId].showLogos
@@ -116,29 +70,8 @@ export default class Trades extends Mixins(PaneMixin) {
     return this.$store.state[this.paneId].monochromeLogos
   }
 
-  get thresholdsMultipler() {
-    return this.$store.state[this.paneId].thresholdsMultipler
-  }
-
-  get minAmount() {
-    return (this.$store.state[this.paneId] as TradesPaneState).thresholds[0].amount
-  }
-
-  get gradient() {
-    return [
-      this.$store.state[this.paneId].thresholds[0].buyColor,
-      this.$store.state[this.paneId].thresholds[
-        this.$store.state[this.paneId].thresholds.length - 1
-      ].buyColor
-    ]
-  }
-
   $refs!: {
     tradesContainer: HTMLElement
-  }
-
-  formatAmount(v) {
-    return formatAmount(v)
   }
 
   created() {
@@ -184,7 +117,6 @@ export default class Trades extends Mixins(PaneMixin) {
         case 'settings/SET_BACKGROUND_COLOR':
         case this.paneId + '/SET_THRESHOLD_COLOR':
         case this.paneId + '/SET_THRESHOLD_AMOUNT':
-        case this.paneId + '/SET_THRESHOLDS_MULTIPLER':
         case this.paneId + '/TOGGLE_THRESHOLD_MAX':
         case this.paneId + '/DELETE_THRESHOLD':
         case this.paneId + '/ADD_THRESHOLD':

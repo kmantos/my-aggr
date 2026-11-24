@@ -439,5 +439,21 @@ export const workspaceUpgrades = {
         exchange.disabled = false
       }
     }
+  },
+  10: (workspace: Workspace) => {
+    // trades lists show clock time (10:04) instead of "5s ago",
+    // and the thresholds multiplier slider is gone
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+
+    for (const paneId in panes) {
+      const state = workspace.states[paneId]
+
+      if (panes[paneId].type !== 'trades' || !state) {
+        continue
+      }
+
+      state.showTimeAgo = false
+      delete state.thresholdsMultipler
+    }
   }
 }

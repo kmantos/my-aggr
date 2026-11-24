@@ -7,51 +7,6 @@
       @zoom="onResize"
     >
       <hr />
-      <dropdown
-        v-if="market"
-        v-model="sliderDropdownTrigger"
-        interactive
-        no-scroll
-      >
-        <slider
-          style="width: 100px"
-          :min="0"
-          :max="10"
-          :step="0.01"
-          label
-          :show-completion="false"
-          :gradient="gradient"
-          :value="thresholdsMultipler"
-          @input="
-            $store.commit(paneId + '/SET_THRESHOLDS_MULTIPLER', {
-              value: $event,
-              market: market
-            })
-          "
-          @reset="
-            $store.commit(paneId + '/SET_THRESHOLDS_MULTIPLER', {
-              value: 1,
-              market: market
-            })
-          "
-          log
-        >
-          <template v-slot:tooltip>
-            {{ formatAmount(thresholdsMultipler * minAmount) }}
-          </template>
-        </slider>
-      </dropdown>
-      <button
-        class="btn"
-        :name="paneId"
-        @click="
-          sliderDropdownTrigger = sliderDropdownTrigger
-            ? null
-            : $event.currentTarget
-        "
-      >
-        <i class="icon-gauge"></i>
-      </button>
     </pane-header>
     <code v-if="paused" class="pane-trades__paused">
       {{ paused }}
@@ -75,7 +30,6 @@ import {
   splitColorCode,
   getAppBackgroundColor
 } from '../../utils/colors'
-import Slider from '@/components/framework/picker/Slider.vue'
 
 import PaneHeader from '@/components/panes/PaneHeader.vue'
 import dialogService from '../../services/dialogService'
@@ -95,8 +49,7 @@ enum TradeType {
 @Component({
   name: 'TradesLite',
   components: {
-    PaneHeader,
-    Slider
+    PaneHeader
   }
 })
 export default class TradesLite extends Mixins(PaneMixin) {
@@ -187,7 +140,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
   private limit: number
   private batchSize = 1
 
-  sliderDropdownTrigger = null
   paused = 0
 
   $refs!: {
@@ -196,23 +148,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
 
   private scrollHandler: (event) => void
   private blurHandler: (event) => void
-
-  get market() {
-    return this.pane.markets[0]
-  }
-
-  get thresholdsMultipler() {
-    return this.$store.state[this.paneId].thresholdsMultipler
-  }
-
-  get gradient() {
-    return [
-      this.$store.state[this.paneId].thresholds[0].buyColor,
-      this.$store.state[this.paneId].thresholds[
-        this.$store.state[this.paneId].thresholds.length - 1
-      ].buyColor
-    ]
-  }
 
   created() {
     this._onStoreMutation = this.$store.subscribe(mutation => {
@@ -246,7 +181,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
         case 'settings/SET_BACKGROUND_COLOR':
         case this.paneId + '/SET_THRESHOLD_COLOR':
         case this.paneId + '/SET_THRESHOLD_AMOUNT':
-        case this.paneId + '/SET_THRESHOLDS_MULTIPLER':
         case this.paneId + '/TOGGLE_THRESHOLD_MAX':
         case this.paneId + '/DELETE_THRESHOLD':
         case this.paneId + '/ADD_THRESHOLD':
@@ -255,7 +189,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
 
           if (
             mutation.type === this.paneId + '/DELETE_THRESHOLD' ||
-            mutation.type === this.paneId + '/SET_THRESHOLDS_MULTIPLER' ||
             mutation.type === this.paneId + '/ADD_THRESHOLD'
           ) {
             this.prepareAudio()
@@ -292,10 +225,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
     if (this.blurHandler) {
       this.onBlur()
     }
-  }
-
-  formatAmount(v) {
-    return formatAmount(v)
   }
 
   onTrades(trades: Trade[]) {
