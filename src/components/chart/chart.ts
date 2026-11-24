@@ -11,7 +11,7 @@ import {
   TimeRange
 } from './chart.d'
 
-import { MAX_BARS_PER_CHUNKS } from '@/utils/constants'
+import { IS_CAR_BROWSER, MAX_BARS_PER_CHUNKS } from '@/utils/constants'
 import {
   getHms,
   camelize,
@@ -524,10 +524,11 @@ export default class Chart {
         fontSize: baseFontSize
       },
       watermark: {
-        // a third of the size on phones (same breakpoint as the mobile layout)
+        // a third of the size on phones (same breakpoint as the mobile
+        // layout) and on car screens
         fontSize: Math.round(
           Math.max(16, Math.min(144, baseFontSize * 10)) /
-            (window.innerWidth < 768 ? 3 : 1)
+            (window.innerWidth < 768 || IS_CAR_BROWSER ? 3 : 1)
         )
       }
     })
