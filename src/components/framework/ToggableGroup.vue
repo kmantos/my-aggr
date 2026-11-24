@@ -8,7 +8,10 @@
         @change="$emit('change', $event)"
       />
       <div></div>
-      <span>{{ label }}</span>
+      <span>
+        {{ label }}
+        <i v-if="info" class="icon-info" v-tippy :title="info"></i>
+      </span>
     </label>
     <transition-height name="toggable-group">
       <div class="toggable-group__collapse" v-if="value" key="content-on">
@@ -42,6 +45,11 @@ import TransitionHeight from './TransitionHeight.vue'
     label: {
       type: String,
       required: true
+    },
+    // optional explanation shown with an info icon next to the label
+    info: {
+      type: String,
+      default: null
     },
     small: {
       type: Boolean,

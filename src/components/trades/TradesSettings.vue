@@ -200,13 +200,7 @@
       </button>
     </ToggableSection>
 
-    <ToggableSection
-      v-if="!tab || tab === 'general'"
-      :auto-open="!!tab"
-      title="Preferences"
-      id="trades-preferences"
-      inset
-    >
+    <template v-if="!tab || tab === 'general'">
       <div class="form-group column mb8">
         <label class="-fill -center -inline">Lines count</label>
         <input
@@ -248,7 +242,7 @@
           ></div>
         </div>
       </div>
-    </ToggableSection>
+    </template>
 
     <ToggableSection
       v-if="!tab || tab === 'general'"
@@ -271,7 +265,7 @@
             <i
               class="icon-info"
               v-tippy
-              title="Show symbol's names<br>(ex: BTC-USD)"
+              title="Show the market's symbol on each trade<br>(ex: BTC-USD)"
             ></i>
           </span>
         </label>
@@ -281,6 +275,7 @@
         class="mb8 mt16"
         :value="showPrices"
         label="Show prices"
+        info="Show the price each trade was filled at"
         @change="$store.commit(paneId + '/TOGGLE_PREFERENCE', 'showPrices')"
         small
       >
@@ -306,29 +301,25 @@
           </label>
         </div>
       </toggable-group>
-      <toggable-group
-        v-if="isLegacy"
-        class="mb8 mt16"
-        :value="showLogos"
-        label="Show logos"
-        @change="$store.commit(paneId + '/TOGGLE_PREFERENCE', 'showLogos')"
-        small
-      >
-        <div class="form-group">
-          <label class="checkbox-control -small">
-            <input
-              type="checkbox"
-              class="form-control"
-              :checked="monochromeLogos"
-              @change="
-                $store.commit(paneId + '/TOGGLE_PREFERENCE', 'monochromeLogos')
-              "
-            />
-            <div></div>
-            <span> Monochrome logos </span>
-          </label>
-        </div>
-      </toggable-group>
+      <div v-if="isLegacy" class="form-group mb8 mt16">
+        <label class="checkbox-control -small">
+          <input
+            type="checkbox"
+            class="form-control"
+            :checked="showLogos"
+            @change="$store.commit(paneId + '/TOGGLE_PREFERENCE', 'showLogos')"
+          />
+          <div></div>
+          <span>
+            Show logos
+            <i
+              class="icon-info"
+              v-tippy
+              title="Show the exchange's logo on each trade instead of its name"
+            ></i>
+          </span>
+        </label>
+      </div>
     </ToggableSection>
   </div>
 </template>
@@ -394,10 +385,6 @@ export default class TradesSettings extends Vue {
 
   get showLogos() {
     return (this.$store.state[this.paneId] as TradesPaneState).showLogos
-  }
-
-  get monochromeLogos() {
-    return (this.$store.state[this.paneId] as TradesPaneState).monochromeLogos
   }
 
   get showAvgPrice() {

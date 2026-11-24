@@ -10,11 +10,7 @@
     <ul
       ref="tradesContainer"
       class="trades-list"
-      :class="[
-        'hide-scrollbar',
-        this.showLogos && '-logos',
-        !this.monochromeLogos && '-logos-colors'
-      ]"
+      :class="['hide-scrollbar', this.showLogos && '-logos', '-logos-colors']"
     ></ul>
     <trades-placeholder
       v-if="showPlaceholder"
@@ -47,10 +43,6 @@ export default class Trades extends Mixins(PaneMixin) {
 
   get showLogos() {
     return this.$store.state[this.paneId].showLogos
-  }
-
-  get monochromeLogos() {
-    return this.$store.state[this.paneId].monochromeLogos
   }
 
   $refs!: {

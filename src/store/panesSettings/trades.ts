@@ -35,7 +35,6 @@ export interface TradesPaneState {
   showTrades: boolean
   showLiquidations: boolean
   showLogos: boolean
-  monochromeLogos: boolean
   showAvgPrice: boolean
 }
 
@@ -67,7 +66,6 @@ const state = {
   showTrades: true,
   showLiquidations: true,
   showLogos: true,
-  monochromeLogos: false,
   showPrices: true,
   showHistograms: true,
   showAvgPrice: true
