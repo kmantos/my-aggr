@@ -582,8 +582,8 @@ export default class Chart {
 
     this._priceWatermark = text
 
-    // warm off-white (#FAF9F5) at 50% on dark backgrounds,
-    // theme text color at 50% on light ones
+    // warm off-white (#FAF9F5) at 30% on dark backgrounds,
+    // theme text color at 30% on light ones
     const [r, g, b] =
       store.state.settings.theme === 'light'
         ? splitColorCode(
@@ -592,7 +592,7 @@ export default class Chart {
             )
           )
         : [250, 249, 245]
-    const color = `rgba(${r}, ${g}, ${b}, 0.5)`
+    const color = `rgba(${r}, ${g}, ${b}, 0.3)`
 
     const element = this._priceWatermarkElement
 
