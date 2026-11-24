@@ -295,6 +295,7 @@ export default class Chart {
 
     this.addPaneIndicators()
     this.updateFontSize()
+    this.applyFlip()
     this.updatePriceWatermark(true)
 
     if (!this.chartControl) {
@@ -563,14 +564,17 @@ export default class Chart {
 
     this._priceWatermark = text
 
-    // solid warm off-white (#FAF9F5) on dark backgrounds,
-    // theme text color on light ones
-    const color =
+    // warm off-white (#FAF9F5) at 50% on dark backgrounds,
+    // theme text color at 50% on light ones
+    const [r, g, b] =
       store.state.settings.theme === 'light'
-        ? getComputedStyle(document.documentElement)
-            .getPropertyValue('--theme-color-100')
-            .trim()
-        : 'rgb(250, 249, 245)'
+        ? splitColorCode(
+            getComputedStyle(document.documentElement).getPropertyValue(
+              '--theme-color-100'
+            )
+          )
+        : [250, 249, 245]
+    const color = `rgba(${r}, ${g}, ${b}, 0.5)`
 
     this.chartInstance.applyOptions({
       watermark: {
@@ -2201,14 +2205,21 @@ export default class Chart {
     )
   }
 
-  flipChart() {
+  /**
+   * flip (invert) the price scale according to the chart's "Flip" setting
+   */
+  applyFlip() {
+    if (!this.chartInstance) {
+      return
+    }
+
     const api = this.getPriceApi()
-    const ps = api.priceScale()
+    const priceScale = api
+      ? api.priceScale()
+      : this.chartInstance.priceScale('right')
 
-    const invertScale = ps.options().invertScale
-
-    api.priceScale().applyOptions({
-      invertScale: !invertScale
+    priceScale.applyOptions({
+      invertScale: !!(store.state[this.paneId] as ChartPaneState).flipped
     })
   }
 

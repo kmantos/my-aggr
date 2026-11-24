@@ -7,7 +7,6 @@ import { ensureIndexedProducts, resolvePair } from '@/services/productsService'
 export const controlledCharts: Chart[] = []
 
 export const components: {
-  contextMenu?: any
   timeframeDropdown?: any
 } = {}
 

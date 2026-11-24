@@ -73,6 +73,7 @@ export interface ChartPaneState {
   showAlerts?: boolean
   showAlertsLabel?: boolean
   showCountdown: boolean
+  flipped: boolean
   showIndicators: boolean
   hiddenMarkets: { [indicatorId: string]: boolean }
   barSpacing: number
@@ -99,6 +100,7 @@ const state = {
   showAlerts: true,
   showAlertsLabel: true,
   showCountdown: true,
+  flipped: false,
   hiddenMarkets: {},
   barSpacing: null
 } as ChartPaneState
@@ -416,6 +418,9 @@ const mutations = {
   },
   SET_REFRESH_RATE(state, value) {
     state.refreshRate = +value || 0
+  },
+  TOGGLE_FLIP(state) {
+    state.flipped = !state.flipped
   },
   TOGGLE_COUNTDOWN(state) {
     state.showCountdown = !state.showCountdown

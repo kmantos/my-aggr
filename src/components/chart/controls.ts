@@ -1,18 +1,8 @@
-import alertService, { MarketAlert } from '@/services/alertService'
 import dialogService from '@/services/dialogService'
 import store from '@/store'
-import {
-  createComponent,
-  floorTimestampToTimeframe,
-  getEventCords,
-  mountComponent
-} from '@/utils/helpers'
+import { createComponent, mountComponent } from '@/utils/helpers'
 import { isTouchSupported } from '@/utils/touchevent'
-import {
-  IPriceLine,
-  MouseEventParams,
-  PriceLineOptions
-} from 'lightweight-charts'
+import { MouseEventParams } from 'lightweight-charts'
 import Chart from './chart'
 import AlertEventHandler from './controls/alertEventHandler'
 import MeasurementEventHandler from './controls/measurementEventHandler'
@@ -29,7 +19,6 @@ export default class ChartControl {
   private isSyncingCrosshairs: boolean
 
   private clickHandler: (event: MouseEvent | TouchEvent) => void
-  private contextMenuHandler: (event: MouseEvent | TouchEvent) => void
   private clearChartsCrosshairsHandler: (event: MouseEvent) => void
   private crosshairMoveHandler: (MouseEventParams) => void
   private onPanHandler: (MouseEventParams) => void
@@ -57,8 +46,6 @@ export default class ChartControl {
         this.clickHandler
       )
     }
-    this.contextMenuHandler = this.onContextMenu.bind(this)
-    canvas.addEventListener('contextmenu', this.contextMenuHandler)
 
     // bind crosshair
     this.crosshairMoveHandler = this.onCrosshairMove.bind(this)
@@ -85,8 +72,6 @@ export default class ChartControl {
       canvas.removeEventListener(clickEventName, this.clickHandler)
       this.clickHandler = null
     }
-    canvas.removeEventListener('contextmenu', this.contextMenuHandler)
-    this.contextMenuHandler = null
 
     // unbind crosshair
     this.chart.chartInstance.unsubscribeCrosshairMove(this.crosshairMoveHandler)
@@ -149,6 +134,9 @@ export default class ChartControl {
           this.chart.refreshAllIndicatorAdapters()
           this.chart.renderAll()
           break
+        case this.chart.paneId + '/TOGGLE_FLIP':
+          this.chart.applyFlip()
+          break
         case this.chart.paneId + '/SET_REFRESH_RATE':
           this.chart.clearQueue()
           this.chart.setupQueue()
@@ -186,98 +174,6 @@ export default class ChartControl {
         case 'settings/TOGGLE_AUTO_HIDE_HEADERS':
           this.chart.refreshChartDimensions()
           break
-      }
-    })
-  }
-
-  onContextMenu(event) {
-    if (window.innerWidth < 375) {
-      return
-    }
-
-    const canvas = event.currentTarget as HTMLCanvasElement
-
-    event.preventDefault()
-    const { x, y } = getEventCords(event, true)
-    const { top, left } = canvas.getBoundingClientRect()
-    const api = this.chart.getPriceApi()
-    const market = this.chart.mainIndex
-
-    let price
-    let alert
-    if (api) {
-      const pricedCoordinate = api.coordinateToPrice(y - top)
-
-      if (pricedCoordinate) {
-        price = alertService.formatPrice(pricedCoordinate)
-      }
-
-      const timeScale = this.chart.chartInstance.timeScale()
-
-      const priceline = api.getPriceLine(
-        price,
-        timeScale ? timeScale.coordinateToLogical(x - left) : null
-      ) as IPriceLine
-
-      if (priceline) {
-        const pricelineOptions = priceline.options() as PriceLineOptions &
-          MarketAlert
-
-        alert = {
-          price: pricelineOptions.price,
-          market: pricelineOptions.market,
-          message: pricelineOptions.message
-        }
-      }
-    }
-
-    const timestamp = floorTimestampToTimeframe(
-      Date.now() / 1000,
-      this.chart.timeframe
-    )
-    const timeframe = store.state[this.chart.paneId].timeframe.toString()
-    const paneId = this.chart.paneId
-
-    this.createContextMenu({
-      value: {
-        top: y - 1,
-        left: x - 1,
-        width: 2,
-        height: 2
-      },
-      market,
-      price,
-      timeframe,
-      timestamp,
-      paneId,
-      alert,
-      getPrice: this.chart.getPrice.bind(this.chart)
-    })
-  }
-
-  async createContextMenu(propsData) {
-    if (components.contextMenu) {
-      components.contextMenu.$off('cmd')
-      for (const key in propsData) {
-        components.contextMenu[key] = propsData[key]
-      }
-    } else {
-      document.body.style.cursor = 'progress'
-      const module = await import(`@/components/chart/ChartContextMenu.vue`)
-      document.body.style.cursor = ''
-
-      components.contextMenu = createComponent(module.default, propsData)
-
-      mountComponent(components.contextMenu)
-    }
-
-    components.contextMenu.$on('cmd', args => {
-      if (this.chart[args[0]] instanceof Function) {
-        this.chart[args[0]](...args.slice(1))
-      } else {
-        throw new Error(
-          `[chart/control] ContextMenu->chart->${args[0]} is not a function`
-        )
       }
     })
   }
