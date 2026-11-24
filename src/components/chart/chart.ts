@@ -524,7 +524,11 @@ export default class Chart {
         fontSize: baseFontSize
       },
       watermark: {
-        fontSize: Math.max(16, Math.min(144, baseFontSize * 10))
+        // 25% smaller on phones (same breakpoint as the mobile layout)
+        fontSize: Math.round(
+          Math.max(16, Math.min(144, baseFontSize * 10)) *
+            (window.innerWidth < 768 ? 0.75 : 1)
+        )
       }
     })
   }
