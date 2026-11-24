@@ -15,11 +15,9 @@ import { IS_CAR_BROWSER, MAX_BARS_PER_CHUNKS } from '@/utils/constants'
 import {
   getHms,
   camelize,
-  getTimeframeForHuman,
   floorTimestampToTimeframe,
   isOddTimeframe,
   formatBytes,
-  displayCanvasInPopup,
   getDefaultFontFamily,
   sleep
 } from '@/utils/helpers'
@@ -2243,148 +2241,6 @@ export default class Chart {
 
     priceScale.applyOptions({
       invertScale: !!(store.state[this.paneId] as ChartPaneState).flipped
-    })
-  }
-
-  takeScreenshot(event) {
-    if (event.shiftKey) {
-      displayCanvasInPopup(
-        this.chartElement.querySelector('tr:first-child td:nth-child(2) canvas')
-      )
-      return
-    }
-
-    const chartCanvas = this.chartInstance.takeScreenshot()
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-
-    const zoom = store.state.panes.panes[this.paneId].zoom || 1
-
-    const pxRatio = window.devicePixelRatio || 1
-    const textPadding = 16 * zoom * pxRatio
-    let textFontsize = 12 * zoom * pxRatio
-    if (chartCanvas.width * chartCanvas.height < 40000) {
-      textFontsize = 6
-    }
-
-    canvas.width = chartCanvas.width
-    ctx.font = `${textFontsize}px ${getDefaultFontFamily()}`
-    ctx.textAlign = 'left'
-    ctx.textBaseline = 'top'
-
-    const lines = []
-    const [date, time] = new Date().toISOString().split('T')
-
-    const fullDate = date + ' ' + time.split('.')[0] + ' UTC'
-    const symbol = this.mainIndex || ''
-    const timeframe = getTimeframeForHuman(store.state[this.paneId].timeframe)
-    if (chartCanvas.width > 500) {
-      lines.push([symbol, timeframe, fullDate].join(' | '))
-    } else {
-      lines.push(fullDate)
-      lines.push([symbol, timeframe].join(' | '))
-    }
-
-    const lineHeight = Math.round(textFontsize)
-    canvas.height = chartCanvas.height
-
-    const styles = getComputedStyle(document.documentElement)
-    const themeColor = styles.getPropertyValue('--theme-base')
-    const themeColorRgba = splitColorCode(themeColor)
-    const themeColorO75 = joinRgba([
-      themeColorRgba[0],
-      themeColorRgba[1],
-      themeColorRgba[2],
-      0.75
-    ])
-    const textColor = styles.getPropertyValue('--theme-color-base')
-    const backgroundColor = store.state.settings.backgroundColor
-
-    if (!event.shiftKey) {
-      ctx.fillStyle = themeColor
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.fillStyle = backgroundColor
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-    }
-
-    ctx.fillStyle =
-      store.state.settings.theme === 'light'
-        ? 'rgba(255,255,255,.2)'
-        : 'rgba(0,0,0,.2)'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.drawImage(chartCanvas, 0, 0)
-
-    ctx.fillStyle = textColor
-    ctx.font = `${textFontsize}px ${getDefaultFontFamily()}`
-    ctx.textAlign = 'left'
-    ctx.textBaseline = 'top'
-
-    let offsetY = 0
-
-    for (let i = 0; i < lines.length; i++) {
-      ctx.strokeStyle = themeColorO75
-      ctx.lineWidth = 4 * pxRatio
-      ctx.lineJoin = 'round'
-      ctx.strokeText(lines[i], textPadding, textPadding + offsetY)
-      ctx.fillText(lines[i], textPadding, textPadding + offsetY)
-
-      offsetY += lineHeight * 1.2 * (i + 1)
-    }
-
-    offsetY += textPadding * 2
-
-    if (store.state[this.paneId].showIndicators) {
-      Object.values(
-        (store.state[this.paneId] as ChartPaneState).indicators
-      ).forEach(indicator => {
-        const options = indicator.options as any
-
-        if (options.visible === false) {
-          return
-        }
-
-        let color = options.color || options.upColor || textColor
-
-        try {
-          color = splitColorCode(color)
-
-          if (typeof color[3] !== 'undefined') {
-            color[3] = 1
-          }
-
-          color = joinRgba(color)
-        } catch (error) {
-          // not rgb(a)
-        }
-
-        const text = indicator.displayName || indicator.name
-
-        ctx.fillStyle = textColor
-        ctx.strokeStyle = themeColorO75
-        ctx.lineWidth = 4 * pxRatio
-        ctx.fillStyle = color
-        ctx.lineJoin = 'round'
-        ctx.strokeText(text, textPadding, offsetY)
-        ctx.fillText(text, textPadding, offsetY)
-
-        offsetY += lineHeight * 1.2
-      })
-    }
-
-    canvas.toBlob(blob => {
-      if (!blob || !window.ClipboardItem) {
-        displayCanvasInPopup(canvas)
-        return
-      }
-
-      const item = new ClipboardItem({ 'image/png': blob })
-      navigator.clipboard
-        .write([item])
-        .then(
-          () => console.log('Screenshot copied to clipboard'),
-          err => console.error('Failed to copy image to clipboard:', err)
-        )
-        .finally(() => displayCanvasInPopup(canvas))
     })
   }
 

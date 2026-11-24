@@ -29,10 +29,6 @@
     <div class="divider" />
     <div class="pane-general-settings__actions">
       <slot name="actions" />
-      <button type="button" class="btn -text" @click="duplicatePane">
-        <i class="icon-copy-paste"></i>
-        <span class="ml8">Duplicate pane</span>
-      </button>
       <button type="button" class="btn -text text-danger" @click="removePane">
         <i class="icon-trash"></i>
         <span class="ml8">Remove pane</span>
@@ -91,10 +87,6 @@ export default class PaneGeneralSettings extends Vue {
       id: this.paneId,
       name: name.trim()
     })
-  }
-
-  duplicatePane() {
-    this.$store.dispatch('panes/duplicatePane', this.paneId)
   }
 
   async removePane() {

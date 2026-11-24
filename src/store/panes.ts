@@ -320,25 +320,6 @@ const actions = {
 
     return dispatch('refreshMarketsListeners', { id, markets })
   },
-  duplicatePane({ state, rootState, dispatch }, id: string) {
-    if (!state.panes[id] || !rootState[id]) {
-      this.dispatch('app/showNotice', {
-        title: `Pane ${id} doesn't exists`,
-        type: 'error'
-      })
-
-      return
-    }
-
-    const options = JSON.parse(JSON.stringify(state.panes[id]))
-    options.settings = JSON.parse(JSON.stringify(rootState[id]))
-    options.originalGridItem = state.layout.find(a => a.i === id)
-    dispatch('addPane', options)
-
-    this.dispatch('app/showNotice', {
-      title: `Duplicated pane ${id}`
-    })
-  },
   async resetPane(
     { state, rootState },
     { id, data, type }: { id: string; data?: any; type?: string }

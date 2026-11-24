@@ -27,14 +27,6 @@
           <i class="icon-refresh"></i>
           <span class="ml8">Restart</span>
         </button>
-        <button
-          type="button"
-          class="btn -text"
-          @click="paneAction('snapshot', $event)"
-        >
-          <i class="icon-add-photo"></i>
-          <span class="ml8">Snapshot</span>
-        </button>
       </template>
     </pane-general-settings>
     <pane-sources v-else-if="tab === 'sources'" :pane-id="paneId" />

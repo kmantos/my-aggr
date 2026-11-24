@@ -577,66 +577,6 @@ export function mountComponent(cmp: Vue, container?: HTMLElement): void {
   container.appendChild(mounted.$el)
 }
 
-let popupWindow: WindowProxy
-
-export function displayCanvasInPopup(canvas) {
-  if (!canvas) {
-    return
-  }
-
-  // Calculate the width and height for the popup window
-  const canvasWidth = canvas.width
-  const canvasHeight = canvas.height
-  const maxWidth = 1400
-  const maxHeight = 700
-  let popupWidth = canvasWidth
-  let popupHeight = canvasHeight
-
-  // Ensure the popup size does not exceed the maximum dimensions
-  if (popupWidth > maxWidth) {
-    popupWidth = maxWidth
-    popupHeight = (canvasHeight * maxWidth) / canvasWidth
-  }
-
-  if (popupHeight > maxHeight) {
-    popupHeight = maxHeight
-    popupWidth = (canvasWidth * maxHeight) / canvasHeight
-  }
-
-  popupWidth += 32
-  popupHeight += 28
-
-  // If the popup window is closed or doesn't exist, create a new one
-  if (!popupWindow || popupWindow.closed) {
-    // Create a new popup window with minimal features
-    const popupFeatures = `width=${popupWidth},height=${popupHeight},toolbar=no,location=no,status=no,menubar=no`
-
-    popupWindow = window.open('', '', popupFeatures)
-  } else {
-    popupWindow.focus()
-  }
-
-  // Check if the popup window was successfully created
-  if (popupWindow) {
-    // Get the canvas content as a data URL
-    const dataURL = canvas.toDataURL()
-
-    // Create an image element in the popup window
-    const img = (popupWindow.document.body.children[0] ||
-      popupWindow.document.createElement('img')) as HTMLImageElement
-
-    // Set the src attribute of the image to the canvas data URL
-    img.src = dataURL
-    img.style.width = '100%'
-
-    // Append the image to the popup window's document body
-    popupWindow.document.body.appendChild(img)
-  } else {
-    // Handle popup window creation failure
-    alert('Popup window creation failed. Please check your browser settings.')
-  }
-}
-
 export async function pathToBase64(path): Promise<string> {
   const response = await fetch(path)
   const blob = await response.blob()

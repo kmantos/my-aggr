@@ -113,7 +113,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
     this.bindAggregator()
 
     paneActions.on('restart', this.onRestartAction)
-    paneActions.on('snapshot', this.onSnapshotAction)
   }
 
   destroyChart() {
@@ -124,7 +123,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
 
   beforeDestroy() {
     paneActions.off('restart', this.onRestartAction)
-    paneActions.off('snapshot', this.onSnapshotAction)
 
     this.destroyChart()
   }
@@ -133,12 +131,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
   onRestartAction(paneId: string) {
     if (paneId === this.paneId) {
       this.restart()
-    }
-  }
-
-  onSnapshotAction(paneId: string, event: MouseEvent) {
-    if (paneId === this.paneId) {
-      this.takeScreenshot(event || ({} as MouseEvent))
     }
   }
 
@@ -192,10 +184,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
 
   restart() {
     this.chart.restart()
-  }
-
-  takeScreenshot(event) {
-    this.chart.takeScreenshot(event)
   }
 
   selectTimeframe(event, timeframe) {
