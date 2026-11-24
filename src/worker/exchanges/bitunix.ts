@@ -1,5 +1,9 @@
 import Exchange from '../exchange'
 
+// coin margined (inverse) markets: BTCUSD, ETHUSD... (vs BTCUSDT / BTCUSDC)
+// their trade volume "v" is in USD contracts instead of coins
+const INVERSE_PAIR_REGEX = /USD$/
+
 export default class BITUNIX extends Exchange {
   id = 'BITUNIX'
   protected maxConnectionsPerApi = 300
@@ -85,12 +89,15 @@ export default class BITUNIX extends Exchange {
   }
 
   formatTrade(trade, symbol) {
+    const price = +trade.p
+
     return {
       exchange: this.id,
       pair: symbol,
       timestamp: +new Date(trade.t),
-      price: +trade.p,
-      size: +trade.v,
+      price,
+      // size in coins (inverse markets report USD, convert it)
+      size: INVERSE_PAIR_REGEX.test(symbol) ? +trade.v / price : +trade.v,
       side: trade.s
     }
   }
