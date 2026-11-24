@@ -535,12 +535,12 @@ export default class Chart {
 
     if (this._priceWatermarkElement) {
       // car screens (detected car browsers, or wide but short displays like
-      // 853x336): 60px; phones (same breakpoint as the mobile layout): a
+      // 853x336): 70px; phones (same breakpoint as the mobile layout): a
       // third of the desktop size (47px); desktop: 140px (default text size)
       const isCarScreen =
         IS_CAR_BROWSER || (window.innerWidth >= 768 && window.innerHeight < 500)
       const isPhone = window.innerWidth < 768
-      const scale = isCarScreen ? 60 / 140 : isPhone ? 1 / 3 : 1
+      const scale = isCarScreen ? 70 / 140 : isPhone ? 1 / 3 : 1
       const watermarkFontSize = Math.round(
         Math.max(16, Math.min(144, baseFontSize * 10)) * scale
       )
