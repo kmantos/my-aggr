@@ -1,70 +1,42 @@
 <template>
   <div class="settings-chart">
-    <div class="form-group mb16">
-      <label>
-        Refresh chart every
-        <code v-text="refreshRateHms" class="text-color-base"></code>
-      </label>
+    <template v-if="tab !== 'alerts'">
+      <div class="form-group mb16">
+        <label>
+          Refresh chart every
+          <code v-text="refreshRateHms" class="text-color-base"></code>
+        </label>
 
-      <slider
-        :min="0"
-        :max="10000"
-        :step="100"
-        :show-completion="true"
-        class="mt8"
-        :value="refreshRate"
-        @input="$store.commit(paneId + '/SET_REFRESH_RATE', $event)"
-        @reset="$store.commit(paneId + '/SET_REFRESH_RATE', 500)"
-      ></slider>
-    </div>
-    <p v-if="refreshRate < 500" class="form-feedback">
-      <i class="icon-warning"></i> Low refresh rate can be <u>very</u> CPU
-      intensive
-    </p>
-    <div class="form-group mb8">
-      <label class="checkbox-control">
-        <input
-          type="checkbox"
-          class="form-control"
-          :checked="showCountdown"
-          @change="$store.commit(paneId + '/TOGGLE_COUNTDOWN')"
-        />
-        <div></div>
-        <span
-          class="-inline"
-          title="Time left before the candle closes (or progress for tick, volume and bps bars), under the price label"
-          v-tippy
-          >Show candle countdown</span
-        >
-      </label>
-    </div>
-    <div class="form-group mb8">
-      <label class="checkbox-control">
-        <input
-          type="checkbox"
-          class="form-control"
-          :checked="flipped"
-          @change="$store.commit(paneId + '/TOGGLE_FLIP')"
-        />
-        <div></div>
-        <span class="-inline" title="Turn the price scale upside down" v-tippy
-          >Flip</span
-        >
-      </label>
-    </div>
-    <div class="divider" />
-    <AlertsSettings />
-    <template v-if="alertsEnabled">
-      <div class="form-group mb8 mt16">
+        <slider
+          :min="0"
+          :max="10000"
+          :step="100"
+          :show-completion="true"
+          class="mt8"
+          :value="refreshRate"
+          @input="$store.commit(paneId + '/SET_REFRESH_RATE', $event)"
+          @reset="$store.commit(paneId + '/SET_REFRESH_RATE', 500)"
+        ></slider>
+      </div>
+      <p v-if="refreshRate < 500" class="form-feedback">
+        <i class="icon-warning"></i> Low refresh rate can be <u>very</u> CPU
+        intensive
+      </p>
+      <div class="form-group mb8">
         <label class="checkbox-control">
           <input
             type="checkbox"
             class="form-control"
-            :checked="showAlerts"
-            @change="$store.commit(paneId + '/TOGGLE_ALERTS')"
+            :checked="showCountdown"
+            @change="$store.commit(paneId + '/TOGGLE_COUNTDOWN')"
           />
           <div></div>
-          <span class="-inline">Show alerts on this chart</span>
+          <span
+            class="-inline"
+            title="Time left before the candle closes (or progress for tick, volume and bps bars), under the price label"
+            v-tippy
+            >Show candle countdown</span
+          >
         </label>
       </div>
       <div class="form-group mb8">
@@ -72,22 +44,54 @@
           <input
             type="checkbox"
             class="form-control"
-            :checked="showAlertsLabel"
-            :disabled="!showAlerts"
-            @change="$store.commit(paneId + '/TOGGLE_ALERTS_LABEL')"
+            :checked="flipped"
+            @change="$store.commit(paneId + '/TOGGLE_FLIP')"
           />
           <div></div>
-          <span class="-inline">Show alert labels</span>
+          <span class="-inline" title="Turn the price scale upside down" v-tippy
+            >Flip</span
+          >
         </label>
       </div>
-      <button
-        type="button"
-        class="btn -text -arrow"
-        @click="showAlertsList = !showAlertsList"
-      >
-        Manage alerts
-      </button>
-      <alerts-list v-if="showAlertsList" :query="market" class="mt8" />
+    </template>
+    <div v-if="!tab" class="divider" />
+    <template v-if="tab !== 'general'">
+      <AlertsSettings />
+      <template v-if="alertsEnabled">
+        <div class="form-group mb8 mt16">
+          <label class="checkbox-control">
+            <input
+              type="checkbox"
+              class="form-control"
+              :checked="showAlerts"
+              @change="$store.commit(paneId + '/TOGGLE_ALERTS')"
+            />
+            <div></div>
+            <span class="-inline">Show alerts on this chart</span>
+          </label>
+        </div>
+        <div class="form-group mb8">
+          <label class="checkbox-control">
+            <input
+              type="checkbox"
+              class="form-control"
+              :checked="showAlertsLabel"
+              :disabled="!showAlerts"
+              @change="$store.commit(paneId + '/TOGGLE_ALERTS_LABEL')"
+            />
+            <div></div>
+            <span class="-inline">Show alert labels</span>
+          </label>
+        </div>
+        <button
+          type="button"
+          class="btn -text -arrow"
+          @click="showAlertsList = !showAlertsList"
+        >
+          Manage alerts
+        </button>
+        <alerts-list v-if="showAlertsList" :query="market" class="mt8" />
+      </template>
     </template>
   </div>
 </template>
@@ -115,11 +119,17 @@ import { stripStablePair } from '@/services/productsService'
     paneId: {
       type: String,
       required: true
+    },
+    // only show one tab of the pane dialog (general / alerts)
+    tab: {
+      type: String,
+      default: null
     }
   }
 })
 export default class ChartSettings extends Vue {
   paneId: string
+  tab: string
   showAlertsList = false
 
   get flipped() {

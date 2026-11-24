@@ -7,14 +7,12 @@
     @mouseup="clickOutsideClose = true"
   >
     <template v-slot:header>
-      <div
-        class="dialog__title -editable"
-        @dblclick="renamePane"
-        v-text="name"
-      ></div>
+      <div class="dialog__title" v-text="name"></div>
       <div class="column -center"></div>
     </template>
-    <AlertsSettings />
+    <pane-general-settings :pane-id="paneId" @close="close">
+      <AlertsSettings />
+    </pane-general-settings>
   </Dialog>
 </template>
 

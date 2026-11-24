@@ -1,14 +1,23 @@
 <template>
   <Dialog @clickOutside="close" class="pane-dialog">
     <template v-slot:header>
-      <div
-        class="dialog__title -editable"
-        @dblclick="renamePane"
-        v-text="name"
-      ></div>
+      <div class="dialog__title" v-text="name"></div>
       <div class="column -center"></div>
     </template>
-    <counters-settings :paneId="paneId" />
+    <template v-slot:subheader>
+      <tabs :value="tab" @input="tab = $event">
+        <tab name="general">General</tab>
+        <tab name="sources">Sources</tab>
+      </tabs>
+    </template>
+    <pane-general-settings
+      v-if="tab === 'general'"
+      :pane-id="paneId"
+      @close="close"
+    >
+      <counters-settings :pane-id="paneId" />
+    </pane-general-settings>
+    <pane-sources v-else :pane-id="paneId" />
   </Dialog>
 </template>
 

@@ -4,7 +4,6 @@
       :paneId="paneId"
       ref="paneHeader"
       :settings="() => import('@/components/trades/TradesDialog.vue')"
-      @zoom="onResize"
     >
       <hr />
     </pane-header>
@@ -152,6 +151,11 @@ export default class TradesLite extends Mixins(PaneMixin) {
   created() {
     this._onStoreMutation = this.$store.subscribe(mutation => {
       switch (mutation.type) {
+        case 'panes/SET_PANE_ZOOM':
+          if (mutation.payload.id === this.paneId) {
+            this.onResize()
+          }
+          break
         case 'panes/SET_PANE_MARKETS':
           if (mutation.payload.id === this.paneId) {
             this.clear()

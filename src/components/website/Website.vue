@@ -4,28 +4,7 @@
       ref="paneHeader"
       :paneId="paneId"
       :settings="() => import('@/components/website/WebsiteDialog.vue')"
-      :show-search="false"
-    >
-      <template v-slot:menu>
-        <div class="dropdown-item">
-          <label class="checkbox-control -small" @click.stop>
-            <input
-              type="checkbox"
-              class="form-control"
-              :checked="interactive"
-              @change="$store.commit(paneId + '/TOGGLE_INTERACTIVE')"
-            />
-            <div></div>
-            <span>Interactive</span>
-          </label>
-        </div>
-        <button type="button" class="dropdown-item" @click="reload(true)">
-          <i class="icon-refresh"></i>
-          <span>Reload</span>
-        </button>
-        <div class="dropdown-divider"></div>
-      </template>
-    </pane-header>
+    ></pane-header>
     <div class="iframe__lock" v-if="locked">
       <div class="ml8 mr8">
         <p>
@@ -65,6 +44,7 @@ import { Component, Mixins, Watch } from 'vue-property-decorator'
 
 import PaneMixin from '@/mixins/paneMixin'
 import PaneHeader from '../panes/PaneHeader.vue'
+import paneActions from '@/utils/paneActions'
 
 @Component({
   components: { PaneHeader },
@@ -132,6 +112,15 @@ export default class Website extends Mixins(PaneMixin) {
 
   created() {
     this.setupReloadTimer()
+
+    paneActions.on('reload', this.onReloadAction)
+  }
+
+  // "Reload" from the website settings dialog
+  onReloadAction(paneId: string) {
+    if (paneId === this.paneId) {
+      this.reload(true)
+    }
   }
 
   getSettingsDialog() {
@@ -139,6 +128,8 @@ export default class Website extends Mixins(PaneMixin) {
   }
 
   beforeDestroy() {
+    paneActions.off('reload', this.onReloadAction)
+
     if (this._reloadTimeout) {
       clearTimeout(this._reloadTimeout)
     }

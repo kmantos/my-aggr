@@ -4,7 +4,6 @@
       class="pane-alerts__header"
       :paneId="paneId"
       :settings="() => import('@/components/alerts/AlertsDialog.vue')"
-      :show-search="false"
       :show-name="false"
     >
       <hr />

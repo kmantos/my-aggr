@@ -5,23 +5,6 @@
       ref="paneHeader"
       :settings="() => import('@/components/trades/TradesDialog.vue')"
     >
-      <template v-slot:menu>
-        <button
-          type="button"
-          class="dropdown-item"
-          @click="upgradeToLite"
-          title="✨ Upgrade to the canvas based feed for better performance ✨"
-          v-tippy="{
-            placement: 'left',
-            boundary: 'window',
-            followCursor: true,
-            distance: 32
-          }"
-        >
-          🚀
-          <span class="ml8">Upgrade</span>
-        </button>
-      </template>
       <hr />
     </pane-header>
     <ul

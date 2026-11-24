@@ -1,6 +1,8 @@
 <template>
   <div>
     <ToggableSection
+      v-if="!tab || tab === 'thresholds'"
+      :auto-open="!!tab"
       class="thresholds"
       title="Thresholds"
       id="trades-thresholds"
@@ -44,6 +46,8 @@
       </div>
     </ToggableSection>
     <ToggableSection
+      v-if="!tab || tab === 'thresholds'"
+      :auto-open="!!tab"
       class="thresholds"
       id="trades-liquidations"
       :badge="liquidations.length"
@@ -89,7 +93,13 @@
       </div>
     </ToggableSection>
 
-    <ToggableSection title="Audio" id="trades-audio" inset>
+    <ToggableSection
+      v-if="!tab || tab === 'audio'"
+      :auto-open="!!tab"
+      title="Audio"
+      id="trades-audio"
+      inset
+    >
       <div class="column mb16">
         <div class="form-group text-nowrap">
           <label class="checkbox-control">
@@ -190,7 +200,13 @@
       </button>
     </ToggableSection>
 
-    <ToggableSection title="Preferences" id="trades-preferences" inset>
+    <ToggableSection
+      v-if="!tab || tab === 'general'"
+      :auto-open="!!tab"
+      title="Preferences"
+      id="trades-preferences"
+      inset
+    >
       <div
         class="form-group column mb8"
         title="Number of trades rendered"
@@ -255,7 +271,13 @@
       </div>
     </ToggableSection>
 
-    <ToggableSection title="Formats" id="trades-columns" inset>
+    <ToggableSection
+      v-if="!tab || tab === 'general'"
+      :auto-open="!!tab"
+      title="Formats"
+      id="trades-columns"
+      inset
+    >
       <div class="form-group mb8">
         <label class="checkbox-control -small">
           <input
@@ -330,7 +352,8 @@
       </toggable-group>
     </ToggableSection>
     <ToggableSection
-      v-if="isLegacy"
+      v-if="isLegacy && (!tab || tab === 'thresholds')"
+      :auto-open="!!tab"
       :title="`THRESHOLD MULTIPLIER (${mutipliersCount})`"
       inset
     >
@@ -391,11 +414,17 @@ import ToggableGroup from '@/components/framework/ToggableGroup.vue'
     paneId: {
       type: String,
       required: true
+    },
+    // only show one tab of the pane dialog (general / thresholds / audio)
+    tab: {
+      type: String,
+      default: null
     }
   }
 })
 export default class TradesSettings extends Vue {
   paneId: string
+  tab: string
   secondsAgoExample = '0s ago'
 
   private _secondsAgoExampleTimeout: number

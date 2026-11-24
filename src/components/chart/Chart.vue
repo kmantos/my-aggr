@@ -5,20 +5,6 @@
       :paneId="paneId"
       :settings="() => import('@/components/chart/ChartDialog.vue')"
     >
-      <template v-slot:menu>
-        <button type="button" class="dropdown-item" @click="toggleLayout">
-          <i class="icon-resize-height"></i>
-          <span>Arrange</span>
-        </button>
-        <button type="button" class="dropdown-item" @click="restart">
-          <i class="icon-refresh"></i>
-          <span>Restart</span>
-        </button>
-        <button type="button" class="dropdown-item" @click="takeScreenshot">
-          <i class="icon-add-photo"></i>
-          <span>Snapshot</span>
-        </button>
-      </template>
       <button
         v-for="(timeframeLabel, timeframe) of favoriteTimeframes"
         :key="timeframe"
@@ -40,14 +26,6 @@
       </Btn>
       <hr />
     </pane-header>
-    <div
-      class="chart-overlay hide-scrollbar"
-      :style="{ left: overlayLeft + 'px' }"
-    >
-      <indicators-overlay v-model="showIndicators" :pane-id="paneId" />
-      <markets-overlay :pane-id="paneId" />
-    </div>
-
     <chart-layout
       v-if="layouting"
       :pane-id="paneId"
@@ -62,6 +40,7 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 
+import paneActions from '@/utils/paneActions'
 import Chart from './chart'
 
 import { getTimeframeForHuman, sleep } from '@/utils/helpers'
@@ -73,8 +52,6 @@ import { AlertEvent } from '@/services/alertService'
 import PaneMixin from '@/mixins/paneMixin'
 import PaneHeader from '@/components/panes/PaneHeader.vue'
 import ChartLayout from '@/components/chart/Layout.vue'
-import IndicatorsOverlay from '@/components/chart/IndicatorsOverlay.vue'
-import MarketsOverlay from '@/components/chart/MarketsOverlay.vue'
 import AlertsList from '@/components/alerts/AlertsList.vue'
 import Btn from '@/components/framework/Btn.vue'
 
@@ -85,8 +62,6 @@ import { Trade } from '@/types/types'
   components: {
     ChartLayout,
     PaneHeader,
-    IndicatorsOverlay,
-    MarketsOverlay,
     AlertsList,
     Btn
   }
@@ -106,14 +81,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
     return (this.$store.state[this.paneId] as ChartPaneState).layouting
   }
 
-  get overlayLeft() {
-    return this.axis.left
-  }
-
-  get overlayTop() {
-    return this.axis.top
-  }
-
   get favoriteTimeframes() {
     return this.$store.state.settings.favoriteTimeframes
   }
@@ -124,14 +91,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
 
   get isKnownTimeframe() {
     return Object.keys(this.favoriteTimeframes).indexOf(this.timeframe) !== -1
-  }
-
-  get showIndicators() {
-    return this.$store.state[this.paneId].showIndicators
-  }
-
-  set showIndicators(value) {
-    this.$store.commit(`${this.paneId}/TOGGLE_INDICATORS`, value)
   }
 
   get timeframeForHuman() {
@@ -153,9 +112,8 @@ export default class ChartComponent extends Mixins(PaneMixin) {
 
     this.bindAggregator()
 
-    if (this.showIndicators && this.$parent.$el.clientHeight > 420) {
-      this.showIndicators = true
-    }
+    paneActions.on('restart', this.onRestartAction)
+    paneActions.on('snapshot', this.onSnapshotAction)
   }
 
   destroyChart() {
@@ -165,7 +123,23 @@ export default class ChartComponent extends Mixins(PaneMixin) {
   }
 
   beforeDestroy() {
+    paneActions.off('restart', this.onRestartAction)
+    paneActions.off('snapshot', this.onSnapshotAction)
+
     this.destroyChart()
+  }
+
+  // actions triggered from the chart settings dialog
+  onRestartAction(paneId: string) {
+    if (paneId === this.paneId) {
+      this.restart()
+    }
+  }
+
+  onSnapshotAction(paneId: string, event: MouseEvent) {
+    if (paneId === this.paneId) {
+      this.takeScreenshot(event || ({} as MouseEvent))
+    }
   }
 
   onTrades(trades: Trade[]) {
@@ -210,10 +184,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
     this.axis = this.chart.getAxisSize()
   }
 
-  toggleLayout() {
-    this.$store.commit(this.paneId + '/TOGGLE_LAYOUTING')
-  }
-
   async toggleTimeframeDropdown(event, button) {
     button.isLoading = true
     await this.chart.toggleTimeframeDropdown(event)
@@ -241,10 +211,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
 <style lang="scss" scoped>
 .pane-chart {
   font-family: $font-condensed;
-
-  &:hover .chart-overlay {
-    display: flex;
-  }
 
   &__timeframe {
     $timeframe: &;
@@ -313,10 +279,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-body.-unselectable .chart-overlay {
-  display: none !important;
 }
 </style>
 

@@ -302,3 +302,16 @@
     }
   }
 }
+
+// pane settings dialogs: tabs share the (narrow) dialog width
+.pane-dialog .tabs {
+  padding: 0 0.5rem;
+
+  .tab {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 0 0.5rem;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+}

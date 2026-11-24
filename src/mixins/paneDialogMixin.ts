@@ -3,8 +3,18 @@ import { parseMarket } from '@/services/productsService'
 import { Pane } from '@/store/panes'
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import Tabs from '@/components/framework/Tabs.vue'
+import Tab from '@/components/framework/Tab.vue'
+import PaneGeneralSettings from '@/components/panes/PaneGeneralSettings.vue'
+import PaneSources from '@/components/panes/PaneSources.vue'
 
 @Component({
+  components: {
+    Tabs,
+    Tab,
+    PaneGeneralSettings,
+    PaneSources
+  },
   props: {
     paneId: {
       required: true,
@@ -14,6 +24,9 @@ import Component from 'vue-class-component'
 })
 export default class PaneDialogMixin extends Vue {
   paneId: string
+
+  // pane settings dialogs are split in tabs (general, sources...)
+  tab = 'general'
 
   get pane(): Pane {
     return this.$store.state.panes.panes[this.paneId]
