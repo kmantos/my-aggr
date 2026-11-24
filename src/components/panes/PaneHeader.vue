@@ -2,13 +2,8 @@
   <div
     class="pane-header hide-scrollbar d-flex"
     :class="[split && 'pane-header--split']"
-    @dblclick="maximizePane"
   >
-    <div
-      v-if="showName && name"
-      class="btn -cases pane-header__highlight"
-      @dblclick="maximizePane"
-    >
+    <div v-if="showName && name" class="btn -cases pane-header__highlight">
       <slot name="title">
         {{ name }}
         <btn
@@ -111,21 +106,9 @@
       ></div>
       <slot name="menu"></slot>
       <div class="dropdown-divider" data-label="utilities"></div>
-      <button type="button" class="dropdown-item" @click="maximizePane">
-        <i class="icon-enlarge"></i>
-        <span>Maximize</span>
-      </button>
       <button type="button" class="dropdown-item" @click="duplicatePane">
         <i class="icon-copy-paste"></i>
         <span>Duplicate</span>
-      </button>
-      <button type="button" class="dropdown-item" @click="downloadPane">
-        <i class="icon-download"></i>
-        <span>Download</span>
-      </button>
-      <button type="button" class="dropdown-item" @click="renamePane">
-        <i class="icon-edit"></i>
-        <span>Rename</span>
       </button>
       <button type="button" class="dropdown-item" @click="removePane">
         <i class="icon-trash"></i>
@@ -140,7 +123,6 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 import Btn from '@/components/framework/Btn.vue'
-import { downloadAnything, getSiblings, slugify } from '@/utils/helpers'
 import dialogService from '@/services/dialogService'
 import { INFRAME } from '@/utils/constants'
 import { Prop } from 'vue-property-decorator'
@@ -221,34 +203,6 @@ export default class PaneHeader extends Vue {
     this.$store.dispatch('panes/duplicatePane', this.paneId)
   }
 
-  maximizePane(event) {
-    if (event.type === 'dblclick' && event.currentTarget !== event.target) {
-      return
-    }
-
-    const el = this.$el.parentElement.parentElement
-    const isMaximized = el.classList.toggle('-maximized')
-
-    const siblings = getSiblings(el)
-
-    for (const sibling of siblings) {
-      if (!sibling.getAttribute('type')) {
-        continue
-      }
-      sibling.classList.remove('-maximized')
-      sibling.style.display = isMaximized ? 'none' : 'block'
-    }
-
-    const cls = Event as any
-
-    window.dispatchEvent(new cls('resize'))
-
-    this.$store.dispatch('panes/setZoom', {
-      id: this.paneId,
-      zoom: isMaximized ? this.zoom * 1.5 : this.zoom * (2 / 3)
-    })
-  }
-
   async renamePane(event) {
     if (event) {
       event.stopPropagation()
@@ -263,22 +217,6 @@ export default class PaneHeader extends Vue {
     if (typeof name === 'string' && name !== this.name) {
       this.$store.commit('panes/SET_PANE_NAME', { id: this.paneId, name: name })
     }
-  }
-
-  async downloadPane() {
-    const id = `${this.type}:${this.paneId}`
-
-    downloadAnything(
-      {
-        name: id,
-        type: this.type,
-        data: this.$store.state[this.paneId],
-        markets: this.$store.state.panes.panes[this.paneId].markets,
-        createdAt: Date.now(),
-        updatedAt: null
-      },
-      slugify(`${this.type} ${this.name}`)
-    )
   }
 
   toggleDropdown(event) {

@@ -32,6 +32,7 @@
         ref="panes"
         :is="gridItem.type"
         :paneId="gridItem.i"
+        @dblclick.native="onPaneDoubleClick"
       ></component>
     </grid-item>
   </grid-layout>
@@ -46,6 +47,7 @@ import PaneMixin from '@/mixins/paneMixin'
 
 import { GRID_COLS } from '@/utils/constants'
 import { GridItem } from '@/utils/grid'
+import { getSiblings } from '@/utils/helpers'
 
 @Component({
   components: {
@@ -99,6 +101,60 @@ export default class Panes extends Vue {
 
   beforeDestroy() {
     window.addEventListener('resize', this.updateRowHeight)
+  }
+
+  /**
+   * double click anywhere in a pane maximizes it, double click again restores
+   * (like TradingView)
+   */
+  onPaneDoubleClick(event: MouseEvent) {
+    const target = event.target as HTMLElement
+
+    // controls (buttons, inputs, menus...) keep their own double click
+    if (
+      target.closest(
+        'button, a, input, select, textarea, label, [contenteditable], .btn, .dropdown, .dialog'
+      )
+    ) {
+      return
+    }
+
+    // chart price & time axes: double click resets the axis scale
+    const cell = target.closest('.chart__container td') as HTMLTableCellElement
+
+    if (cell) {
+      const row = cell.parentElement as HTMLTableRowElement
+      const isTimeAxisRow =
+        !row.nextElementSibling && !!row.previousElementSibling
+
+      if (cell.cellIndex !== 1 || isTimeAxisRow) {
+        return
+      }
+    }
+
+    const selection = window.getSelection && window.getSelection()
+
+    if (selection) {
+      selection.removeAllRanges()
+    }
+
+    this.toggleMaximize((event.currentTarget as HTMLElement).parentElement)
+  }
+
+  toggleMaximize(gridItemElement: HTMLElement) {
+    const isMaximized = gridItemElement.classList.toggle('-maximized')
+
+    for (const sibling of getSiblings(gridItemElement)) {
+      if (!sibling.getAttribute('type')) {
+        continue
+      }
+
+      sibling.classList.remove('-maximized')
+      sibling.style.display = isMaximized ? 'none' : 'block'
+    }
+
+    // untrusted resize event -> resizeMaximizedPane (see updateRowHeight)
+    window.dispatchEvent(new Event('resize'))
   }
 
   resizeMaximizedPane() {
