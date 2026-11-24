@@ -14,15 +14,6 @@
       <div class="column -center"></div>
     </template>
     <website-settings :paneId="paneId" />
-    <template v-slot:footer>
-      <presets
-        type="website"
-        :adapter="getPreset"
-        :placeholder="paneId"
-        @apply="resetPane($event)"
-        class="-left -top"
-      />
-    </template>
   </Dialog>
 </template>
 

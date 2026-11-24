@@ -64,7 +64,6 @@
     { "label": "1597 ticks", "value": "1597t" }
   ],
   "favoriteTimeframes": {},
-  "normalizeWatermarks": true,
   "alerts": true,
   "alertsColor": "rgb(0,255,0)",
   "alertsLineStyle": 1,

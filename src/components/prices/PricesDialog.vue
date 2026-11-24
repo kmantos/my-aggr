@@ -15,15 +15,6 @@
       <div class="column -center"></div>
     </template>
     <prices-settings :paneId="paneId" />
-    <template v-slot:footer>
-      <presets
-        type="prices"
-        :adapter="getPreset"
-        :placeholder="paneId"
-        @apply="resetPane($event)"
-        class="-left -top"
-      />
-    </template>
   </Dialog>
 </template>
 

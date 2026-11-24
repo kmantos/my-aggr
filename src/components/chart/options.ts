@@ -243,17 +243,6 @@ export function getChartCrosshairOptions() {
   }
 }
 
-export function getChartWatermarkOptions(paneId) {
-  const chartOptions = store.state[paneId] as ChartPaneState
-
-  return {
-    watermark: {
-      color: chartOptions.watermarkColor,
-      visible: chartOptions.showWatermark
-    }
-  }
-}
-
 export function getChartBorderOptions(paneId?: string) {
   const transColor = getComputedStyle(
     document.documentElement
@@ -273,40 +262,19 @@ export function getChartBorderOptions(paneId?: string) {
     }
   }
 
-  const chartOptions = store.state[paneId] as ChartPaneState
-
+  // chart panes: right price scale and time scale only, no borders
   return {
     timeScale: {
-      visible: chartOptions.showTimeScale,
-      borderColor: chartOptions.borderColor || transColor,
-      borderVisible: chartOptions.showBorder
+      visible: true,
+      borderVisible: false
     },
     rightPriceScale: {
-      visible: chartOptions.showRightScale,
-      borderColor: chartOptions.borderColor || transColor,
-      borderVisible: chartOptions.showBorder
+      visible: true,
+      borderVisible: false
     },
     leftPriceScale: {
-      visible: chartOptions.showLeftScale,
-      borderColor: chartOptions.borderColor || transColor,
-      borderVisible: chartOptions.showBorder
-    }
-  }
-}
-
-export function getChartGridlinesOptions(paneId) {
-  const chartOptions = store.state[paneId] as ChartPaneState
-
-  return {
-    grid: {
-      vertLines: {
-        color: chartOptions.verticalGridlinesColor,
-        visible: chartOptions.showVerticalGridlines
-      },
-      horzLines: {
-        color: chartOptions.horizontalGridlinesColor,
-        visible: chartOptions.showHorizontalGridlines
-      }
+      visible: false,
+      borderVisible: false
     }
   }
 }
@@ -368,9 +336,7 @@ export function getChartOptions(
 export function getChartCustomColorsOptions(paneId) {
   return merge(
     getChartLayoutOptions(paneId),
-    getChartOptions(defaultChartOptions as any),
-    getChartWatermarkOptions(paneId),
-    getChartGridlinesOptions(paneId)
+    getChartOptions(defaultChartOptions as any)
   )
 }
 

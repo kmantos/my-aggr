@@ -72,22 +72,9 @@ export interface ChartPaneState {
   refreshRate?: number
   showAlerts?: boolean
   showAlertsLabel?: boolean
-  showLegend: boolean
   showCountdown: boolean
   showIndicators: boolean
-  fillGapsWithEmpty: boolean
-  showHorizontalGridlines: boolean
-  horizontalGridlinesColor: string
-  showVerticalGridlines: boolean
-  verticalGridlinesColor: string
-  showWatermark: boolean
-  watermarkColor: string
-  showBorder: boolean
-  borderColor: string
   textColor: string
-  showLeftScale: boolean
-  showRightScale: boolean
-  showTimeScale: boolean
   hiddenMarkets: { [indicatorId: string]: boolean }
   barSpacing: number
 }
@@ -112,21 +99,8 @@ const state = {
   refreshRate: 1000,
   showAlerts: true,
   showAlertsLabel: true,
-  showLegend: true,
   showCountdown: true,
-  fillGapsWithEmpty: false,
-  showHorizontalGridlines: false,
-  horizontalGridlinesColor: 'rgba(255,255,255,.1)',
-  showVerticalGridlines: false,
-  verticalGridlinesColor: 'rgba(255,255,255,.1)',
-  showWatermark: true,
-  watermarkColor: 'rgba(255,255,255,.033)',
-  showBorder: true,
-  borderColor: null,
   textColor: null,
-  showLeftScale: false,
-  showRightScale: true,
-  showTimeScale: true,
   hiddenMarkets: {},
   barSpacing: null
 } as ChartPaneState
@@ -445,55 +419,14 @@ const mutations = {
   SET_REFRESH_RATE(state, value) {
     state.refreshRate = +value || 0
   },
-  TOGGLE_LEGEND(state) {
-    state.showLegend = !state.showLegend
-  },
   TOGGLE_COUNTDOWN(state) {
     state.showCountdown = !state.showCountdown
   },
   TOGGLE_INDICATORS(state, value) {
     state.showIndicators = value
   },
-  SET_GRIDLINES(state, { type, value }) {
-    if (type === 'vertical') {
-      if (typeof value === 'boolean') {
-        state.showVerticalGridlines = value
-      } else {
-        state.verticalGridlinesColor = value
-      }
-    } else {
-      if (typeof value === 'boolean') {
-        state.showHorizontalGridlines = value
-      } else {
-        state.horizontalGridlinesColor = value
-      }
-    }
-  },
-  SET_WATERMARK(state, { value }) {
-    if (typeof value === 'boolean') {
-      state.showWatermark = value
-    } else {
-      state.watermarkColor = value
-    }
-  },
-  SET_BORDER(state, { value }) {
-    if (typeof value === 'boolean') {
-      state.showBorder = value
-    } else {
-      state.borderColor = value
-    }
-  },
   SET_TEXT_COLOR(state, { value }) {
     state.textColor = value
-  },
-  TOGGLE_AXIS(state, side) {
-    if (side === 'left') {
-      state.showLeftScale = !state.showLeftScale
-    } else if (side === 'right') {
-      state.showRightScale = !state.showRightScale
-    } else if (side === 'time') {
-      state.showTimeScale = !state.showTimeScale
-    }
   },
   SET_INDICATOR_SERIES(state, { id, series }) {
     state.indicators[id].series = series
@@ -560,9 +493,6 @@ const mutations = {
     } else {
       state.layouting = !state.layouting
     }
-  },
-  TOGGLE_FILL_GAPS_WITH_EMPTY(state) {
-    state.fillGapsWithEmpty = !state.fillGapsWithEmpty
   },
   UPDATE_INDICATOR_DISPLAY_NAME(state, id) {
     const displayName = state.indicators[id].name.replace(

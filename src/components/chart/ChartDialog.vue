@@ -9,15 +9,6 @@
       <div class="column -center"></div>
     </template>
     <chart-settings :paneId="paneId" />
-    <template v-slot:footer>
-      <presets
-        type="chart"
-        :adapter="getPreset"
-        :placeholder="paneId"
-        @apply="resetPane($event)"
-        class="-left -top"
-      />
-    </template>
   </Dialog>
 </template>
 

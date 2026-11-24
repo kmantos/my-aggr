@@ -1,14 +1,11 @@
 import alertService, { MarketAlert } from '@/services/alertService'
 import dialogService from '@/services/dialogService'
-import { formatAmount, formatPrice } from '@/services/productsService'
 import store from '@/store'
-import { ChartPaneState } from '@/store/panesSettings/chart'
 import {
   createComponent,
   floorTimestampToTimeframe,
   getEventCords,
-  mountComponent,
-  sleep
+  mountComponent
 } from '@/utils/helpers'
 import { isTouchSupported } from '@/utils/touchevent'
 import {
@@ -19,12 +16,7 @@ import {
 import Chart from './chart'
 import AlertEventHandler from './controls/alertEventHandler'
 import MeasurementEventHandler from './controls/measurementEventHandler'
-import {
-  getChartCustomColorsOptions,
-  getChartGridlinesOptions,
-  getChartBorderOptions,
-  getChartLayoutOptions
-} from './options'
+import { getChartCustomColorsOptions, getChartLayoutOptions } from './options'
 import { components, controlledCharts, syncCrosshair } from './common'
 import iframeService from '@/services/iframeService'
 
@@ -32,7 +24,6 @@ export default class ChartControl {
   chart: Chart
 
   private onPanTimeout: number
-  private legendElements: { [id: string]: HTMLElement }
   private lastCrosshairX: number
   private activeEvent: any
   private isSyncingCrosshairs: boolean
@@ -75,20 +66,11 @@ export default class ChartControl {
     this.clearChartsCrosshairsHandler = this.clearChartsCrosshairs.bind(this)
     canvas.addEventListener('mouseleave', this.clearChartsCrosshairsHandler)
 
-    // bind legends
-    if (
-      store.state[this.chart.paneId].showIndicators &&
-      store.state[this.chart.paneId].showLegend
-    ) {
-      this.bindLegend()
-    }
-
     controlledCharts.push(this.chart)
   }
 
   unbindEvents() {
     this.unsubscribeStore()
-    this.unbindLegend()
 
     // unbind pan
     this.chart.chartInstance
@@ -129,9 +111,8 @@ export default class ChartControl {
           this.chart.chartInstance.applyOptions(
             getChartCustomColorsOptions(this.chart.paneId)
           )
-          break
-        case 'settings/TOGGLE_NORMAMIZE_WATERMARKS':
-          this.chart.refreshMarkets()
+          // custom colors options include the (hidden) default watermark
+          this.chart.updatePriceWatermark(true)
           break
         case 'settings/SET_TIMEZONE_OFFSET':
           this.chart.setTimezoneOffset(store.state.settings.timezoneOffset)
@@ -172,39 +153,10 @@ export default class ChartControl {
           this.chart.clearQueue()
           this.chart.setupQueue()
           break
-        case this.chart.paneId + '/TOGGLE_LEGEND':
-        case this.chart.paneId + '/TOGGLE_INDICATORS':
-          if (
-            store.state[this.chart.paneId].showIndicators &&
-            store.state[this.chart.paneId].showLegend
-          ) {
-            this.bindLegend()
-          } else {
-            this.unbindLegend()
-          }
-          break
-        case this.chart.paneId + '/SET_GRIDLINES':
-          this.chart.chartInstance.applyOptions(
-            getChartGridlinesOptions(this.chart.paneId)
-          )
-          break
-        case this.chart.paneId + '/SET_BORDER':
-        case this.chart.paneId + '/TOGGLE_AXIS':
-          this.chart.chartInstance.applyOptions(
-            getChartLayoutOptions(this.chart.paneId)
-          )
-          this.chart.chartInstance.applyOptions(
-            getChartBorderOptions(this.chart.paneId)
-          )
-          break
         case this.chart.paneId + '/SET_TEXT_COLOR':
           this.chart.chartInstance.applyOptions(
             getChartLayoutOptions(this.chart.paneId)
           )
-          break
-        case this.chart.paneId + '/SET_WATERMARK':
-        case this.chart.paneId + '/TOGGLE_NORMAMIZE_WATERMARKS':
-          this.chart.updateWatermark()
           break
         case this.chart.paneId + '/SET_INDICATOR_OPTION':
           this.chart.setIndicatorOption(
@@ -225,13 +177,6 @@ export default class ChartControl {
         case this.chart.paneId + '/ADD_INDICATOR':
           if (this.chart.addIndicator(mutation.payload.id)) {
             this.chart.redrawIndicator(mutation.payload.id)
-
-            if (
-              store.state[this.chart.paneId].showIndicators &&
-              store.state[this.chart.paneId].showLegend
-            ) {
-              this.bindLegend(mutation.payload.id)
-            }
           }
           break
         case this.chart.paneId + '/UPDATE_INDICATOR_ORDER':
@@ -241,11 +186,7 @@ export default class ChartControl {
           )
           break
         case this.chart.paneId + '/REMOVE_INDICATOR':
-          this.unbindLegend(mutation.payload)
           this.chart.removeIndicator(mutation.payload)
-          break
-        case this.chart.paneId + '/TOGGLE_FILL_GAPS_WITH_EMPTY':
-          this.chart.toggleFillGapsWithEmpty()
           break
         case 'settings/TOGGLE_AUTO_HIDE_HEADERS':
           this.chart.refreshChartDimensions()
@@ -408,10 +349,6 @@ export default class ChartControl {
     }
 
     this.lastCrosshairX = event.point.x
-
-    if (this.legendElements) {
-      this.updateLegend(event)
-    }
   }
 
   onPan(visibleLogicalRange) {
@@ -447,61 +384,6 @@ export default class ChartControl {
     }, 500) as unknown as number
   }
 
-  async bindLegend(indicatorId?: string) {
-    if (!this.legendElements) {
-      this.legendElements = {}
-    }
-
-    if (!indicatorId) {
-      for (const id in (store.state[this.chart.paneId] as ChartPaneState)
-        .indicators) {
-        this.bindLegend(id)
-      }
-
-      return
-    }
-
-    await sleep(1)
-
-    const legendId = this.chart.paneId + indicatorId
-
-    if (this.legendElements[legendId]) {
-      return
-    }
-
-    const el = document.getElementById(legendId)
-
-    if (el) {
-      this.legendElements[legendId] = el
-    }
-  }
-
-  unbindLegend(indicatorId?: string) {
-    if (!this.legendElements) {
-      return
-    }
-
-    if (!indicatorId) {
-      for (const indicator of this.chart.loadedIndicators) {
-        this.unbindLegend(indicator.id)
-      }
-
-      this.legendElements = null
-
-      return
-    }
-
-    const legendId = this.chart.paneId + indicatorId
-
-    for (const bindedLegendId in this.legendElements) {
-      if (legendId === bindedLegendId) {
-        this.legendElements[bindedLegendId].innerText = ''
-        delete this.legendElements[bindedLegendId]
-        return
-      }
-    }
-  }
-
   clearChartsCrosshairs() {
     if (!this.isSyncingCrosshairs) {
       return
@@ -512,75 +394,6 @@ export default class ChartControl {
     }
 
     this.isSyncingCrosshairs = false
-  }
-
-  updateLegend(event: MouseEventParams) {
-    for (let i = 0; i < this.chart.loadedIndicators.length; i++) {
-      const indicator = this.chart.loadedIndicators[i]
-
-      if (!indicator.apis.length) {
-        continue
-      }
-
-      const id = this.chart.paneId + indicator.id
-
-      if (!this.legendElements[id]) {
-        continue
-      }
-
-      if (!event.point.x) {
-        continue
-      }
-
-      let text = ''
-
-      for (let j = 0; j < indicator.apis.length; j++) {
-        if (j > 10) {
-          break
-        }
-
-        const api = indicator.apis[j]
-
-        // const data = event.seriesPrices.get(api) as any
-        const data = event.seriesData.get(api) as any
-
-        if (text.length) {
-          text += '\u00a0|\u00a0'
-        }
-
-        if (!data) {
-          text += 'na'
-          continue
-        }
-
-        let type = 'price'
-        let precision
-
-        if (indicator.options.priceFormat) {
-          if (indicator.options.priceFormat.type) {
-            type = indicator.options.priceFormat.type
-          }
-
-          precision = indicator.options.priceFormat.precision
-        }
-
-        const formatFunction = type === 'volume' ? formatAmount : formatPrice
-
-        if (data.value) {
-          text += formatFunction(data.value, precision)
-        } else if (data.close) {
-          text += `O: ${formatFunction(
-            data.open,
-            precision
-          )} H: ${formatFunction(data.high, precision)} L: ${formatFunction(
-            data.low,
-            precision
-          )} C: ${formatFunction(data.close, precision)}`
-        }
-      }
-
-      this.legendElements[id].textContent = text
-    }
   }
 
   async toggleTimeframeDropdown(event) {

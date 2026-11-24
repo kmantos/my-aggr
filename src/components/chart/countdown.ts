@@ -121,13 +121,10 @@ export default class CandleCountdown {
       return null
     }
 
+    // charts only have the right price scale (plus the time scale)
     const side = options.priceScaleId
 
-    if (
-      (side === 'right' && !paneState.showRightScale) ||
-      (side === 'left' && !paneState.showLeftScale) ||
-      (side !== 'right' && side !== 'left')
-    ) {
+    if (side !== 'right') {
       return null
     }
 
@@ -163,8 +160,7 @@ export default class CandleCountdown {
     const labelHeight = fontSize * (1 + LABEL_PADDING_RATIO * 2)
     const scaleWidth = chartInstance.priceScale(side).width()
     const paneHeight =
-      this.chart.chartElement.clientHeight -
-      (paneState.showTimeScale ? chartInstance.timeScale().height() : 0)
+      this.chart.chartElement.clientHeight - chartInstance.timeScale().height()
     const top = Math.round(coordinate + labelHeight / 2)
 
     // hide when the price label is off screen

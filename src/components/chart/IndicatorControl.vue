@@ -33,10 +33,6 @@
         <i class="icon-more"></i>
       </button>
     </div>
-    <div
-      class="indicator__legend pane-overlay"
-      :id="paneId + indicator.id"
-    ></div>
     <div v-if="error">
       <i class="icon-warning ml4 mr8"></i>
       {{ error }}
@@ -65,9 +61,6 @@ export default class IndicatorControl extends Vue {
 
   get indicator() {
     return this.$store.state[this.paneId].indicators[this.indicatorId]
-  }
-  get showLegend() {
-    return this.$store.state[this.paneId].showLegend
   }
 
   get name() {
@@ -136,10 +129,6 @@ export default class IndicatorControl extends Vue {
     .pane-overlay {
       background: 0;
     }
-
-    .indicator__legend {
-      display: none;
-    }
   }
 
   &__name {
@@ -149,19 +138,6 @@ export default class IndicatorControl extends Vue {
     font-size: inherit;
     font-family: inherit;
     cursor: pointer;
-  }
-
-  &__legend {
-    color: var(--theme-accent-100);
-    font-family: $font-monospace;
-    pointer-events: none;
-    line-height: 1.75em;
-    letter-spacing: 0px;
-    position: absolute;
-    font-size: 0.75em;
-    margin: 0 0 0 1em;
-    left: 100%;
-    padding: 0 0.5em;
   }
 
   &__controls {

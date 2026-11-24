@@ -30,9 +30,7 @@ import {
   defaultChartOptions,
   getChartBarSpacingOptions,
   getChartFontSize,
-  getChartGridlinesOptions,
   getChartOptions,
-  getChartWatermarkOptions,
   getSerieOptions
 } from '@/components/chart/options'
 import dialogService from '@/services/dialogService'
@@ -63,6 +61,7 @@ import {
   PriceScaleOptions,
   UTCTimestamp,
   IChartApi,
+  MismatchDirection,
   Time
 } from 'lightweight-charts'
 import { Trade } from '@/types/types'
@@ -96,7 +95,6 @@ import {
 // + helpers (utilities, exposed getters)
 export default class Chart {
   paneId: string
-  watermark: string
 
   chartCache: ChartCache
   chartControl: ChartControl
@@ -111,7 +109,6 @@ export default class Chart {
   marketsIndexes: string[] = []
   mainIndex: string
   timezoneOffset = 0
-  fillGapsWithEmpty = true
   timeframe: number
   isOddTimeframe: boolean
   type: 'time' | 'tick' | 'bps' | 'vol'
@@ -145,6 +142,7 @@ export default class Chart {
   private _promiseOfMarketsRender: Promise<void>
   private _priceIndicatorId: string
   private _priceApi: IndicatorApi
+  private _priceWatermark: string = null
   private _alertsRendered: boolean
   private _timeToRecycle: number
   private _recycleTimeout: number
@@ -169,12 +167,10 @@ export default class Chart {
     this.fetch()
 
     aggregatorService.on('decimals', this._refreshDecimalsHandler)
-
-    this.fillGapsWithEmpty = Boolean(store.state[this.paneId].fillGapsWithEmpty)
   }
 
   /**
-   * update watermark when pane's markets changes
+   * update markets filters / main index when pane's markets changes
    */
   async refreshMarkets() {
     if (!store.state.app.isExchangesReady) {
@@ -192,8 +188,6 @@ export default class Chart {
     }
 
     const markets: string[] = store.state.panes.panes[this.paneId].markets
-    const normalizeWatermarks = store.state.settings.normalizeWatermarks
-    const marketsForWatermark: string[] = []
     const marketsIndexes: { [index: string]: number } = {}
     const marketsFilters: any = {}
 
@@ -212,16 +206,6 @@ export default class Chart {
         store.state.exchanges[exchange] &&
         !store.state.exchanges[exchange].disabled &&
         !store.state[this.paneId].hiddenMarkets[marketKey]
-
-      // build up watermark
-      if (
-        marketsFilters[marketKey] &&
-        marketsForWatermark.indexOf(localPair) === -1
-      ) {
-        marketsForWatermark.push(
-          !normalizeWatermarks || !market ? marketKey : localPair
-        )
-      }
 
       // find main pair
       if (!marketsIndexes[localPair]) {
@@ -246,7 +230,6 @@ export default class Chart {
       }, [])
       .sort((a, b) => b.count - a.count)[0]?.index
 
-    this.updateWatermark(marketsForWatermark)
     this.resetPriceScales()
     this.refreshAutoDecimals()
 
@@ -258,7 +241,7 @@ export default class Chart {
   }
 
   /**
-   * set timeframe to chart model and update watermark with litteral
+   * set timeframe to chart model
    * @param timeframe
    */
   setTimeframe(timeframe) {
@@ -276,8 +259,6 @@ export default class Chart {
     this.timeframe = parseFloat(timeframe)
     this.isOddTimeframe = isOddTimeframe(this.timeframe)
     this.previousLogicalRange = null
-
-    this.updateWatermark()
   }
 
   /**
@@ -304,8 +285,6 @@ export default class Chart {
 
     const chartOptions = merge(
       getChartOptions(defaultChartOptions, this.paneId),
-      getChartWatermarkOptions(this.paneId),
-      getChartGridlinesOptions(this.paneId),
       getChartBarSpacingOptions(this.paneId, this.chartElement.clientWidth)
     )
 
@@ -315,8 +294,8 @@ export default class Chart {
     ) as IChartApi
 
     this.addPaneIndicators()
-    this.updateWatermark()
     this.updateFontSize()
+    this.updatePriceWatermark(true)
 
     if (!this.chartControl) {
       this.chartControl = new ChartControl(this)
@@ -530,48 +509,6 @@ export default class Chart {
   }
 
   /**
-   * render watermark in chart
-   * @returns
-   */
-  updateWatermark(marketsUpdate?: string[]) {
-    if (marketsUpdate) {
-      if (!marketsUpdate.length) {
-        this.watermark = 'Empty'
-      } else if (store.state.settings.normalizeWatermarks) {
-        this.watermark = marketsUpdate.join('\u2009|\u2009')
-      } else {
-        const othersCount = marketsUpdate.length - 3
-        this.watermark =
-          marketsUpdate.slice(0, 3).join('\u2009+\u2009') +
-          (othersCount > 0
-            ? '\u2009+\u2009' +
-              othersCount +
-              '\u2009other' +
-              (othersCount > 1 ? 's' : '')
-            : '')
-      }
-    }
-
-    if (!this.chartInstance) {
-      return
-    }
-
-    /**
-     * weird spaces (\u00A0) are for left / right margins
-     */
-    this.chartInstance.applyOptions({
-      watermark: {
-        text: `\u00A0\u00A0\u00A0\u00A0${
-          this.watermark +
-          '\u2009|\u2009' +
-          getTimeframeForHuman(store.state[this.paneId].timeframe)
-        }\u00A0\u00A0\u00A0\u00A0`,
-        ...getChartWatermarkOptions(this.paneId).watermark
-      }
-    })
-  }
-
-  /**
    * update chart font using pane zoom option
    */
   updateFontSize() {
@@ -587,6 +524,56 @@ export default class Chart {
       },
       watermark: {
         fontSize: Math.max(16, Math.min(144, baseFontSize * 10))
+      }
+    })
+  }
+
+  /**
+   * big faded price in the middle of the chart (behind the candles)
+   * @param force re-apply watermark options even if the price didn't change
+   */
+  updatePriceWatermark(force?: boolean) {
+    if (!this.chartInstance) {
+      return
+    }
+
+    let text = ''
+    const api = this.getPriceApi()
+
+    if (api) {
+      const bar = api.dataByIndex(
+        Number.MAX_SAFE_INTEGER,
+        MismatchDirection.NearestLeft
+      ) as any
+      const price =
+        bar && (typeof bar.close === 'number' ? bar.close : bar.value)
+
+      if (typeof price === 'number') {
+        // whole number (59500), but keep decimals for low priced markets
+        text =
+          Math.abs(price) >= 100
+            ? Math.round(price).toString()
+            : api.priceFormatter().format(price)
+      }
+    }
+
+    if (!force && text === this._priceWatermark) {
+      return
+    }
+
+    this._priceWatermark = text
+
+    const textColor = splitColorCode(
+      getComputedStyle(document.documentElement).getPropertyValue(
+        '--theme-color-100'
+      )
+    )
+
+    this.chartInstance.applyOptions({
+      watermark: {
+        visible: !!text,
+        text,
+        color: `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, 0.06)`
       }
     })
   }
@@ -1399,29 +1386,6 @@ export default class Chart {
         barCount++
 
         if (temporaryRenderer) {
-          if (this.fillGapsWithEmpty && temporaryRenderer.type === 'time') {
-            const missingBars =
-              (bar.time -
-                temporaryRenderer.timeframe -
-                temporaryRenderer.timestamp) /
-              temporaryRenderer.timeframe
-
-            if (missingBars > 0) {
-              for (let j = 0; j < missingBars; j++) {
-                this.incrementRendererBar(temporaryRenderer)
-
-                for (const id in computedSeries) {
-                  if (this.seriesIndicatorsMap[id].plotType !== 'broken-area') {
-                    computedSeries[id].push({
-                      time: temporaryRenderer.localTimestamp
-                    })
-                  }
-                }
-
-                barCount++
-              }
-            }
-          }
           this.nextBar(bar.time, temporaryRenderer)
         } else {
           temporaryRenderer = this.createRenderer(
@@ -1598,6 +1562,8 @@ export default class Chart {
     if (scrollPosition) {
       this.chartInstance.timeScale().scrollToPosition(scrollPosition, false)
     }
+
+    this.updatePriceWatermark()
   }
 
   async renderAlerts() {
@@ -1861,6 +1827,8 @@ export default class Chart {
       toUpdate[i][0].update(toUpdate[i][1])
       toUpdate[i][1].rendered = true
     }
+
+    this.updatePriceWatermark()
   }
 
   /**
@@ -2035,31 +2003,6 @@ export default class Chart {
    * @param {Renderer?} renderer bar to use as reference
    */
   nextBar(timestamp, renderer?: Renderer) {
-    if (
-      this.fillGapsWithEmpty &&
-      renderer === this.activeRenderer &&
-      this.activeRenderer.type === 'time' &&
-      this.activeRenderer.timestamp < timestamp - this.activeRenderer.timeframe
-    ) {
-      const missingBars =
-        (timestamp -
-          this.activeRenderer.timeframe -
-          this.activeRenderer.timestamp) /
-        this.activeRenderer.timeframe
-
-      for (let k = 0; k < missingBars; k++) {
-        this.incrementRendererBar(renderer)
-
-        for (let i = 0; i < this.loadedIndicators.length; i++) {
-          for (let j = 0; j < this.loadedIndicators[i].apis.length; j++) {
-            this.loadedIndicators[i].apis[j].update({
-              time: renderer.localTimestamp
-            })
-          }
-        }
-      }
-    }
-
     this.incrementRendererBar(renderer)
     resetRendererBar(renderer)
 
@@ -2151,12 +2094,6 @@ export default class Chart {
         }
       }
     }
-  }
-
-  toggleFillGapsWithEmpty() {
-    this.fillGapsWithEmpty = !this.fillGapsWithEmpty
-
-    this.renderAll()
   }
 
   refreshAutoDecimals(indexes?: string[], indicatorId?: string) {
@@ -2302,7 +2239,7 @@ export default class Chart {
     const [date, time] = new Date().toISOString().split('T')
 
     const fullDate = date + ' ' + time.split('.')[0] + ' UTC'
-    const symbol = this.watermark
+    const symbol = this.mainIndex || ''
     const timeframe = getTimeframeForHuman(store.state[this.paneId].timeframe)
     if (chartCanvas.width > 500) {
       lines.push([symbol, timeframe, fullDate].join(' | '))
@@ -2862,29 +2799,14 @@ export default class Chart {
   }
 
   getAxisSize() {
-    const chartOptions = store.state[this.paneId] as ChartPaneState
-
+    // charts always have the right price scale and the time scale (no left scale)
     const axis = {
       top: 0,
       left: 0,
-      right: 0,
-      time: 0
-    }
-
-    if (chartOptions.showLeftScale) {
-      axis.left = this.chartElement.querySelector(
-        'tr:first-child td:first-child canvas'
-      ).clientWidth
-    }
-
-    if (chartOptions.showRightScale) {
-      axis.right = this.chartElement.querySelector(
+      right: this.chartElement.querySelector(
         'tr:first-child td:last-child canvas'
-      ).clientWidth
-    }
-
-    if (chartOptions.showTimeScale) {
-      axis.time = this.chartElement.querySelector(
+      ).clientWidth,
+      time: this.chartElement.querySelector(
         'tr:last-child td:nth-child(2) canvas'
       ).clientHeight
     }

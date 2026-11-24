@@ -9,15 +9,6 @@
       <div class="column -center"></div>
     </template>
     <trades-settings :paneId="paneId" />
-    <template v-slot:footer>
-      <presets
-        type="trades"
-        :adapter="getPreset"
-        :placeholder="paneId"
-        @apply="resetPane($event)"
-        class="-left -top"
-      />
-    </template>
   </Dialog>
 </template>
 

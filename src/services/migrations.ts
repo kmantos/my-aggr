@@ -455,5 +455,40 @@ export const workspaceUpgrades = {
       state.showTimeAgo = false
       delete state.thresholdsMultipler
     }
+  },
+  11: (workspace: Workspace) => {
+    // chart options removed from the app: drop their saved values
+    const removedChartOptions = [
+      'showLegend',
+      'showVerticalGridlines',
+      'verticalGridlinesColor',
+      'showHorizontalGridlines',
+      'horizontalGridlinesColor',
+      'showWatermark',
+      'watermarkColor',
+      'showBorder',
+      'borderColor',
+      'showLeftScale',
+      'showRightScale',
+      'showTimeScale',
+      'fillGapsWithEmpty'
+    ]
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+
+    for (const paneId in panes) {
+      const state = workspace.states[paneId]
+
+      if (panes[paneId].type !== 'chart' || !state) {
+        continue
+      }
+
+      for (const key of removedChartOptions) {
+        delete state[key]
+      }
+    }
+
+    if (workspace.states.settings) {
+      delete workspace.states.settings.normalizeWatermarks
+    }
   }
 }

@@ -50,7 +50,6 @@ export interface SettingsState {
   previousSearchSelections?: PreviousSearchSelection[]
   timeframes?: { label: string; value: string }[]
   favoriteTimeframes?: { [timeframe: number]: string }
-  normalizeWatermarks: boolean
   alerts: number | boolean
   alertsLineStyle: number
   alertsLineWidth: number
@@ -435,9 +434,6 @@ const mutations = {
   },
   TOGGLE_ANIMATIONS(state) {
     state.disableAnimations = !state.disableAnimations
-  },
-  TOGGLE_NORMAMIZE_WATERMARKS(state) {
-    state.normalizeWatermarks = !state.normalizeWatermarks
   },
   TOGGLE_SECTION(state, value) {
     const index = state.sections.indexOf(value)
