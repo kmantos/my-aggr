@@ -534,11 +534,13 @@ export default class Chart {
     })
 
     if (this._priceWatermarkElement) {
-      // a third of the size on phones (same breakpoint as the mobile
-      // layout) and on car screens
+      // a third of the size on small screens: phones (same breakpoint as the
+      // mobile layout), short screens like car displays (853x336) or phones in
+      // landscape, and detected car browsers
+      const isSmallScreen =
+        window.innerWidth < 768 || window.innerHeight < 500 || IS_CAR_BROWSER
       const watermarkFontSize = Math.round(
-        Math.max(16, Math.min(144, baseFontSize * 10)) /
-          (window.innerWidth < 768 || IS_CAR_BROWSER ? 3 : 1)
+        Math.max(16, Math.min(144, baseFontSize * 10)) / (isSmallScreen ? 3 : 1)
       )
 
       this._priceWatermarkElement.style.fontSize = watermarkFontSize + 'px'
