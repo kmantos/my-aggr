@@ -11,38 +11,6 @@
         @change="setName($event.target.value)"
       />
     </div>
-    <div class="form-group mb16">
-      <label>Text size</label>
-      <div class="d-flex btn-group">
-        <button
-          type="button"
-          class="btn -green"
-          title="Smaller (hold shift for finer steps)"
-          v-tippy
-          @click="changeZoom($event, -1)"
-        >
-          <i class="icon-minus"></i>
-        </button>
-        <button
-          type="button"
-          class="btn -green text-monospace flex-grow-1 text-center"
-          title="Reset"
-          v-tippy
-          @click="resetZoom"
-        >
-          × {{ zoom.toFixed(2) }}
-        </button>
-        <button
-          type="button"
-          class="btn -green"
-          title="Bigger (hold shift for finer steps)"
-          v-tippy
-          @click="changeZoom($event, 1)"
-        >
-          <i class="icon-plus"></i>
-        </button>
-      </div>
-    </div>
     <div v-if="isInFrame" class="form-group mb16">
       <label class="checkbox-control">
         <input
@@ -81,7 +49,7 @@ import { INFRAME } from '@/utils/constants'
 
 /**
  * "General" tab shared by every pane settings dialog:
- * name, text size, pane specific settings (default slot),
+ * name, pane specific settings (default slot),
  * pane specific actions ("actions" slot), duplicate and remove
  */
 @Component({
@@ -112,10 +80,6 @@ export default class PaneGeneralSettings extends Vue {
     return market ? market.local : this.pane.type
   }
 
-  get zoom() {
-    return this.pane.zoom || 1
-  }
-
   get syncedWithParent() {
     return (
       this.$store.state.panes.syncedWithParentFrame.indexOf(this.paneId) !== -1
@@ -127,16 +91,6 @@ export default class PaneGeneralSettings extends Vue {
       id: this.paneId,
       name: name.trim()
     })
-  }
-
-  changeZoom(event: MouseEvent, direction: number) {
-    const zoom = this.zoom + (event.shiftKey ? 0.0625 : 0.125) * direction
-
-    this.$store.dispatch('panes/setZoom', { id: this.paneId, zoom })
-  }
-
-  resetZoom() {
-    this.$store.dispatch('panes/setZoom', { id: this.paneId, zoom: 1 })
   }
 
   duplicatePane() {
