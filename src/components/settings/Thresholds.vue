@@ -4,19 +4,6 @@
     :class="{ '-dragging': dragging, '-rendering': rendering }"
   >
     <table class="table thresholds-table" v-if="showThresholdsAsTable">
-      <thead>
-        <tr>
-          <th colspan="2"></th>
-          <th class="table-action">
-            <button class="btn -text" @click="flipSwatches('buy')">flip</button>
-          </th>
-          <th class="table-action">
-            <button class="btn -text" @click="flipSwatches('sell')">
-              flip
-            </button>
-          </th>
-        </tr>
-      </thead>
       <transition-group name="flip-list" tag="tbody">
         <tr v-for="(threshold, index) in thresholds" :key="threshold.id">
           <td class="table-input table-min">
@@ -497,20 +484,6 @@ export default class Thresholds extends Vue {
 
   formatAmount(amount, precision?) {
     return formatAmount(amount, precision)
-  }
-
-  flipSwatches(side) {
-    const prop = `${side}Color`
-
-    const colors = this.thresholds.map(threshold => threshold[prop]).reverse()
-
-    for (let i = 0; i < this.thresholds.length; i++) {
-      this.$store.commit(this.paneId + '/SET_THRESHOLD_COLOR', {
-        id: this.thresholds[i].id,
-        side: prop,
-        value: colors[i]
-      })
-    }
   }
 
   toggleMaximumThreshold(threshold) {
