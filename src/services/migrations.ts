@@ -101,6 +101,15 @@ export const databaseUpgrades = {
     if (cvd && cvd.enabled) {
       await objectStore.put({ ...cvd, enabled: false })
     }
+  },
+  9: async (db: IDBPDatabase<AggrDB>, tx: IDBPTransaction<AggrDB>) => {
+    // Volume is no longer added to new charts by default (still in the library)
+    const objectStore = tx.objectStore('indicators') as any
+    const volume = await objectStore.get('volume')
+
+    if (volume && volume.enabled) {
+      await objectStore.put({ ...volume, enabled: false })
+    }
   }
 }
 
@@ -401,6 +410,33 @@ export const workspaceUpgrades = {
         ) {
           delete state.priceScales[priceScaleId]
         }
+      }
+    }
+  },
+  9: (workspace: Workspace) => {
+    // new default layout (BTC + ETH charts, SPOT / FUTURES / REKTS on all
+    // exchanges): drop saved panes so they are rebuilt from defaultPanes.json
+    const panes = workspace.states.panes ? workspace.states.panes.panes : null
+
+    for (const paneId in panes || {}) {
+      delete workspace.states[paneId]
+    }
+
+    delete workspace.states.panes
+
+    // and enable every exchange
+    const exchanges = workspace.states.exchanges
+
+    for (const exchangeId in exchanges || {}) {
+      const exchange = exchanges[exchangeId]
+
+      if (
+        exchangeId[0] !== '_' &&
+        exchange &&
+        typeof exchange === 'object' &&
+        !Array.isArray(exchange)
+      ) {
+        exchange.disabled = false
       }
     }
   }

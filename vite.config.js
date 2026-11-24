@@ -46,8 +46,7 @@ process.env.VITE_APP_EXCHANGES = [
   'BYBIT',
   'PHEMEX',
   'DYDX',
-  'MEXC',
-  'MEXC_FUTURES',
+  'MEXC', // spot + futures (single connector)
   'KUCOIN',
   'BITGET',
   'BITUNIX',

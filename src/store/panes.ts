@@ -37,6 +37,9 @@ export interface Pane {
   zoom?: number
   markets?: string[]
   settings?: any
+  // default panes: replace markets with every matching market from all
+  // enabled exchanges, once, after first boot (see resolveAutoMarkets)
+  autoMarkets?: { pairs: string[]; types: string[] }
 }
 
 export interface PanesState {
@@ -47,15 +50,18 @@ export interface PanesState {
   syncedWithParentFrame: string[]
 }
 
+// 24 columns x 24 rows: BTC + ETH charts on the left, SPOT / FUTURES / REKTS on the right
 const layoutDesktop = [
-  { i: 'chart', type: 'chart', x: 0, y: 0, w: 20, h: 24 },
-  { i: 'trades', type: 'trades', x: 20, y: 0, w: 4, h: 20 },
-  { i: 'liquidations', type: 'trades', x: 20, y: 20, w: 4, h: 4 }
+  { i: 'chart', type: 'chart', x: 0, y: 0, w: 20, h: 16 },
+  { i: 'chart-eth', type: 'chart', x: 0, y: 16, w: 20, h: 8 },
+  { i: 'spot', type: 'trades', x: 20, y: 0, w: 4, h: 5 },
+  { i: 'futures', type: 'trades', x: 20, y: 5, w: 4, h: 13 },
+  { i: 'liquidations', type: 'trades', x: 20, y: 18, w: 4, h: 6 }
 ]
 
 const layoutMobile = [
   { i: 'chart', type: 'chart', x: 0, y: 0, w: 24, h: 16 },
-  { i: 'trades', type: 'trades', x: 0, y: 0, w: 24, h: 8 }
+  { i: 'futures', type: 'trades', x: 0, y: 16, w: 24, h: 8 }
 ]
 
 const state: PanesState = JSON.parse(JSON.stringify(defaultPanes))
@@ -415,7 +421,12 @@ const actions = {
       // start with mobile layout
       state.layout = layoutMobile
 
-      delete state.panes.liquidations
+      // only keep the panes used by the mobile layout
+      for (const paneId in state.panes) {
+        if (!layoutMobile.find(item => item.i === paneId)) {
+          delete state.panes[paneId]
+        }
+      }
     }
 
     if (initialZoom > 1) {
@@ -462,6 +473,11 @@ const mutations = {
     { id, markets }: { id: string; markets: string[] }
   ) => {
     state.panes[id].markets = markets
+  },
+  CLEAR_PANE_AUTO_MARKETS: (state, id: string) => {
+    if (state.panes[id]) {
+      Vue.delete(state.panes[id], 'autoMarkets')
+    }
   },
   SET_PANE_NAME: (state, { id, name }: { id: string; name: string }) => {
     state.panes[id].name = name

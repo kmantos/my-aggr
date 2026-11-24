@@ -18,9 +18,9 @@ export const supportedExchanges = import.meta.env.VITE_APP_EXCHANGES.split(
 
 const state = supportedExchanges.reduce(
   (exchangesState: ExchangesState, id: string) => {
+    // every supported exchange is enabled by default
     exchangesState[id] = {
-      disabled:
-        /CRYPTOCOM|BITMART|HITBTC|MEXC|ASTER|PHEMEX|BINANCE_US|GATEIO/.test(id)
+      disabled: false
     }
 
     return exchangesState

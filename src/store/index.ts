@@ -7,7 +7,7 @@ import settings, { SettingsState } from './settings'
 import exchanges, { ExchangesState } from './exchanges'
 import panes, { PanesState } from './panes'
 import { Workspace } from '@/types/types'
-import { resolvePairs } from '../services/productsService'
+import { resolveAutoMarkets, resolvePairs } from '../services/productsService'
 import panesSettings from './panesSettings'
 
 Vue.use(Vuex)
@@ -88,6 +88,11 @@ export async function boot(workspace?: Workspace, pairsFromURL?: string[]) {
   })
 
   store.commit('app/SET_EXCHANGES_READY')
+
+  // expand default panes to all exchanges in the background (first visit only)
+  resolveAutoMarkets().catch(error => {
+    console.error('[panes] could not resolve default markets', error)
+  })
 }
 
 export default store

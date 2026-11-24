@@ -12,6 +12,12 @@ Crypto is a rebranded fork of [aggr](https://github.com/Tucsky/aggr) by Tucsky. 
 - Electric teal (`#00d1b2`) accent color and a deeper navy default background (`#0f131f`)
 - Removed third-party analytics (Google Tag Manager) and the donation menu
 - Source/issue links point to this repository; GitHub Pages deploys to `/my-aggr/`
+- Candle close countdown under the chart's price label (time left, or progress for tick/volume/bps bars)
+- Sound on by default ("Click anywhere to enable sound", as browsers require a user gesture)
+- Default layout: BTCUSD and ETHUSD charts (1m, Price + Liquidations) with SPOT, FUTURES and REKTS trade lists
+  - SPOT: trades from $100K, sound from $100K · FUTURES: trades from $1M, sound from $1M · REKTS: liquidations from $1, sound from $1K
+  - On first visit, panes expand to every matching BTC/ETH market (stablecoin quotes included) on all exchanges
+- Every exchange is enabled by default
 
 ## What it does
 

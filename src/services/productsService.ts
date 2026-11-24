@@ -610,6 +610,91 @@ export async function resolvePairs(pairs: string[]) {
   return markets
 }
 
+/**
+ * Default panes come with a few known markets so the first visit starts fast,
+ * plus an `autoMarkets` spec ({ pairs: ['BTCUSD'], types: ['spot'] }).
+ * After boot, replace those markets with every matching market from all
+ * enabled exchanges (stablecoin quotes count as USD), then drop the spec so
+ * it only happens once and later manual changes are kept.
+ */
+export async function resolveAutoMarkets() {
+  const panes = store.state.panes.panes
+  const pending = Object.keys(panes).filter(id => panes[id].autoMarkets)
+
+  if (!pending.length) {
+    return
+  }
+
+  const exchanges = store.getters['exchanges/getExchanges'].filter(
+    (exchangeId: string) =>
+      exchangeId !== 'AGGR' && !store.state.exchanges[exchangeId].disabled
+  )
+
+  // one slow or broken exchange must not block the others
+  const timeout = (ms: number) =>
+    new Promise<string[]>((resolve, reject) =>
+      setTimeout(() => reject(new Error('timeout')), ms)
+    )
+
+  const symbolsByExchange: [string, string[]][] = await Promise.all(
+    exchanges.map(async (exchangeId: string) => {
+      try {
+        const symbols = await Promise.race([
+          getExchangeSymbols(exchangeId),
+          timeout(20000)
+        ])
+
+        return [exchangeId, symbols || []]
+      } catch (error) {
+        console.error(`[products.${exchangeId}] auto markets failed`, error)
+        return [exchangeId, []]
+      }
+    })
+  )
+
+  const loadedExchanges = symbolsByExchange
+    .filter(([, symbols]) => symbols.length)
+    .map(([exchangeId]) => exchangeId)
+
+  for (const paneId of pending) {
+    const { pairs, types } = panes[paneId].autoMarkets
+    const markets = []
+
+    for (const [exchangeId, symbols] of symbolsByExchange) {
+      for (const symbol of symbols) {
+        const product = getMarketProduct(exchangeId, symbol, true)
+
+        if (
+          product &&
+          pairs.indexOf(product.local) !== -1 &&
+          types.indexOf(product.type) !== -1
+        ) {
+          markets.push(product.id)
+        }
+      }
+    }
+
+    // keep the default markets of exchanges whose products couldn't be loaded
+    for (const market of panes[paneId].markets) {
+      const [exchangeId] = parseMarket(market)
+
+      if (
+        loadedExchanges.indexOf(exchangeId) === -1 &&
+        markets.indexOf(market) === -1
+      ) {
+        markets.push(market)
+      }
+    }
+
+    store.commit('panes/CLEAR_PANE_AUTO_MARKETS', paneId)
+
+    if (markets.length) {
+      console.info(`[panes/${paneId}] using ${markets.length} markets`)
+      await store.dispatch('panes/setMarketsForPane', { id: paneId, markets })
+    }
+  }
+}
+
 export async function resolvePair(base: string, quote: string) {
   const markets = []
 
