@@ -563,17 +563,20 @@ export default class Chart {
 
     this._priceWatermark = text
 
-    const textColor = splitColorCode(
-      getComputedStyle(document.documentElement).getPropertyValue(
-        '--theme-color-100'
-      )
-    )
+    // solid warm off-white (#FAF9F5) on dark backgrounds,
+    // theme text color on light ones
+    const color =
+      store.state.settings.theme === 'light'
+        ? getComputedStyle(document.documentElement)
+            .getPropertyValue('--theme-color-100')
+            .trim()
+        : 'rgb(250, 249, 245)'
 
     this.chartInstance.applyOptions({
       watermark: {
         visible: !!text,
         text,
-        color: `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, 0.15)`
+        color
       }
     })
   }
