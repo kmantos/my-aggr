@@ -105,7 +105,7 @@
     0% {
       box-shadow: 0 0 0 0 var(--theme-accent-base);
     }
-    
+
     100% {
       box-shadow: 0 0 0 0.5rem rgba(255, 255, 255, 0);
     }
@@ -192,6 +192,19 @@
 
     .pane.-small & {
       height: 1.429em;
+    }
+
+    // pane name label: light background (10%) so the content stays visible
+    > .pane-header__name.btn {
+      &,
+      &:hover,
+      &:focus {
+        background-color: rgba(black, 0.1) !important;
+
+        #app.-light & {
+          background-color: rgba(white, 0.1) !important;
+        }
+      }
     }
 
     &__highlight.btn {

@@ -3,7 +3,10 @@
     class="pane-header hide-scrollbar d-flex"
     :class="[split && 'pane-header--split']"
   >
-    <div v-if="showName && name" class="btn -cases pane-header__highlight">
+    <div
+      v-if="showName && name"
+      class="btn -cases pane-header__highlight pane-header__name"
+    >
       <slot name="title">{{ name }}</slot>
     </div>
     <slot>
