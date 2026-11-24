@@ -38,17 +38,6 @@
         >
       </label>
     </div>
-    <div class="form-group mb8">
-      <color-picker-control
-        :value="textColor"
-        label="Text color"
-        @input="
-          $event !== textColor &&
-            $store.commit(paneId + '/SET_TEXT_COLOR', { value: $event })
-        "
-      ></color-picker-control>
-      <span class="ml8">Text color</span>
-    </div>
     <div class="divider" />
     <AlertsSettings />
   </div>
@@ -60,7 +49,6 @@ import { Component, Vue } from 'vue-property-decorator'
 import Slider from '@/components/framework/picker/Slider.vue'
 import ToggableGroup from '@/components/framework/ToggableGroup.vue'
 import DropdownButton from '@/components/framework/DropdownButton.vue'
-import ColorPickerControl from '@/components/framework/picker/ColorPickerControl.vue'
 import AlertsSettings from '@/components/alerts/AlertsSettings.vue'
 
 @Component({
@@ -68,8 +56,7 @@ import AlertsSettings from '@/components/alerts/AlertsSettings.vue'
     AlertsSettings,
     Slider,
     ToggableGroup,
-    DropdownButton,
-    ColorPickerControl
+    DropdownButton
   },
   name: 'ChartSettings',
   props: {
@@ -88,10 +75,6 @@ export default class ChartSettings extends Vue {
 
   get refreshRate() {
     return this.$store.state[this.paneId].refreshRate
-  }
-
-  get textColor() {
-    return this.$store.state[this.paneId].textColor
   }
 
   get refreshRateHms() {

@@ -490,5 +490,15 @@ export const workspaceUpgrades = {
     if (workspace.states.settings) {
       delete workspace.states.settings.normalizeWatermarks
     }
+  },
+  12: (workspace: Workspace) => {
+    // chart text color option removed (charts use the theme text color)
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+
+    for (const paneId in panes) {
+      if (panes[paneId].type === 'chart' && workspace.states[paneId]) {
+        delete workspace.states[paneId].textColor
+      }
+    }
   }
 }

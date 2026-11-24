@@ -16,7 +16,7 @@ import {
 import Chart from './chart'
 import AlertEventHandler from './controls/alertEventHandler'
 import MeasurementEventHandler from './controls/measurementEventHandler'
-import { getChartCustomColorsOptions, getChartLayoutOptions } from './options'
+import { getChartCustomColorsOptions } from './options'
 import { components, controlledCharts, syncCrosshair } from './common'
 import iframeService from '@/services/iframeService'
 
@@ -152,11 +152,6 @@ export default class ChartControl {
         case this.chart.paneId + '/SET_REFRESH_RATE':
           this.chart.clearQueue()
           this.chart.setupQueue()
-          break
-        case this.chart.paneId + '/SET_TEXT_COLOR':
-          this.chart.chartInstance.applyOptions(
-            getChartLayoutOptions(this.chart.paneId)
-          )
           break
         case this.chart.paneId + '/SET_INDICATOR_OPTION':
           this.chart.setIndicatorOption(

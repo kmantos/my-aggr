@@ -74,7 +74,6 @@ export interface ChartPaneState {
   showAlertsLabel?: boolean
   showCountdown: boolean
   showIndicators: boolean
-  textColor: string
   hiddenMarkets: { [indicatorId: string]: boolean }
   barSpacing: number
 }
@@ -100,7 +99,6 @@ const state = {
   showAlerts: true,
   showAlertsLabel: true,
   showCountdown: true,
-  textColor: null,
   hiddenMarkets: {},
   barSpacing: null
 } as ChartPaneState
@@ -424,9 +422,6 @@ const mutations = {
   },
   TOGGLE_INDICATORS(state, value) {
     state.showIndicators = value
-  },
-  SET_TEXT_COLOR(state, { value }) {
-    state.textColor = value
   },
   SET_INDICATOR_SERIES(state, { id, series }) {
     state.indicators[id].series = series

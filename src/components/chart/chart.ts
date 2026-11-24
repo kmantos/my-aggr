@@ -573,7 +573,7 @@ export default class Chart {
       watermark: {
         visible: !!text,
         text,
-        color: `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, 0.06)`
+        color: `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, 0.15)`
       }
     })
   }

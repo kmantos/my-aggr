@@ -207,12 +207,9 @@ export function getChartLayoutOptions(paneId?: string) {
   const styles = getComputedStyle(document.documentElement)
   const transColor = styles.getPropertyValue('--theme-background-100')
 
-  const chartOptions = store.state[paneId] as ChartPaneState
-
   const customColorsOptions = {
     layout: {
-      textColor:
-        chartOptions?.textColor || styles.getPropertyValue('--theme-color-100'),
+      textColor: styles.getPropertyValue('--theme-color-100'),
       borderColor: transColor,
       fontSize: getChartFontSize(paneId)
     }
