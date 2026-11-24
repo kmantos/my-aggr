@@ -30,14 +30,12 @@ export interface TradesPaneState {
   audioVolume: number
   maxRows: number
   showPairs: boolean
-  showTimeAgo: boolean
   showPrices: boolean
   showHistograms: boolean
   showTrades: boolean
   showLiquidations: boolean
   showLogos: boolean
   monochromeLogos: boolean
-  multipliers: { [identifier: string]: number }
   showAvgPrice: boolean
 }
 
@@ -61,8 +59,7 @@ const state = {
   liquidations: [],
   thresholds: [],
   audioThreshold: null,
-  multipliers: {},
-  maxRows: 100,
+  maxRows: 10,
   muted: false,
   audioPitch: null,
   audioVolume: null,
@@ -71,7 +68,6 @@ const state = {
   showLiquidations: true,
   showLogos: true,
   monochromeLogos: false,
-  showTimeAgo: false, // clock time (10:04) instead of "5s ago"
   showPrices: true,
   showHistograms: true,
   showAvgPrice: true
@@ -173,7 +169,12 @@ const actions = {
 
 const mutations = {
   SET_MAX_ROWS(state, value) {
-    state.maxRows = value
+    // whole number between 1 and 1000, invalid input keeps the current value
+    const rows = Math.round(+value)
+
+    if (!isNaN(rows) && rows >= 1) {
+      state.maxRows = Math.min(1000, rows)
+    }
   },
   TOGGLE_MUTED(state) {
     state.muted = !state.muted
@@ -228,21 +229,6 @@ const mutations = {
     if (threshold) {
       Vue.set(threshold, 'max', !threshold.max)
     }
-  },
-  SET_THRESHOLD_MULTIPLIER(
-    state,
-    { identifier, multiplier }: { identifier: string; multiplier: number }
-  ) {
-    if (multiplier === null || isNaN(multiplier) || multiplier < 0) {
-      Vue.delete(state.multipliers, identifier)
-      return
-    }
-
-    if (multiplier === 0) {
-      multiplier = 0.01
-    }
-
-    Vue.set(state.multipliers, identifier, multiplier)
   },
   SET_THRESHOLD_GIF(state, payload) {
     const threshold = this.getters[state._id + '/getThreshold'](payload.id)

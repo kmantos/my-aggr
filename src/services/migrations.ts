@@ -500,5 +500,21 @@ export const workspaceUpgrades = {
         delete workspace.states[paneId].textColor
       }
     }
+  },
+  13: (workspace: Workspace) => {
+    // trade lists: 10 lines by default, clock time only, no threshold multipliers
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+
+    for (const paneId in panes) {
+      const state = workspace.states[paneId]
+
+      if (!/^trades/.test(panes[paneId].type) || !state) {
+        continue
+      }
+
+      state.maxRows = 10
+      delete state.showTimeAgo
+      delete state.multipliers
+    }
   }
 }

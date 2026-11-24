@@ -215,32 +215,15 @@
         <label class="-fill -center -inline">Lines count</label>
         <input
           id="trades-limit"
+          v-model="rowsInput"
           type="number"
-          min="0"
+          min="1"
           max="1000"
           step="1"
           class="form-control"
-          :value="maxRows"
-          @change="$store.commit(paneId + '/SET_MAX_ROWS', $event.target.value)"
+          @change="setMaxRows"
+          @keydown.enter="setMaxRows"
         />
-      </div>
-
-      <div
-        v-if="isLegacy"
-        class="form-group column"
-        @click.stop="
-          $store.commit(paneId + '/TOGGLE_PREFERENCE', 'showTimeAgo')
-        "
-      >
-        <label class="-fill -center -inline">Time format</label>
-        <div
-          class="checkbox-control -auto checkbox-control-input -unshrinkable"
-          title="Time format preference"
-          v-tippy
-        >
-          <input type="checkbox" class="form-control" :checked="showTimeAgo" />
-          <div :on="secondsAgoExample" :off="HHMM"></div>
-        </div>
       </div>
 
       <div
@@ -351,52 +334,18 @@
         </div>
       </toggable-group>
     </ToggableSection>
-    <ToggableSection
-      v-if="isLegacy && (!tab || tab === 'thresholds')"
-      :auto-open="!!tab"
-      :title="`THRESHOLD MULTIPLIER (${mutipliersCount})`"
-      inset
-    >
-      <div class="form-group" v-if="multipliers.length">
-        <label>
-          <div class="d-flex">
-            <div>← Decrease threshold</div>
-            <div class="text-right mlauto">Increase threshold →</div>
-          </div>
-        </label>
-        <div class="multipliers">
-          <MarketMultiplier
-            v-for="market in multipliers"
-            :key="market.identifier"
-            :pane-id="paneId"
-            :market="market"
-          />
-        </div>
-      </div>
-      <p v-else class="mb0">
-        No active markets,
-        <a
-          href="javascript:void(0);"
-          @click="$store.dispatch('app/showSearch', { paneId })"
-        >
-          add markets</a
-        >.
-      </p>
-    </ToggableSection>
   </div>
 </template>
 
 <script lang="ts">
 import { TradesPaneState } from '@/store/panesSettings/trades'
-import { ago } from '@/utils/helpers'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import Slider from '@/components/framework/picker/Slider.vue'
 import Thresholds from '@/components/settings/Thresholds.vue'
-import { formatAmount, parseMarket } from '@/services/productsService'
+import { formatAmount } from '@/services/productsService'
 import ToggableSection from '@/components/framework/ToggableSection.vue'
 import ColorPickerControl from '@/components/framework/picker/ColorPickerControl.vue'
 import ThresholdColor from '@/components/trades/ThresholdColor.vue'
-import MarketMultiplier from '@/components/trades/MarketMultiplier.vue'
 import ToggableGroup from '@/components/framework/ToggableGroup.vue'
 
 @Component({
@@ -405,7 +354,6 @@ import ToggableGroup from '@/components/framework/ToggableGroup.vue'
     Slider,
     ThresholdColor,
     ToggableSection,
-    MarketMultiplier,
     ColorPickerControl,
     ToggableGroup
   },
@@ -425,18 +373,8 @@ import ToggableGroup from '@/components/framework/ToggableGroup.vue'
 export default class TradesSettings extends Vue {
   paneId: string
   tab: string
-  secondsAgoExample = '0s ago'
-
-  private _secondsAgoExampleTimeout: number
-
-  get HHMM() {
-    return new Date()
-      .toISOString()
-      .split('T')[1]
-      .split(':')
-      .slice(0, 2)
-      .join(':')
-  }
+  // local copy so typing isn't reset by re-renders, saved on change / enter
+  rowsInput: number | string = null
 
   get useAudio() {
     return this.$store.state.settings.useAudio
@@ -464,10 +402,6 @@ export default class TradesSettings extends Vue {
 
   get monochromeLogos() {
     return (this.$store.state[this.paneId] as TradesPaneState).monochromeLogos
-  }
-
-  get showTimeAgo() {
-    return (this.$store.state[this.paneId] as TradesPaneState).showTimeAgo
   }
 
   get showAvgPrice() {
@@ -533,26 +467,6 @@ export default class TradesSettings extends Vue {
     )
   }
 
-  get multipliers() {
-    return this.markets.map(marketKey => {
-      const [exchange, pair] = parseMarket(marketKey)
-
-      const multiplier = (this.$store.state[this.paneId] as TradesPaneState)
-        .multipliers[marketKey]
-
-      return {
-        exchange,
-        pair,
-        multiplier: !isNaN(multiplier) ? multiplier : 1,
-        identifier: marketKey
-      }
-    })
-  }
-
-  get mutipliersCount() {
-    return this.multipliers.filter(market => market.multiplier !== 1).length
-  }
-
   get thresholdsBuyColor() {
     return this.thresholds[1].buyColor
   }
@@ -569,18 +483,20 @@ export default class TradesSettings extends Vue {
     return this.liquidations[1].sellColor
   }
 
-  mounted() {
-    const time = Date.now()
-
-    this._secondsAgoExampleTimeout = setInterval(() => {
-      this.secondsAgoExample = `${ago(time)} ago`
-    }, 1000) as unknown as number
+  created() {
+    this.rowsInput = this.maxRows
   }
 
-  beforeDestroy() {
-    if (this._secondsAgoExampleTimeout) {
-      clearTimeout(this._secondsAgoExampleTimeout)
-    }
+  @Watch('maxRows')
+  onMaxRowsChange(value: number) {
+    this.rowsInput = value
+  }
+
+  setMaxRows() {
+    this.$store.commit(this.paneId + '/SET_MAX_ROWS', this.rowsInput)
+
+    // invalid values are ignored by the store: show the current value again
+    this.rowsInput = this.maxRows
   }
 
   formatAmount(amount) {
@@ -591,47 +507,5 @@ export default class TradesSettings extends Vue {
 <style scoped lang="scss">
 .thresholds {
   pointer-events: all;
-}
-
-.multipliers {
-  margin: 0 -1rem;
-  padding: 0.5rem 0;
-}
-
-.multipliers-market {
-  padding: 0.4rem 1rem;
-
-  &:hover {
-    background-color: var(--theme-background-100);
-  }
-
-  &__id {
-    min-width: 125px;
-    flex-basis: 30%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    font-family: $font-condensed;
-  }
-
-  &__action {
-    cursor: pointer;
-  }
-
-  &:not(.-disabled) {
-    background-color: $green;
-  }
-
-  .market-exchange {
-    line-height: 1;
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-  }
-
-  &.-disabled {
-    .market-threshold {
-      display: none;
-    }
-  }
 }
 </style>

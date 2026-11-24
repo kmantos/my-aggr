@@ -50,7 +50,6 @@ export default class TradesFeed {
   private showPairs: boolean
   private showPrices: boolean
   private showAvgPrice: boolean
-  private showTimeAgo: boolean
   private slippageMode: SlippageMode
   private paneMarkets: { [identifier: string]: boolean }
 
@@ -70,8 +69,6 @@ export default class TradesFeed {
 
   private lastSide: 'buy' | 'sell' | 'lbuy' | 'lsell'
   private lastTimestamp: number
-  private timeUpdateInterval: number
-  private marketsMultipliers: { [identifier: string]: number }
 
   constructor(paneId: string, containerElement: HTMLElement, maxCount: number) {
     this.paneId = paneId
@@ -97,10 +94,6 @@ export default class TradesFeed {
       }
 
       const trade = trades[i]
-
-      if (typeof this.marketsMultipliers[marketKey] !== 'undefined') {
-        trade.amount /= this.marketsMultipliers[marketKey]
-      }
 
       if (!trade.liquidation && this.showTrades) {
         if (
@@ -264,16 +257,13 @@ export default class TradesFeed {
 
       this.lastTimestamp = trade.timestamp
 
-      if (!this.showTimeAgo) {
-        const date = new Date(+trade.timestamp)
-        const minutes = date.getMinutes()
+      // clock time (10:15)
+      const date = new Date(+trade.timestamp)
+      const minutes = date.getMinutes()
 
-        timestampText = `${date.getHours()}:${
-          minutes < 10 ? '0' : ''
-        }${minutes}`
+      timestampText = `${date.getHours()}:${minutes < 10 ? '0' : ''}${minutes}`
 
-        timestampClass += ' -fixed'
-      }
+      timestampClass += ' -fixed'
     }
 
     let priceSlippage = ''
@@ -524,19 +514,9 @@ export default class TradesFeed {
     this.showPairs = store.state[this.paneId].showPairs
     this.showPrices = store.state[this.paneId].showPrices
     this.showAvgPrice = store.state[this.paneId].showAvgPrice
-    this.showTimeAgo = store.state[this.paneId].showTimeAgo
-
-    if (this.showTimeAgo && !this.timeUpdateInterval) {
-      this.setupTimeUpdateInterval()
-    } else if (!this.showTimeAgo && this.timeUpdateInterval) {
-      clearInterval(this.timeUpdateInterval)
-      this.timeUpdateInterval = null
-    }
   }
 
   cachePaneMarkets() {
-    this.marketsMultipliers = {}
-
     this.paneMarkets = store.state.panes.panes[this.paneId].markets.reduce(
       (output, marketKey) => {
         const [exchange] = marketKey.split(':')
@@ -546,12 +526,6 @@ export default class TradesFeed {
           return output
         }
 
-        const multiplier = store.state[this.paneId].multipliers[marketKey]
-
-        if (typeof multiplier !== 'undefined') {
-          this.marketsMultipliers[marketKey] = multiplier
-        }
-
         output[marketKey] = true
         return output
       },
@@ -559,64 +533,11 @@ export default class TradesFeed {
     )
   }
 
-  setupTimeUpdateInterval() {
-    let now
-
-    const timeAgo = milliseconds => {
-      if (milliseconds < 60000) {
-        return Math.floor(milliseconds / 1000) + 's'
-      } else if (milliseconds < 3600000) {
-        return Math.floor(milliseconds / 60000) + 'm'
-      } else {
-        return Math.floor(milliseconds / 3600000) + 'h'
-      }
-    }
-
-    this.timeUpdateInterval = setInterval(() => {
-      const elements =
-        this.containerElement.getElementsByClassName('-timestamp')
-      const length = elements.length
-
-      if (!length) {
-        return
-      }
-
-      now = Date.now()
-
-      const topOfTheMinute = (now / 1000) % 60 < 1
-
-      let previousRowTimeAgo
-
-      for (let i = 0; i < length; i++) {
-        if (typeof elements[i] === 'undefined') {
-          break
-        }
-
-        const milliseconds =
-          now - (elements[i] as any).getAttribute('data-timestamp')
-        const txt = timeAgo(milliseconds)
-
-        if (txt === previousRowTimeAgo && txt) {
-          elements[i - 1].textContent = ''
-          elements[i - 1].className = 'trade__time'
-          continue
-        }
-
-        if (txt != elements[i].textContent) {
-          elements[i].textContent = txt
-
-          if (!topOfTheMinute && txt[txt.length - 1] !== 's') {
-            break
-          }
-        }
-
-        previousRowTimeAgo = txt
-      }
-    }, 1000) as unknown as number
-  }
-
   setMaxCount(maxCount: number) {
     this.maxCount = maxCount
+
+    // apply right away when the list gets shorter
+    this.trim()
   }
 
   trim() {
@@ -632,6 +553,6 @@ export default class TradesFeed {
   }
 
   destroy() {
-    clearInterval(this.timeUpdateInterval)
+    // nothing to clean up
   }
 }

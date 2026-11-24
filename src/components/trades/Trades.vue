@@ -69,10 +69,10 @@ export default class Trades extends Mixins(PaneMixin) {
           this.refreshList()
           break
         case this.paneId + '/SET_MAX_ROWS':
-          this.feed.setMaxCount(mutation.payload)
+          // the store validates the value (invalid input is ignored)
+          this.feed.setMaxCount(this.$store.state[this.paneId].maxRows)
           break
         case 'panes/SET_PANE_MARKETS':
-        case this.paneId + '/SET_THRESHOLD_MULTIPLIER':
           if (
             mutation.type !== 'panes/SET_PANE_MARKETS' ||
             mutation.payload.id === this.paneId
