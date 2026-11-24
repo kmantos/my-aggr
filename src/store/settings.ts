@@ -57,6 +57,7 @@ export interface SettingsState {
   alertsClick: boolean
   alertSound: string
   showThresholdsAsTable: boolean
+  showResolution: boolean
   indicatorDialogNavigation?: string
 }
 
@@ -589,6 +590,9 @@ const mutations = {
       label: getTimeframeForHuman(value),
       value
     })
+  },
+  TOGGLE_RESOLUTION(state) {
+    state.showResolution = !state.showResolution
   },
   TOGGLE_THRESHOLDS_TABLE(state) {
     state.showThresholdsAsTable = !state.showThresholdsAsTable

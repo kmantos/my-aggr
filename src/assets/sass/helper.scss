@@ -267,3 +267,12 @@ $unit: 'px';
 #app.-light .text-muted {
   opacity: 0.75;
 }
+
+// info icons inside checkbox labels: tapping shows the explanation
+// (click is stopped so it doesn't toggle the checkbox), bigger tap target
+.info-tap {
+  display: inline-block;
+  padding: 0.25em;
+  margin: -0.25em 0;
+  cursor: help;
+}

@@ -4,7 +4,7 @@ import VueTippy, { TippyComponent } from 'vue-tippy'
 import './assets/sass/app.scss'
 import store from './store'
 import { watchForUpdates } from './utils/updateChecker'
-import { showResolutionBadge } from './utils/resolutionBadge'
+import { watchResolutionBadge } from './utils/resolutionBadge'
 
 import Editable from '@/components/framework/Editable.vue'
 import DropdownComponent from '@/components/framework/Dropdown.vue'
@@ -40,8 +40,8 @@ if ('serviceWorker' in navigator) {
 }
 
 watchForUpdates()
-// TEMPORARY: resolution label to find the car screen size
-showResolutionBadge()
+// optional screen resolution label (Settings > Other)
+watchResolutionBadge()
 
 new Vue({
   el: '#app',

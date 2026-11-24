@@ -244,13 +244,7 @@
       </div>
     </template>
 
-    <ToggableSection
-      v-if="!tab || tab === 'general'"
-      :auto-open="!!tab"
-      title="Formats"
-      id="trades-columns"
-      inset
-    >
+    <template v-if="!tab || tab === 'general'">
       <div class="form-group mb8">
         <label class="checkbox-control -small">
           <input
@@ -263,8 +257,9 @@
           <span>
             Show pairs
             <i
-              class="icon-info"
-              v-tippy
+              class="icon-info info-tap"
+              v-tippy="infoTippy"
+              @click.stop.prevent="showInfo"
               title="Show the market's symbol on each trade<br>(ex: BTC-USD)"
             ></i>
           </span>
@@ -293,8 +288,9 @@
             <span>
               Weighted average
               <i
-                class="icon-info"
-                v-tippy
+                class="icon-info info-tap"
+                v-tippy="infoTippy"
+                @click.stop.prevent="showInfo"
                 title="Show the weighted average price instead of the last price for aggregated trade results"
               ></i>
             </span>
@@ -313,19 +309,21 @@
           <span>
             Show logos
             <i
-              class="icon-info"
-              v-tippy
+              class="icon-info info-tap"
+              v-tippy="infoTippy"
+              @click.stop.prevent="showInfo"
               title="Show the exchange's logo on each trade instead of its name"
             ></i>
           </span>
         </label>
       </div>
-    </ToggableSection>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
 import { TradesPaneState } from '@/store/panesSettings/trades'
+import { isTouchSupported } from '@/utils/touchevent'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import Slider from '@/components/framework/picker/Slider.vue'
 import Thresholds from '@/components/settings/Thresholds.vue'
@@ -480,6 +478,18 @@ export default class TradesSettings extends Vue {
 
     // invalid values are ignored by the store: show the current value again
     this.rowsInput = this.maxRows
+  }
+
+  // info icons: hover on desktop; on touch screens tippy is manual (its touch
+  // handling hides it right away) and a tap shows it without toggling the checkbox
+  infoTippy = isTouchSupported() ? { trigger: 'manual' } : {}
+
+  showInfo(event: Event) {
+    const tip = (event.currentTarget as any)._tippy
+
+    if (tip) {
+      tip.show()
+    }
   }
 
   formatAmount(amount) {

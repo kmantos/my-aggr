@@ -70,5 +70,6 @@
   "alertsLineWidth": 1,
   "alertsClick": false,
   "alertSound": null,
-  "showThresholdsAsTable": true
+  "showThresholdsAsTable": true,
+  "showResolution": false
 }

@@ -1,20 +1,43 @@
+import store from '@/store'
 import { IS_CAR_BROWSER } from './constants'
 
 /**
- * TEMPORARY: shows the screen resolution, pixel ratio, car detection and the
- * browser identifier on the left of the screen, so the size used on a car
- * screen can be tuned. Remove once the car's resolution is known.
+ * Optional screen resolution label (Settings > Other > Show screen resolution):
+ * window size, pixel ratio, screen size, car detection and the browser
+ * identifier, on the left of the screen. Below dialogs (z-index 10).
  */
-export function showResolutionBadge() {
-  const badge = document.createElement('div')
+let badge: HTMLElement = null
 
+function render() {
+  if (!badge) {
+    return
+  }
+
+  const dpr = Math.round((window.devicePixelRatio || 1) * 100) / 100
+
+  badge.innerHTML = `
+    <strong>${window.innerWidth}×${window.innerHeight}</strong> @${dpr}x
+    · screen ${window.screen.width}×${window.screen.height}
+    · car: ${IS_CAR_BROWSER ? 'yes' : 'no'}
+    <div style="opacity:.75;font-size:11px;margin-top:2px"></div>
+  `
+  // browser identifier as text (no html)
+  badge.lastElementChild.textContent = navigator.userAgent
+}
+
+function show() {
+  if (badge) {
+    return
+  }
+
+  badge = document.createElement('div')
   badge.className = 'resolution-badge'
   badge.style.cssText = [
     'position: fixed',
     'left: 0',
     'top: 50%',
     'transform: translateY(-50%)',
-    'z-index: 1000',
+    'z-index: 5',
     'max-width: min(60vw, 420px)',
     'padding: 6px 8px',
     'border-radius: 0 6px 6px 0',
@@ -26,20 +49,26 @@ export function showResolutionBadge() {
     'word-break: break-all'
   ].join(';')
 
-  const render = () => {
-    const dpr = Math.round((window.devicePixelRatio || 1) * 100) / 100
-
-    badge.innerHTML = `
-      <strong>${window.innerWidth}×${window.innerHeight}</strong> @${dpr}x
-      · screen ${window.screen.width}×${window.screen.height}
-      · car: ${IS_CAR_BROWSER ? 'yes' : 'no'}
-      <div style="opacity:.75;font-size:11px;margin-top:2px"></div>
-    `
-    // browser identifier as text (no html)
-    badge.lastElementChild.textContent = navigator.userAgent
-  }
-
   render()
   window.addEventListener('resize', render)
   document.body.appendChild(badge)
+}
+
+function hide() {
+  if (!badge) {
+    return
+  }
+
+  window.removeEventListener('resize', render)
+  badge.remove()
+  badge = null
+}
+
+export function watchResolutionBadge() {
+  store.watch(
+    state =>
+      !!(state as any).settings && (state as any).settings.showResolution,
+    enabled => (enabled ? show() : hide()),
+    { immediate: true }
+  )
 }

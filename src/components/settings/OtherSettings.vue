@@ -87,6 +87,18 @@
         <span>Use slider for thresholds</span>
       </label>
     </div>
+    <div class="form-group mb8">
+      <label class="checkbox-control flex-left">
+        <input
+          type="checkbox"
+          class="form-control"
+          :checked="showResolution"
+          @change="$store.commit('settings/TOGGLE_RESOLUTION')"
+        />
+        <div></div>
+        <span>Show screen resolution</span>
+      </label>
+    </div>
   </div>
 </template>
 
@@ -121,6 +133,10 @@ export default class OtherSettings extends Vue {
 
   get timezoneOffset() {
     return this.$store.state.settings.timezoneOffset
+  }
+
+  get showResolution() {
+    return this.$store.state.settings.showResolution
   }
 
   get showThresholdsAsTable() {

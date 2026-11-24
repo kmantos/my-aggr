@@ -10,7 +10,13 @@
       <div></div>
       <span>
         {{ label }}
-        <i v-if="info" class="icon-info" v-tippy :title="info"></i>
+        <i
+          v-if="info"
+          class="icon-info info-tap"
+          v-tippy="infoTippy"
+          :title="info"
+          @click.stop.prevent="showInfo"
+        ></i>
       </span>
     </label>
     <transition-height name="toggable-group">
@@ -33,6 +39,7 @@
 </template>
 
 <script lang="ts">
+import { isTouchSupported } from '@/utils/touchevent'
 import { Component, Vue } from 'vue-property-decorator'
 import TransitionHeight from './TransitionHeight.vue'
 
@@ -60,7 +67,19 @@ import TransitionHeight from './TransitionHeight.vue'
     }
   }
 })
-export default class TogglableGroup extends Vue {}
+export default class TogglableGroup extends Vue {
+  // info icons: hover on desktop; on touch screens tippy is manual (its touch
+  // handling hides it right away) and a tap shows it without toggling the checkbox
+  infoTippy = isTouchSupported() ? { trigger: 'manual' } : {}
+
+  showInfo(event: Event) {
+    const tip = (event.currentTarget as any)._tippy
+
+    if (tip) {
+      tip.show()
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .toggable-group {
