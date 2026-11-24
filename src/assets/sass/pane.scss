@@ -162,10 +162,15 @@
         display: inline-flex;
       }
 
+      // header buttons (pane name, timeframes, settings) at 40%
       &,
       &:hover,
       &:focus {
-        background-color: var(--pane-overlay-background) !important;
+        background-color: rgba(black, 0.4) !important;
+
+        #app.-light & {
+          background-color: rgba(white, 0.4) !important;
+        }
       }
 
       &:hover,
@@ -192,19 +197,6 @@
 
     .pane.-small & {
       height: 1.429em;
-    }
-
-    // pane name label: light background (10%) so the content stays visible
-    > .pane-header__name.btn {
-      &,
-      &:hover,
-      &:focus {
-        background-color: rgba(black, 0.1) !important;
-
-        #app.-light & {
-          background-color: rgba(white, 0.1) !important;
-        }
-      }
     }
 
     &__highlight.btn {
