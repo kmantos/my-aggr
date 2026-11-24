@@ -367,6 +367,14 @@ function formatAmount(amount, decimals?: number) {
   }
 }
 
+/**
+ * the font the page renders with (the browser's default font),
+ * for canvas text which can't inherit it from CSS
+ */
+export function getDefaultFontFamily(): string {
+  return getComputedStyle(document.body).fontFamily || 'serif'
+}
+
 export function getTimeframeForHuman(timeframe, full?: boolean) {
   if (timeframe === null) {
     return 'ERR!'

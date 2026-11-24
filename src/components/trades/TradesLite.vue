@@ -35,6 +35,7 @@ import dialogService from '../../services/dialogService'
 import audioService, { AudioFunction } from '../../services/audioService'
 import logos from '@/assets/exchanges'
 import { Trade } from '../../types/types'
+import { getDefaultFontFamily } from '../../utils/helpers'
 
 const DEBUG = false
 const GRADIENT_DETAIL = 5
@@ -712,7 +713,7 @@ export default class TradesLite extends Mixins(PaneMixin) {
 
     this.ctx.font = `${zoom > 1.25 ? '600 ' : ''}${
       this.fontSize
-    }px Spline Sans Mono`
+    }px ${getDefaultFontFamily()}`
     this.ctx.textBaseline = 'middle'
 
     this.refreshColumnsWidth()

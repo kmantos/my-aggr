@@ -20,6 +20,7 @@ import {
   isOddTimeframe,
   formatBytes,
   displayCanvasInPopup,
+  getDefaultFontFamily,
   sleep
 } from '@/utils/helpers'
 import { waitForStateMutation } from '@/utils/store'
@@ -585,7 +586,8 @@ export default class Chart {
       watermark: {
         visible: !!text,
         text,
-        color
+        color,
+        fontFamily: getDefaultFontFamily()
       }
     })
   }
@@ -2250,7 +2252,7 @@ export default class Chart {
     }
 
     canvas.width = chartCanvas.width
-    ctx.font = `${textFontsize}px Spline Sans Mono`
+    ctx.font = `${textFontsize}px ${getDefaultFontFamily()}`
     ctx.textAlign = 'left'
     ctx.textBaseline = 'top'
 
@@ -2297,7 +2299,7 @@ export default class Chart {
     ctx.drawImage(chartCanvas, 0, 0)
 
     ctx.fillStyle = textColor
-    ctx.font = `${textFontsize}px Spline Sans Mono`
+    ctx.font = `${textFontsize}px ${getDefaultFontFamily()}`
     ctx.textAlign = 'left'
     ctx.textBaseline = 'top'
 

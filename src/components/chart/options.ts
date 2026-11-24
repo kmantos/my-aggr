@@ -1,5 +1,6 @@
 import store from '@/store'
 import { getColor } from '@/utils/colors'
+import { getDefaultFontFamily } from '@/utils/helpers'
 import {
   ChartOptions,
   ColorType,
@@ -38,7 +39,6 @@ export const defaultChartOptions: DeepPartial<ChartOptions> = {
     text: '',
     horzAlign: 'center',
     vertAlign: 'center',
-    fontFamily: 'Spline Sans Mono',
     fontStyle: '600'
   },
   layout: {
@@ -46,8 +46,7 @@ export const defaultChartOptions: DeepPartial<ChartOptions> = {
       type: ColorType.Solid,
       color: 'transparent'
     },
-    textColor: 'white',
-    fontFamily: 'Barlow Semi Condensed'
+    textColor: 'white'
   },
   grid: {
     horzLines: {
@@ -210,6 +209,7 @@ export function getChartLayoutOptions(paneId?: string) {
   const customColorsOptions = {
     layout: {
       textColor: styles.getPropertyValue('--theme-color-100'),
+      fontFamily: getDefaultFontFamily(),
       borderColor: transColor,
       fontSize: getChartFontSize(paneId)
     }

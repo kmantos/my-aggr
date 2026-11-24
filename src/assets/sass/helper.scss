@@ -4,8 +4,9 @@ html {
 
 body {
   margin: 0;
-  font-family: 'Barlow', sans-serif;
   height: 100%;
+  // browser's default font; fixed width digits so numbers line up in columns
+  font-variant-numeric: tabular-nums;
 }
 
 *:focus {
@@ -18,7 +19,7 @@ a {
 
 $max: 16;
 $offset: 4;
-$unit: 'px'; 
+$unit: 'px';
 @mixin list-loop($className, $styleName) {
   $i: 0;
 
