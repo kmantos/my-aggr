@@ -144,6 +144,7 @@ export default class Chart {
   private _priceIndicatorId: string
   private _priceApi: IndicatorApi
   private _priceWatermark: string = null
+  private _priceWatermarkElement: HTMLElement = null
   private _alertsRendered: boolean
   private _timeToRecycle: number
   private _recycleTimeout: number
@@ -294,6 +295,12 @@ export default class Chart {
       chartOptions
     ) as IChartApi
 
+    // price watermark: page element behind the chart, centered on the whole
+    // chart width (candles + price scale), see updatePriceWatermark
+    this._priceWatermarkElement = document.createElement('div')
+    this._priceWatermarkElement.className = 'chart-price-watermark'
+    this.chartElement.appendChild(this._priceWatermarkElement)
+
     this.addPaneIndicators()
     this.updateFontSize()
     this.applyFlip()
@@ -334,6 +341,8 @@ export default class Chart {
 
     this.chartInstance = null
     this.chartElement.innerHTML = ''
+    this._priceWatermarkElement = null
+    this._priceWatermark = null
   }
 
   /**
@@ -523,16 +532,19 @@ export default class Chart {
     this.chartInstance.applyOptions({
       layout: {
         fontSize: baseFontSize
-      },
-      watermark: {
-        // a third of the size on phones (same breakpoint as the mobile
-        // layout) and on car screens
-        fontSize: Math.round(
-          Math.max(16, Math.min(144, baseFontSize * 10)) /
-            (window.innerWidth < 768 || IS_CAR_BROWSER ? 3 : 1)
-        )
       }
     })
+
+    if (this._priceWatermarkElement) {
+      // a third of the size on phones (same breakpoint as the mobile
+      // layout) and on car screens
+      const watermarkFontSize = Math.round(
+        Math.max(16, Math.min(144, baseFontSize * 10)) /
+          (window.innerWidth < 768 || IS_CAR_BROWSER ? 3 : 1)
+      )
+
+      this._priceWatermarkElement.style.fontSize = watermarkFontSize + 'px'
+    }
   }
 
   /**
@@ -582,14 +594,18 @@ export default class Chart {
         : [250, 249, 245]
     const color = `rgba(${r}, ${g}, ${b}, 0.5)`
 
-    this.chartInstance.applyOptions({
-      watermark: {
-        visible: !!text,
-        text,
-        color,
-        fontFamily: getDefaultFontFamily()
-      }
-    })
+    const element = this._priceWatermarkElement
+
+    if (!element) {
+      return
+    }
+
+    element.textContent = text
+    element.style.display = text ? 'flex' : 'none'
+    element.style.color = color
+    element.style.fontFamily = getDefaultFontFamily()
+    // vertically centered on the candles area (above the time scale)
+    element.style.bottom = this.chartInstance.timeScale().height() + 'px'
   }
 
   /**

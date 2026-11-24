@@ -273,6 +273,8 @@ export default class ChartComponent extends Mixins(PaneMixin) {
   position: relative;
   width: 100%;
   flex-grow: 1;
+  // own stacking context so the price watermark (z-index -1) stays inside
+  isolation: isolate;
 
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -283,6 +285,24 @@ export default class ChartComponent extends Mixins(PaneMixin) {
 </style>
 
 <style lang="scss">
+// price watermark (see chart.ts updatePriceWatermark), behind the chart,
+// centered on the whole chart width including the price scale
+.chart-price-watermark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+  font-weight: 600;
+  line-height: 1;
+}
+
 // candle close countdown (see countdown.ts), created outside of vue so not scoped
 .chart-countdown {
   position: absolute;

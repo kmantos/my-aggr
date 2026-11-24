@@ -207,11 +207,7 @@
       id="trades-preferences"
       inset
     >
-      <div
-        class="form-group column mb8"
-        title="Number of trades rendered"
-        v-tippy="{ boundary: 'window', placement: 'left' }"
-      >
+      <div class="form-group column mb8">
         <label class="-fill -center -inline">Lines count</label>
         <input
           id="trades-limit"
