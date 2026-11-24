@@ -17,7 +17,7 @@ $ease-in-expo: cubic-bezier(0.7, 0, 0.84, 0);
 $ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
 $ease-elastic: cubic-bezier(0, 1.4, 1, 1);
 
-// the site uses the browser's default font everywhere
+// the site uses the device's system font everywhere (see body in helper.scss)
 $font-base: inherit;
 $font-monospace: inherit;
 $font-condensed: inherit;

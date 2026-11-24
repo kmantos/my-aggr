@@ -7,8 +7,6 @@ import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 import { qrcode } from 'vite-plugin-qrcode'
 import svgLoader from 'vite-svg-loader'
 
-import crypto from 'crypto'
-
 let date
 
 if (typeof gitprocess === 'function') {
@@ -26,6 +24,12 @@ process.env.VITE_APP_BUILD_DATE =
   date.getDate() +
   ' ' +
   date.toLocaleString('en-US', { month: 'short' }).toLowerCase()
+
+// unique per deploy (commit sha on GitHub Actions), published in version.json
+// so running pages can detect a new version (see src/utils/updateChecker.ts)
+process.env.VITE_APP_BUILD_ID = (
+  process.env.GITHUB_SHA || Date.now().toString(36)
+).slice(0, 12)
 
 process.env.VITE_APP_EXCHANGES = [
   'AGGR',
@@ -75,12 +79,6 @@ export default defineConfig(({ mode }) => {
     }, {})
   }
 
-  const hash = crypto
-    .createHash('md5')
-    .update('aggr')
-    .digest('hex')
-    .substring(0, 7)
-
   return {
     define: {
       ...processEnvValues
@@ -93,16 +91,29 @@ export default defineConfig(({ mode }) => {
       }),
       visualizer(),
       monacoEditorPlugin.default({}),
-      qrcode() // only applies in dev mode
+      qrcode(), // only applies in dev mode
+      {
+        name: 'version-json',
+        apply: 'build',
+        generateBundle() {
+          this.emitFile({
+            type: 'asset',
+            fileName: 'version.json',
+            source: JSON.stringify({ build: process.env.VITE_APP_BUILD_ID })
+          })
+        }
+      }
       // Add the terser plugin for production builds to remove console.log
     ],
     build: {
       minify: 'terser',
       rollupOptions: {
         output: {
-          entryFileNames: `[name].` + hash + `.js`,
-          chunkFileNames: `[name].` + hash + `.js`,
-          assetFileNames: `[name].` + hash + `.[ext]`
+          // content hashes: every changed file gets a new name on each
+          // deploy, so browsers never reuse a stale cached copy
+          entryFileNames: `[name].[hash].js`,
+          chunkFileNames: `[name].[hash].js`,
+          assetFileNames: `[name].[hash].[ext]`
         }
       },
       terserOptions: {

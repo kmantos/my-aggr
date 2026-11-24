@@ -5,7 +5,20 @@ html {
 body {
   margin: 0;
   height: 100%;
-  // browser's default font; fixed width digits so numbers line up in columns
+  // device's system font (San Francisco, Roboto, Segoe UI...)
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    'Noto Sans',
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji';
+  // fixed width digits so numbers line up in columns
   font-variant-numeric: tabular-nums;
 }
 

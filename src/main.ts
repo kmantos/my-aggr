@@ -3,6 +3,7 @@ import App from './App.vue'
 import VueTippy, { TippyComponent } from 'vue-tippy'
 import './assets/sass/app.scss'
 import store from './store'
+import { watchForUpdates } from './utils/updateChecker'
 
 import Editable from '@/components/framework/Editable.vue'
 import DropdownComponent from '@/components/framework/Dropdown.vue'
@@ -36,6 +37,8 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register(`${base_url}sw.js`)
   })
 }
+
+watchForUpdates()
 
 new Vue({
   el: '#app',

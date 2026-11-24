@@ -368,7 +368,7 @@ function formatAmount(amount, decimals?: number) {
 }
 
 /**
- * the font the page renders with (the browser's default font),
+ * the font the page renders with (the device's system font),
  * for canvas text which can't inherit it from CSS
  */
 export function getDefaultFontFamily(): string {
