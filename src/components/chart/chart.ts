@@ -1073,20 +1073,20 @@ export default class Chart {
       return
     }
 
-    if (!store.state[this.paneId].refreshRate) {
+    if (!store.state.settings.chartRefreshRate) {
       this._releaseQueueInterval = requestAnimationFrame(this._queueHandler)
       return
     }
 
     console.debug(
       `[chart/${this.paneId}/controller] setup queue (${getHms(
-        store.state[this.paneId].refreshRate
+        store.state.settings.chartRefreshRate
       )})`
     )
 
     this._releaseQueueInterval = setInterval(
       this._queueHandler,
-      store.state[this.paneId].refreshRate
+      store.state.settings.chartRefreshRate
     ) as unknown as number
   }
 
@@ -1130,7 +1130,7 @@ export default class Chart {
   queueTrades(trades) {
     Array.prototype.push.apply(this.queuedTrades, trades)
 
-    if (!store.state[this.paneId].refreshRate) {
+    if (!store.state.settings.chartRefreshRate) {
       this._releaseQueueInterval = requestAnimationFrame(this._queueHandler)
     }
   }
@@ -2227,7 +2227,7 @@ export default class Chart {
   }
 
   /**
-   * flip (invert) the price scale according to the chart's "Flip" setting
+   * flip (invert) the price scale according to the "Flip" setting (main settings > Charts)
    */
   applyFlip() {
     if (!this.chartInstance) {
@@ -2240,7 +2240,7 @@ export default class Chart {
       : this.chartInstance.priceScale('right')
 
     priceScale.applyOptions({
-      invertScale: !!(store.state[this.paneId] as ChartPaneState).flipped
+      invertScale: !!store.state.settings.flipCharts
     })
   }
 

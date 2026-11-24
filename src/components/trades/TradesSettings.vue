@@ -266,37 +266,26 @@
         </label>
       </div>
 
-      <toggable-group
-        class="mb8 mt16"
-        :value="showPrices"
-        label="Show prices"
-        info="Show the price each trade was filled at"
-        @change="$store.commit(paneId + '/TOGGLE_PREFERENCE', 'showPrices')"
-        small
-      >
-        <div class="form-group">
-          <label class="checkbox-control -small">
-            <input
-              type="checkbox"
-              class="form-control"
-              :checked="showAvgPrice"
-              @change="
-                $store.commit(paneId + '/TOGGLE_PREFERENCE', 'showAvgPrice')
-              "
-            />
-            <div></div>
-            <span>
-              Weighted average
-              <i
-                class="icon-info info-tap"
-                v-tippy="infoTippy"
-                @click.stop.prevent="showInfo"
-                title="Show the weighted average price instead of the last price for aggregated trade results"
-              ></i>
-            </span>
-          </label>
-        </div>
-      </toggable-group>
+      <div class="form-group mb8 mt16">
+        <label class="checkbox-control -small">
+          <input
+            type="checkbox"
+            class="form-control"
+            :checked="showPrices"
+            @change="$store.commit(paneId + '/TOGGLE_PREFERENCE', 'showPrices')"
+          />
+          <div></div>
+          <span>
+            Show prices
+            <i
+              class="icon-info info-tap"
+              v-tippy="infoTippy"
+              @click.stop.prevent="showInfo"
+              title="Show the price of each trade (the volume weighted average price when several fills are grouped together)"
+            ></i>
+          </span>
+        </label>
+      </div>
       <div v-if="isLegacy" class="form-group mb8 mt16">
         <label class="checkbox-control -small">
           <input
@@ -383,10 +372,6 @@ export default class TradesSettings extends Vue {
 
   get showLogos() {
     return (this.$store.state[this.paneId] as TradesPaneState).showLogos
-  }
-
-  get showAvgPrice() {
-    return (this.$store.state[this.paneId] as TradesPaneState).showAvgPrice
   }
 
   get showPrices() {

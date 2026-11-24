@@ -35,7 +35,6 @@ export interface TradesPaneState {
   showTrades: boolean
   showLiquidations: boolean
   showLogos: boolean
-  showAvgPrice: boolean
 }
 
 const getters = {
@@ -67,8 +66,7 @@ const state = {
   showLiquidations: true,
   showLogos: true,
   showPrices: true,
-  showHistograms: true,
-  showAvgPrice: true
+  showHistograms: true
 } as TradesPaneState
 
 const actions = {
@@ -155,13 +153,6 @@ const actions = {
         state[type][i][name] = joinRgba(buyScaled)
       }
     }
-  },
-  upgradeToLite({ state }) {
-    this.dispatch('panes/resetPane', {
-      id: state._id,
-      data: state,
-      type: 'trades-lite'
-    })
   }
 } as ActionTree<TradesPaneState, ModulesState>
 

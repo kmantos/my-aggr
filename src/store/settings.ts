@@ -58,6 +58,9 @@ export interface SettingsState {
   alertSound: string
   showThresholdsAsTable: boolean
   showResolution: boolean
+  chartRefreshRate: number
+  showCountdown: boolean
+  flipCharts: boolean
   indicatorDialogNavigation?: string
 }
 
@@ -590,6 +593,15 @@ const mutations = {
       label: getTimeframeForHuman(value),
       value
     })
+  },
+  SET_CHART_REFRESH_RATE(state, value) {
+    state.chartRefreshRate = +value || 0
+  },
+  TOGGLE_COUNTDOWN(state) {
+    state.showCountdown = !state.showCountdown
+  },
+  TOGGLE_CHART_FLIP(state) {
+    state.flipCharts = !state.flipCharts
   },
   TOGGLE_RESOLUTION(state) {
     state.showResolution = !state.showResolution

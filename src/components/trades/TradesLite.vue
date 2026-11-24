@@ -136,7 +136,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
   private addedVolumeBySide: { buy: number; sell: number }
   private offset: number
   private maxCount: number
-  private showAvgPrice: boolean
   private limit: number
   private batchSize = 1
 
@@ -284,7 +283,7 @@ export default class TradesLite extends Mixins(PaneMixin) {
         pair: trades[i].pair,
         amount: trades[i].amount,
         count: trades[i].count,
-        price: this.showAvgPrice ? trades[i].avgPrice : trades[i].price,
+        price: trades[i].avgPrice,
         side: trades[i].side,
         time: null
       }
@@ -663,7 +662,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
     this.maxHistory = pane.maxRows
     this.showHistograms = pane.showHistograms
     this.showPairs = pane.showPairs
-    this.showAvgPrice = pane.showAvgPrice
     this.renderTrades =
       !pane.showHistograms || this.height > window.innerHeight / 24
     this.showPrices = pane.showPrices

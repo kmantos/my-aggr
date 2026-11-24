@@ -17,7 +17,6 @@
       :pane-id="paneId"
       @close="close"
     >
-      <chart-settings :pane-id="paneId" tab="general" />
       <template v-slot:actions>
         <button type="button" class="btn -text" @click="arrange">
           <i class="icon-resize-height"></i>

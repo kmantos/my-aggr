@@ -134,10 +134,10 @@ export default class ChartControl {
           this.chart.refreshAllIndicatorAdapters()
           this.chart.renderAll()
           break
-        case this.chart.paneId + '/TOGGLE_FLIP':
+        case 'settings/TOGGLE_CHART_FLIP':
           this.chart.applyFlip()
           break
-        case this.chart.paneId + '/SET_REFRESH_RATE':
+        case 'settings/SET_CHART_REFRESH_RATE':
           this.chart.clearQueue()
           this.chart.setupQueue()
           break

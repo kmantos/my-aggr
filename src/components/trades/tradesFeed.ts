@@ -49,7 +49,6 @@ export default class TradesFeed {
   private showLogos: boolean
   private showPairs: boolean
   private showPrices: boolean
-  private showAvgPrice: boolean
   private slippageMode: SlippageMode
   private paneMarkets: { [identifier: string]: boolean }
 
@@ -312,7 +311,7 @@ export default class TradesFeed {
     ${
       this.showPrices
         ? `<div class="trade__price">${priceSlippage}<span>${formatMarketPrice(
-            this.showAvgPrice ? trade.avgPrice : trade.price,
+            trade.avgPrice,
             marketKey
           )}</span></div>`
         : ''
@@ -513,7 +512,6 @@ export default class TradesFeed {
     this.showLogos = store.state[this.paneId].showLogos
     this.showPairs = store.state[this.paneId].showPairs
     this.showPrices = store.state[this.paneId].showPrices
-    this.showAvgPrice = store.state[this.paneId].showAvgPrice
   }
 
   cachePaneMarkets() {

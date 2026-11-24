@@ -177,10 +177,6 @@ export default class Trades extends Mixins(PaneMixin) {
     this.feed.clear()
     this.feed.processTradesSilent(trades)
   }
-
-  upgradeToLite() {
-    this.$store.dispatch(`${this.paneId}/upgradeToLite`)
-  }
 }
 </script>
 

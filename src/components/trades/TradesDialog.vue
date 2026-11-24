@@ -18,18 +18,6 @@
       @close="close"
     >
       <trades-settings :pane-id="paneId" tab="general" />
-      <template v-if="pane.type === 'trades'" v-slot:actions>
-        <button
-          type="button"
-          class="btn -text"
-          title="Canvas based feed for better performance"
-          v-tippy
-          @click="$store.dispatch(paneId + '/upgradeToLite')"
-        >
-          🚀
-          <span class="ml8">Upgrade</span>
-        </button>
-      </template>
     </pane-general-settings>
     <pane-sources v-else-if="tab === 'sources'" :pane-id="paneId" />
     <trades-settings v-else :pane-id="paneId" :tab="tab" />

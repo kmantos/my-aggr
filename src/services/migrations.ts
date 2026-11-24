@@ -516,5 +516,45 @@ export const workspaceUpgrades = {
       delete state.showTimeAgo
       delete state.multipliers
     }
+  },
+  14: (workspace: Workspace) => {
+    // chart refresh rate, countdown and flip moved to the main settings (one
+    // value for every chart): keep the first chart's values. Weighted average
+    // price is always used in trade lists.
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+    let copied = false
+
+    for (const paneId in panes) {
+      const state = workspace.states[paneId]
+
+      if (!state) {
+        continue
+      }
+
+      if (panes[paneId].type === 'chart') {
+        if (!copied) {
+          // settings are only stored once changed: merge into a partial state
+          const settings =
+            workspace.states.settings || (workspace.states.settings = {})
+
+          if (typeof state.refreshRate === 'number') {
+            settings.chartRefreshRate = state.refreshRate
+          }
+          if (typeof state.showCountdown === 'boolean') {
+            settings.showCountdown = state.showCountdown
+          }
+          if (typeof state.flipped === 'boolean') {
+            settings.flipCharts = state.flipped
+          }
+          copied = true
+        }
+
+        delete state.refreshRate
+        delete state.showCountdown
+        delete state.flipped
+      } else if (/^trades/.test(panes[paneId].type)) {
+        delete state.showAvgPrice
+      }
+    }
   }
 }

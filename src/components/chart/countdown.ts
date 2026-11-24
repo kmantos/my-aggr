@@ -105,7 +105,11 @@ export default class CandleCountdown {
     const chartInstance = this.chart.chartInstance
     const paneState = store.state[this.chart.paneId] as ChartPaneState
 
-    if (!chartInstance || !paneState || paneState.showCountdown === false) {
+    if (
+      !chartInstance ||
+      !paneState ||
+      store.state.settings.showCountdown === false
+    ) {
       return null
     }
 
