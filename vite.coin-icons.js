@@ -13,7 +13,8 @@ const SVGS = path.resolve(__dirname, 'node_modules/@web3icons/core/dist/svgs')
 const ALIASES = {
   TON: 'networks/branded/ton',
   GRAM: 'networks/branded/ton',
-  HYPE: 'networks/branded/hyper-evm'
+  HYPE: 'networks/branded/hyper-evm',
+  WLD: 'networks/branded/world'
 }
 
 function listIcons() {
