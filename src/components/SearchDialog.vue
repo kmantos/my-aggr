@@ -358,14 +358,8 @@ import noResultsPng from '@/assets/noresults.png'
 
 const RESULTS_PER_PAGE = 25
 
-// not listed when connecting a chart
-const CHART_HIDDEN_EXCHANGES = [
-  'AGGR',
-  'HITBTC',
-  'BITMEX',
-  'BITMART',
-  'WHITEBIT'
-]
+// exchanges without historical data: not listed when connecting a chart
+const CHART_HIDDEN_EXCHANGES = ['HITBTC', 'BITMEX', 'BITMART', 'WHITEBIT']
 
 const selectedProducts = {}
 let flattenedProducts = []
@@ -466,14 +460,17 @@ export default {
     searchTypes() {
       return this.$store.state.settings.searchTypes
     },
-    // exchanges without historical data are of no use to a chart (no results)
-    // but still feed the trades panes
-    hiddenExchanges() {
+    // historical data only matters to charts (past candles): other panes
+    // (and all panes at once) only use live trades
+    isChartTarget() {
       const pane =
         this.selectedPaneId &&
         this.$store.state.panes.panes[this.selectedPaneId]
 
-      return pane && pane.type === 'chart' ? CHART_HIDDEN_EXCHANGES : []
+      return !!pane && pane.type === 'chart'
+    },
+    hiddenExchanges() {
+      return this.isChartTarget ? CHART_HIDDEN_EXCHANGES : []
     },
     searchQuotes() {
       const searchQuotesPreferences = this.$store.state.settings.searchQuotes
@@ -553,9 +550,9 @@ export default {
       const searchQuotes = this.searchQuotes
       const allQuotes = this.allQuotes
 
-      // only markets with historical data (all markets until that list loads)
+      // charts: only markets with historical data (all until that list loads)
       const historicalMarkets = this.historicalMarkets
-      const hasHistorical = historicalMarkets.length > 0
+      const hasHistorical = this.isChartTarget && historicalMarkets.length > 0
 
       return flattenedProducts.filter(a => {
         if (hasHistorical && historicalMarkets.indexOf(a.id) === -1) {

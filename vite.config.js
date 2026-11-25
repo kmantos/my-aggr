@@ -32,7 +32,6 @@ process.env.VITE_APP_BUILD_ID = (
 ).slice(0, 12)
 
 process.env.VITE_APP_EXCHANGES = [
-  'AGGR',
   'ASTER',
   'BITMEX',
   'BINANCE_FUTURES',

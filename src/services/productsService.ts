@@ -641,8 +641,7 @@ export async function resolveAutoMarkets() {
   }
 
   const exchanges = store.getters['exchanges/getExchanges'].filter(
-    (exchangeId: string) =>
-      exchangeId !== 'AGGR' && !store.state.exchanges[exchangeId].disabled
+    (exchangeId: string) => !store.state.exchanges[exchangeId].disabled
   )
 
   // one slow or broken exchange must not block the others

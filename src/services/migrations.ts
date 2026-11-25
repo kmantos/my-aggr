@@ -625,5 +625,17 @@ export const workspaceUpgrades = {
         workspace.states[paneId].barSpacing = null
       }
     }
+  },
+  18: (workspace: Workspace) => {
+    // AGGR (sentiment feed) exchange removed
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+
+    for (const paneId in panes) {
+      if (Array.isArray(panes[paneId].markets)) {
+        panes[paneId].markets = panes[paneId].markets.filter(
+          market => !/^AGGR:/.test(market)
+        )
+      }
+    }
   }
 }
