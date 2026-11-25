@@ -641,14 +641,13 @@ class AudioService {
             continue
           }
 
+          // volume: multiply the gain argument (once)
           if (gainMultiplier && gainMultiplier !== 1) {
-            for (let i = 1; i <= 2; i++) {
-              if (+functionArguments[1]) {
-                functionArguments[1] *= gainMultiplier
-              } else {
-                functionArguments[1] =
-                  gainMultiplier + '*(' + functionArguments[1] + ')'
-              }
+            if (+functionArguments[1]) {
+              functionArguments[1] *= gainMultiplier
+            } else {
+              functionArguments[1] =
+                gainMultiplier + '*(' + functionArguments[1] + ')'
             }
           }
 

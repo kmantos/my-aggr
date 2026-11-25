@@ -429,16 +429,22 @@ export default class TradesLite extends Mixins(PaneMixin) {
 
   async prepareSounds(type: string, thresholds: Threshold[]) {
     const sounds = []
+    // pane volume (ex: 2 = twice as loud), on top of the main volume
+    const volume = this.$store.state[this.paneId].audioVolume
 
     for (let i = 0; i < thresholds.length; i++) {
       sounds.push({
         buy: await audioService.buildAudioFunction(
           thresholds[i].buyAudio,
-          'buy'
+          'buy',
+          null,
+          volume
         ),
         sell: await audioService.buildAudioFunction(
           thresholds[i].sellAudio,
-          'sell'
+          'sell',
+          null,
+          volume
         )
       })
     }
