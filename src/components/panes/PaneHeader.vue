@@ -16,7 +16,7 @@
       v-if="settings"
       type="button"
       @click="openSettings"
-      class="pane-overlay -text"
+      class="pane-overlay -text pane-header__settings"
       title="Settings"
       :loading="isLoading"
     >

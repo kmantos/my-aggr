@@ -199,6 +199,31 @@
       height: 1.429em;
     }
 
+    // settings (cog) button: easy to hit, even more on touch screens
+    > .btn.pane-header__settings {
+      justify-content: center;
+      align-items: center;
+      min-width: 2em;
+      padding: 0.25em 0.5em;
+
+      i {
+        font-size: 1.125em;
+      }
+
+      @media (hover: none), (pointer: coarse) {
+        // no hover on touch screens: always there, no "tap the pane first"
+        display: inline-flex;
+        align-self: flex-start;
+        min-width: 2.75em;
+        height: 2.25em;
+        border-bottom-left-radius: 0.5em;
+
+        i {
+          font-size: 1.375em;
+        }
+      }
+    }
+
     &__highlight.btn {
       display: inline-flex;
 
