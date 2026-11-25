@@ -246,8 +246,7 @@ export default class ChartControl {
     if (
       !visibleLogicalRange ||
       this.chart.panPrevented ||
-      this.chart.isLoading ||
-      this.chart.type !== 'time'
+      this.chart.isLoading
     ) {
       return
     }
@@ -260,7 +259,17 @@ export default class ChartControl {
     this.onPanTimeout = setTimeout(() => {
       this.onPanTimeout = null
 
-      if (this.chart.chartCache.cacheRange.from === null) {
+      if (!this.chart.chartInstance) {
+        return
+      }
+
+      // remember zoom (shown in the chart settings)
+      this.chart.savePosition()
+
+      if (
+        this.chart.type !== 'time' ||
+        this.chart.chartCache.cacheRange.from === null
+      ) {
         return
       }
 
@@ -268,8 +277,6 @@ export default class ChartControl {
       visibleLogicalRange = this.chart.chartInstance
         .timeScale()
         .getVisibleLogicalRange()
-
-      this.chart.savePosition(visibleLogicalRange)
 
       this.chart.fetchMore(visibleLogicalRange)
     }, 500) as unknown as number

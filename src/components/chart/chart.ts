@@ -26,6 +26,7 @@ import { joinRgba, splitColorCode } from '@/utils/colors'
 import merge from 'lodash.merge'
 
 import {
+  DEFAULT_BAR_SPACING,
   defaultChartOptions,
   getChartBarSpacingOptions,
   getChartFontSize,
@@ -2448,11 +2449,46 @@ export default class Chart {
     await this.fetch(rangeToFetch)
   }
 
-  savePosition(visibleLogicalRange) {
-    store.commit(
-      this.paneId + '/SET_BAR_SPACING',
-      this.getBarSpacing(visibleLogicalRange)
-    )
+  savePosition() {
+    // current candle width (zoom), options().barSpacing ignores user zoom
+    const barSpacing =
+      Math.round(
+        this.getBarSpacing(
+          this.chartInstance.timeScale().getVisibleLogicalRange()
+        ) * 1000
+      ) / 1000
+
+    if (barSpacing && barSpacing !== store.state[this.paneId].barSpacing) {
+      store.commit(this.paneId + '/SET_BAR_SPACING', barSpacing)
+    }
+  }
+
+  /**
+   * zoom = candle width relative to DEFAULT_BAR_SPACING (1x)
+   * @param zoom ex: 2 for candles twice as wide as default
+   * @param scrollToLatest bring the latest candle back to the right edge
+   */
+  setZoom(zoom: number, scrollToLatest = false) {
+    if (!this.chartInstance || !(zoom > 0)) {
+      return
+    }
+
+    const barSpacing = zoom * DEFAULT_BAR_SPACING
+    const timeScale = this.chartInstance.timeScale()
+
+    if (scrollToLatest) {
+      timeScale.applyOptions({
+        barSpacing,
+        rightOffset: Math.ceil(
+          (this.chartElement.clientWidth * 0.05) / barSpacing
+        )
+      })
+      timeScale.scrollToRealTime()
+    } else {
+      timeScale.applyOptions({ barSpacing })
+    }
+
+    store.commit(this.paneId + '/SET_BAR_SPACING', barSpacing)
   }
 
   getBarSpacing(visibleLogicalRange) {

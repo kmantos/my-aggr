@@ -113,6 +113,7 @@ export default class ChartComponent extends Mixins(PaneMixin) {
     this.bindAggregator()
 
     paneActions.on('restart', this.onRestartAction)
+    paneActions.on('zoom', this.onZoomAction)
   }
 
   destroyChart() {
@@ -123,6 +124,7 @@ export default class ChartComponent extends Mixins(PaneMixin) {
 
   beforeDestroy() {
     paneActions.off('restart', this.onRestartAction)
+    paneActions.off('zoom', this.onZoomAction)
 
     this.destroyChart()
   }
@@ -131,6 +133,15 @@ export default class ChartComponent extends Mixins(PaneMixin) {
   onRestartAction(paneId: string) {
     if (paneId === this.paneId) {
       this.restart()
+    }
+  }
+
+  onZoomAction(
+    paneId: string,
+    { zoom, scrollToLatest }: { zoom: number; scrollToLatest?: boolean }
+  ) {
+    if (paneId === this.paneId) {
+      this.chart.setZoom(zoom, scrollToLatest)
     }
   }
 

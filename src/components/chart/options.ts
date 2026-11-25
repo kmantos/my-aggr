@@ -276,9 +276,14 @@ export function getChartBorderOptions(paneId?: string) {
   }
 }
 
+/**
+ * candle width (px) at zoom 1x, also the zoom of a new chart
+ */
+export const DEFAULT_BAR_SPACING = 3
+
 export function getChartBarSpacingOptions(paneId, chartWidth: number) {
   const chartOptions = store.state[paneId] as ChartPaneState
-  const barSpacing = chartOptions.barSpacing || 3
+  const barSpacing = chartOptions.barSpacing || DEFAULT_BAR_SPACING
   return {
     timeScale: {
       barSpacing: barSpacing,
