@@ -564,5 +564,22 @@ export const workspaceUpgrades = {
     if (settings && settings.searchTypes) {
       delete settings.searchTypes.futures
     }
+  },
+  16: (workspace: Workspace) => {
+    // search history (recents) and the historical data filter removed: search
+    // always lists markets with historical data
+    const settings = workspace.states.settings
+
+    if (!settings) {
+      return
+    }
+
+    delete settings.previousSearchSelections
+
+    if (settings.searchTypes) {
+      delete settings.searchTypes.recent
+      delete settings.searchTypes.recentSearches
+      delete settings.searchTypes.historical
+    }
   }
 }

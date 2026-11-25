@@ -108,12 +108,6 @@ export interface ImportedSound {
 }
 export type ProductsData = string[] | { [prop: string]: any }
 
-export interface PreviousSearchSelection {
-  label: string
-  count: number
-  markets: string[]
-}
-
 export interface Ticker {
   updated?: boolean
   initialPrice?: number

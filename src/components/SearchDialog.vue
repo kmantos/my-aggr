@@ -77,42 +77,6 @@
             ></i>
           </span>
         </label>
-        <label class="checkbox-control -small mb4">
-          <input
-            type="checkbox"
-            class="form-control"
-            :checked="searchTypes.historical"
-            @change="$store.commit('settings/TOGGLE_SEARCH_TYPE', 'historical')"
-          />
-          <div></div>
-          <span>
-            With historical data
-            <i
-              class="icon-info info-tap"
-              v-tippy="infoTippy"
-              @click.stop.prevent="showInfo"
-              title="Only list markets with past data available, so charts can show candles from before the page was opened"
-            ></i>
-          </span>
-        </label>
-        <label class="checkbox-control -small mb4">
-          <input
-            type="checkbox"
-            class="form-control"
-            :checked="searchTypes.recent"
-            @change="$store.commit('settings/TOGGLE_SEARCH_TYPE', 'recent')"
-          />
-          <div></div>
-          <span>
-            Show recents
-            <i
-              class="icon-info info-tap"
-              v-tippy="infoTippy"
-              @click.stop.prevent="showInfo"
-              title="Show your previous market selections (search history) above the results while the search box is empty, to bring them back in one click"
-            ></i>
-          </span>
-        </label>
       </ToggableSection>
 
       <ToggableSection title="Exchanges" id="search-exchanges">
@@ -272,48 +236,6 @@
         <i class="icon-cross"></i>
       </button>
       <div class="search-dialog__results hide-scrollbar">
-        <table
-          class="table mt8 search-dialog-recents table--inset"
-          v-if="
-            searchTypes.recent &&
-            previousSearchSelections.length &&
-            !query.length
-          "
-        >
-          <thead>
-            <tr>
-              <th colspan="100%">
-                Search history
-                <button class="btn -small -text" @click="toggleType('recent')">
-                  <i class="icon-cross"></i>
-                </button>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="savedSelection of previousSearchSelections"
-              :key="savedSelection.label"
-              class="-action"
-              @click="toggleMarkets(savedSelection.markets, $event.shiftKey)"
-            >
-              <td class="search-dialog-recents__label">
-                {{ savedSelection.label }}
-                <span
-                  v-if="savedSelection.count > 1"
-                  class="badge -invert ml8"
-                  v-text="savedSelection.markets.length"
-                ></span>
-              </td>
-              <td
-                class="search-dialog-recents__markets table-ellipsis text-nowrap"
-              >
-                <small>{{ savedSelection.markets.join(', ') }}</small>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
         <table class="table mt8 table--inset" v-if="searchTypes.normalize">
           <tbody>
             <tr
@@ -356,13 +278,6 @@
               <td v-text="market.exchange"></td>
               <td v-text="market.pair"></td>
               <td v-text="market.type"></td>
-              <td class="text-center">
-                <i
-                  v-if="historicalMarkets.indexOf(market.id) !== -1"
-                  class="icon-candlestick"
-                  title="historical data available for this market"
-                ></i>
-              </td>
             </tr>
           </tbody>
         </table>
@@ -500,9 +415,6 @@ export default {
     ]
   }),
   computed: {
-    previousSearchSelections() {
-      return this.$store.state.settings.previousSearchSelections
-    },
     paneName() {
       if (!this.selectedPaneId) {
         return 'n/a'
@@ -599,11 +511,10 @@ export default {
       )
     },
     hasFilters() {
-      const hasHistorical = this.searchTypes.historical
       const hasSpot = this.searchTypes.spots
       const hasPerpetuals = this.searchTypes.perpetuals
       const isMergeStables = this.searchTypes.mergeUsdt
-      return isMergeStables || hasHistorical || hasSpot || hasPerpetuals
+      return isMergeStables || hasSpot || hasPerpetuals
     },
     historicalMarkets() {
       return this.$store.state.app.historicalMarkets
@@ -624,7 +535,6 @@ export default {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const id = this.cacheTimestamp
 
-      const hasHistorical = this.searchTypes.historical
       const hasSpot = this.searchTypes.spots
       const hasPerpetuals = this.searchTypes.perpetuals
 
@@ -634,7 +544,9 @@ export default {
       const searchQuotes = this.searchQuotes
       const allQuotes = this.allQuotes
 
+      // only markets with historical data (all markets until that list loads)
       const historicalMarkets = this.historicalMarkets
+      const hasHistorical = historicalMarkets.length > 0
 
       return flattenedProducts.filter(a => {
         if (hasHistorical && historicalMarkets.indexOf(a.id) === -1) {
@@ -869,10 +781,6 @@ export default {
   beforeDestroy() {
     document.removeEventListener('paste', this.onPaste)
     document.removeEventListener('keydown', this.onKeydown)
-
-    if (this._hideHistoryTimeout) {
-      clearTimeout(this._hideHistoryTimeout)
-    }
   },
   methods: {
     showInfo(event) {
@@ -959,16 +867,11 @@ export default {
           .filter((v, i, a) => a.indexOf(v) === i).length > 1
       )
     },
-    async toggleMarkets(markets, removeFromHistory) {
+    async toggleMarkets(markets) {
       const scrollTop = this.$refs.selection.scrollTop
 
       if (!Array.isArray(markets)) {
         markets = [markets]
-      }
-      if (removeFromHistory) {
-        this.$store.commit('settings/REMOVE_SEARCH_HISTORY', markets)
-        clearTimeout(this._hideHistoryTimeout)
-        return
       }
       for (const market of markets) {
         this.toggleMarket(market)
@@ -992,10 +895,6 @@ export default {
       }
     },
     async submit() {
-      if (this.selection.length) {
-        this.$store.dispatch('settings/saveSearchSelection', this.selection)
-      }
-
       if (!this.selectedPaneId) {
         if (
           this.hasMultipleMarketsConfigurations() &&
@@ -1028,9 +927,6 @@ export default {
     },
     hide() {
       this.$store.dispatch('app/hideSearch')
-    },
-    toggleType(key) {
-      this.$store.commit('settings/TOGGLE_SEARCH_TYPE', key)
     },
     toggleExchange(event, id) {
       if (event.shiftKey) {
@@ -1347,10 +1243,6 @@ export default {
     position: relative;
     overflow: auto;
 
-    .icon-candlestick {
-      display: block;
-    }
-
     table {
       border: 0;
       border-collapse: collapse;
@@ -1493,20 +1385,6 @@ export default {
       padding: 0.25rem;
       flex-grow: 1;
       font-size: 1rem;
-    }
-  }
-
-  &-recents {
-    &__label {
-      min-width: 0;
-      width: 0;
-      white-space: nowrap;
-    }
-    &__markets {
-      display: none;
-      @media screen and (min-width: 550px) {
-        display: table-cell;
-      }
     }
   }
 

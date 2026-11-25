@@ -23,15 +23,12 @@
   },
   "sections": ["settings-workspaces", "settings-trades", "timeframe-minutes"],
   "searchTypes": {
-    "recentSearches": true,
-    "historical": true,
     "spots": true,
     "perpetuals": true,
     "normalize": true,
     "mergeUsdt": true
   },
   "searchQuotes": {},
-  "previousSearchSelections": [],
   "searchExchanges": {},
   "timeframes": [
     { "label": "1s", "value": "1" },

@@ -561,7 +561,8 @@ export async function resolvePairs(pairs: string[]) {
 
   const historicalMarkets = store.state.app.historicalMarkets
   const searchPreference = store.state.settings.searchTypes
-  const historicalOnly = searchPreference.historical
+  // only markets with historical data (all markets until that list loads)
+  const historicalOnly = historicalMarkets.length > 0
   const searchTypes = {
     spot: searchPreference.spots,
     perp: searchPreference.perpetuals

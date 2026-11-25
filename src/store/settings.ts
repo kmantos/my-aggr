@@ -12,17 +12,12 @@ import {
   splitColorCode
 } from '@/utils/colors'
 import { ModulesState } from '.'
-import {
-  AggregationLength,
-  PreviousSearchSelection,
-  SlippageMode
-} from '@/types/types'
+import { AggregationLength, SlippageMode } from '@/types/types'
 import aggregatorService from '@/services/aggregatorService'
 import audioService from '@/services/audioService'
 import { getTimeframeForHuman } from '@/utils/helpers'
 import { isTouchSupported } from '@/utils/touchevent'
 import { ACCENT_COLOR } from '@/utils/constants'
-import { getMarketProduct, parseMarket } from '../services/productsService'
 
 export type AudioFilters = { [id: string]: boolean }
 export interface SettingsState {
@@ -47,7 +42,6 @@ export interface SettingsState {
   searchTypes?: any
   searchQuotes?: any
   searchExchanges?: any
-  previousSearchSelections?: PreviousSearchSelection[]
   timeframes?: { label: string; value: string }[]
   favoriteTimeframes?: { [timeframe: number]: string }
   alerts: number | boolean
@@ -336,46 +330,6 @@ const actions = {
     } else if (!volume && state.useAudio) {
       commit('TOGGLE_AUDIO', false)
     }
-  },
-  saveSearchSelection({ commit }, selection: string[]) {
-    const sortedSelection = selection.sort((a, b) => a.localeCompare(b))
-
-    const pairs = []
-    const exchanges = []
-
-    for (const market of sortedSelection) {
-      const [exchange, pair] = parseMarket(market)
-      const product = getMarketProduct(exchange, pair, true)
-
-      const local = product.local
-
-      if (pairs.indexOf(local) === -1) {
-        pairs.push(local)
-      }
-
-      if (exchanges.indexOf(exchange) === -1) {
-        exchanges.push(exchange)
-      }
-    }
-
-    let label
-    let count = 0
-
-    if (sortedSelection.length === 1) {
-      label = sortedSelection[0]
-    } else if (exchanges.length === 1) {
-      label = exchanges[0] + ':' + pairs.join('+')
-      count = sortedSelection.length
-    } else {
-      label = pairs.join('+')
-      count = sortedSelection.length
-    }
-
-    commit('SAVE_SEARCH_SELECTION', {
-      label: label.length > 32 ? label.slice(0, 29) + '...' : label,
-      markets: sortedSelection,
-      count
-    })
   }
 } as ActionTree<SettingsState, ModulesState>
 
@@ -543,41 +497,6 @@ const mutations = {
   },
   SET_ALERT_SOUND(state, value) {
     state.alertSound = value
-  },
-  SAVE_SEARCH_SELECTION(state, value) {
-    const matchingSavedSearch = state.previousSearchSelections.find(
-      a => a.label === value.label && a.count === value.count
-    )
-
-    if (matchingSavedSearch) {
-      state.previousSearchSelections.splice(
-        state.previousSearchSelections.indexOf(matchingSavedSearch),
-        1
-      )
-    }
-    state.previousSearchSelections.unshift(value)
-
-    if (state.previousSearchSelections.length > 32) {
-      state.previousSearchSelections.splice(
-        32,
-        state.previousSearchSelections.length - 32
-      )
-    }
-  },
-  CLEAR_SEARCH_HISTORY(state) {
-    state.previousSearchSelections = []
-  },
-  REMOVE_SEARCH_HISTORY(state, markets) {
-    const match = state.previousSearchSelections.find(
-      a => a.markets === markets
-    )
-
-    if (match) {
-      state.previousSearchSelections.splice(
-        state.previousSearchSelections.indexOf(match),
-        1
-      )
-    }
   },
   REMOVE_TIMEFRAME(state, value) {
     const index = state.timeframes.indexOf(
