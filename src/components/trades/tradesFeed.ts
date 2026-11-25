@@ -470,33 +470,27 @@ export default class TradesFeed {
     }
 
     if (!this.tradesAudios || prepareThresholds) {
-      const audioPitch = store.state[this.paneId].audioPitch
-
       this.tradesAudios = await this.cacheAudioThresholds(
-        this.getTradesThesholds(),
-        audioPitch
+        this.getTradesThesholds()
       )
       this.liquidationsAudios = await this.cacheAudioThresholds(
-        this.getLiquidationsThresholds(),
-        audioPitch
+        this.getLiquidationsThresholds()
       )
     }
   }
 
-  async cacheAudioThresholds(thresholds, audioPitch) {
+  async cacheAudioThresholds(thresholds) {
     const audios = []
 
     for (let i = 0; i < thresholds.length; i++) {
       audios.push({
         buy: await audioService.buildAudioFunction(
           thresholds[i].buyAudio,
-          'buy',
-          audioPitch
+          'buy'
         ),
         sell: await audioService.buildAudioFunction(
           thresholds[i].sellAudio,
-          'sell',
-          audioPitch
+          'sell'
         )
       })
     }

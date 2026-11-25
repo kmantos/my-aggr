@@ -26,7 +26,6 @@ export interface TradesPaneState {
   thresholds: Threshold[]
   audioThreshold: number
   muted: boolean
-  audioPitch: number
   audioVolume: number
   maxRows: number
   showPairs: boolean
@@ -59,7 +58,6 @@ const state = {
   audioThreshold: null,
   maxRows: 10,
   muted: false,
-  audioPitch: null,
   audioVolume: null,
   showPairs: false,
   showTrades: true,
@@ -170,19 +168,6 @@ const mutations = {
 
     if (!state.muted && state.audioVolume === 0) {
       state.audioVolume = null
-    }
-  },
-  SET_AUDIO_PITCH(state, value) {
-    if (typeof value === 'string') {
-      value = value.replace(/[^0-9-.]/g, '')
-    }
-
-    value = +value
-
-    if (!value || value === 1) {
-      state.audioPitch = null
-    } else {
-      state.audioPitch = value
     }
   },
   SET_AUDIO_VOLUME(state, value) {

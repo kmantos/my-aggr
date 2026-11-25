@@ -655,5 +655,15 @@ export const workspaceUpgrades = {
     if (workspace.states.settings) {
       delete workspace.states.settings.showThresholdsAsTable
     }
+  },
+  21: (workspace: Workspace) => {
+    // trades panes audio "transpose" (pitch) removed
+    for (const paneId in workspace.states) {
+      const state = workspace.states[paneId]
+
+      if (state && typeof state === 'object' && 'audioPitch' in state) {
+        delete state.audioPitch
+      }
+    }
   }
 }

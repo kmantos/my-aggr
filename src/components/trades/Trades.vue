@@ -79,7 +79,6 @@ export default class Trades extends Mixins(PaneMixin) {
           break
         case this.paneId + '/SET_THRESHOLD_AUDIO':
         case this.paneId + '/SET_AUDIO_VOLUME':
-        case this.paneId + '/SET_AUDIO_PITCH':
         case 'settings/SET_AUDIO_VOLUME':
         case 'settings/TOGGLE_AUDIO':
           this.feed.cacheAudio()

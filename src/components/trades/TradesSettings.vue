@@ -146,29 +146,6 @@
               @input="$store.commit(paneId + '/SET_AUDIO_VOLUME', $event)"
             ></editable>
           </div>
-          <label class="mt16 d-block text-color-base">Transpose</label>
-          <div class="column">
-            <slider
-              class="mrauto -fill mt8 mb8"
-              :min="0.001"
-              :max="5"
-              :step="0.01"
-              :showCompletion="false"
-              :disabled="muted"
-              :value="audioPitch"
-              @input="$store.commit(paneId + '/SET_AUDIO_PITCH', $event)"
-              @reset="$store.commit(paneId + '/SET_AUDIO_PITCH', null)"
-              log
-            >
-              <template v-slot:tooltip>× {{ audioPitch }} </template>
-            </slider>
-            <editable
-              class="-center text-nowrap ml8"
-              style="line-height: 1"
-              :value="'× ' + audioPitch"
-              @input="$store.commit(paneId + '/SET_AUDIO_PITCH', $event)"
-            ></editable>
-          </div>
         </div>
       </div>
       <div class="form-group" v-if="useAudio && !muted">
@@ -400,10 +377,6 @@ export default class TradesSettings extends Vue {
 
   get muted() {
     return (this.$store.state[this.paneId] as TradesPaneState).muted
-  }
-
-  get audioPitch() {
-    return (this.$store.state[this.paneId] as TradesPaneState).audioPitch || 1
   }
 
   get audioVolume() {

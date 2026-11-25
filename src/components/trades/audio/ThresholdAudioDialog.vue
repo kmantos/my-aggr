@@ -215,9 +215,6 @@ export default {
     amounts: function () {
       return this.thresholds.map(t => t.amount)
     },
-    audioPitch: function () {
-      return this.$store.state[this.paneId].audioPitch
-    },
     audioVolume: function () {
       return this.$store.state[this.paneId].audioVolume
     },
@@ -379,7 +376,7 @@ export default {
         const adapter = await audioService.buildAudioFunction(
           litteral,
           side,
-          this.audioPitch,
+          null,
           this.audioVolume,
           true
         )

@@ -172,7 +172,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
           break
         case this.paneId + '/SET_THRESHOLD_AUDIO':
         case this.paneId + '/SET_AUDIO_VOLUME':
-        case this.paneId + '/SET_AUDIO_PITCH':
         case this.paneId + '/TOGGLE_MUTED':
         case 'settings/SET_AUDIO_VOLUME':
         case 'settings/TOGGLE_AUDIO':
@@ -430,19 +429,16 @@ export default class TradesLite extends Mixins(PaneMixin) {
 
   async prepareSounds(type: string, thresholds: Threshold[]) {
     const sounds = []
-    const audioPitch = this.$store.state[this.paneId].audioPitch
 
     for (let i = 0; i < thresholds.length; i++) {
       sounds.push({
         buy: await audioService.buildAudioFunction(
           thresholds[i].buyAudio,
-          'buy',
-          audioPitch
+          'buy'
         ),
         sell: await audioService.buildAudioFunction(
           thresholds[i].sellAudio,
-          'sell',
-          audioPitch
+          'sell'
         )
       })
     }
