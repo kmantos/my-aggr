@@ -197,9 +197,64 @@ const COIN_ICONS = {
 // listed first, then A to Z (names starting with a digit, ex: 1000SHIB, last)
 const FIRST_COINS = ['BTC', 'ETH', 'SOL']
 
-// coins tiles shown at once (the coins with the most markets), others are
-// found with the search
+// stablecoins are quotes, never a pane's coin
+const STABLECOINS = [
+  'USDT',
+  'USDC',
+  'USDE',
+  'USDS',
+  'DAI',
+  'FDUSD',
+  'TUSD',
+  'USDD',
+  'USDP',
+  'BUSD',
+  'PYUSD',
+  'RLUSD',
+  'USD1',
+  'USDG',
+  'UST',
+  'EURC',
+  'EURT'
+]
+
+// coin tiles shown at once, others are found with the search
 const MAX_COINS = 24
+
+// biggest coins by market cap (Nov 2026, stablecoins and wrapped tokens
+// excluded, BTC / ETH / SOL kept first), they get the tiles. When fewer are
+// available (ex: charts only list coins with historical data), the coins
+// listed on the most exchanges fill the remaining tiles
+const TOP_COINS = [
+  'BTC',
+  'ETH',
+  'SOL',
+  'BNB',
+  'XRP',
+  'TRX',
+  'HYPE',
+  'ZEC',
+  'XMR',
+  'DOGE',
+  'BCH',
+  'LINK',
+  'ADA',
+  'XLM',
+  'LEO',
+  'NEAR',
+  'SUI',
+  'AVAX',
+  'LTC',
+  'HBAR',
+  'GRAM', // formerly TON
+  'TON',
+  'SHIB',
+  'DOT',
+  'UNI',
+  'AAVE',
+  'CRO',
+  'TAO'
+]
 
 function compareCoins(a: string, b: string) {
   const firstA = FIRST_COINS.indexOf(a)
@@ -338,7 +393,9 @@ export default class PaneSources extends Vue {
     const counts = {}
 
     for (const product of this.products) {
-      counts[product.base] = (counts[product.base] || 0) + 1
+      if (STABLECOINS.indexOf(product.base) === -1) {
+        counts[product.base] = (counts[product.base] || 0) + 1
+      }
     }
 
     return counts
@@ -363,14 +420,27 @@ export default class PaneSources extends Vue {
   get coinTiles() {
     const counts = this.coinCounts
     const query = this.coinQuery.trim()
-    const bases = this.coinsList.slice(0, MAX_COINS)
+    let bases: string[]
 
-    // BTC, ETH, SOL and the pane's coin always get a tile
-    if (!query) {
-      for (const base of [...FIRST_COINS, this.coin]) {
-        if (counts[base] && bases.indexOf(base) === -1) {
+    if (query) {
+      bases = this.coinsList.slice(0, MAX_COINS)
+    } else {
+      // biggest coins by market cap, then the most listed ones
+      bases = TOP_COINS.filter(base => counts[base]).slice(0, MAX_COINS)
+
+      for (const base of this.coinsList) {
+        if (bases.length >= MAX_COINS) {
+          break
+        }
+
+        if (bases.indexOf(base) === -1) {
           bases.push(base)
         }
+      }
+
+      // the pane's coin always gets a tile
+      if (counts[this.coin] && bases.indexOf(this.coin) === -1) {
+        bases.push(this.coin)
       }
     }
 
