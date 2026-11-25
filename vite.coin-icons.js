@@ -9,9 +9,6 @@ import path from 'path'
 
 const SVGS = path.resolve(__dirname, 'node_modules/@web3icons/core/dist/svgs')
 
-// our own logos for coins the package doesn't have (<SYMBOL>.svg)
-const CUSTOM = path.resolve(__dirname, 'src/assets/coins')
-
 // symbols whose logo is a network logo (or another token's)
 const ALIASES = {
   TON: 'networks/branded/ton',
@@ -38,25 +35,11 @@ function listIcons() {
     }
   }
 
-  if (fs.existsSync(CUSTOM)) {
-    for (const file of fs.readdirSync(CUSTOM)) {
-      const match = file.match(/^([A-Z0-9]+)\.svg$/)
-
-      if (match) {
-        icons[match[1]] = 'custom:' + file
-      }
-    }
-  }
-
   return icons
 }
 
 // the package's modules are `var X = '<svg ...>'; export { X as default }`
 function readSvg(source) {
-  if (source.startsWith('custom:')) {
-    return fs.readFileSync(path.join(CUSTOM, source.slice(7)), 'utf8')
-  }
-
   const content = fs.readFileSync(path.join(SVGS, source + '.svg.js'), 'utf8')
   const match = content.match(/=\s*'((?:[^'\\]|\\.)*)'/)
 
