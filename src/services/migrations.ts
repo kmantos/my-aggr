@@ -794,5 +794,22 @@ export const workspaceUpgrades = {
 
       delete state.audioVolume
     }
+  },
+  27: (workspace: Workspace) => {
+    // new alert line defaults: gray (chart text color), dashed, width 1
+    // (only replaces the old defaults, customized values are kept)
+    const settings = workspace.states.settings
+
+    if (!settings) {
+      return
+    }
+
+    if (settings.alertsColor === 'rgb(0,255,0)') {
+      settings.alertsColor = 'rgb(195,196,199)'
+    }
+
+    if (settings.alertsLineStyle === 1) {
+      settings.alertsLineStyle = 2
+    }
   }
 }
