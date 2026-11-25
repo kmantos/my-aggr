@@ -12,7 +12,14 @@
         class="slider__completion"
         :style="`width: ${handle.position}%`"
       ></div>
-      <tippy :distance="24" follow-cursor>
+      <div
+        v-if="!tooltip"
+        class="slider__handle"
+        @mousedown="select"
+        @touchstart="select"
+        :style="`left: ${handle.position}%; background-color: ${handle.color};`"
+      />
+      <tippy v-else :distance="24" follow-cursor>
         <template v-slot:trigger>
           <div
             class="slider__handle"
@@ -39,6 +46,8 @@ export default {
     gradient: { type: Array, default: null },
     colorCode: { type: Boolean, default: false },
     label: { type: Boolean, default: false },
+    // value bubble over the handle while hovering / dragging
+    tooltip: { type: Boolean, default: true },
     disabled: { type: Boolean, default: false },
     min: { type: Number, default: 0 },
     max: { type: Number, default: 255 },

@@ -12,6 +12,7 @@
           :max="3"
           :step="0.01"
           :value="audioVolume"
+          :tooltip="false"
           @input="$store.dispatch('settings/setAudioVolume', $event)"
           @reset="$store.dispatch('settings/setAudioVolume', 1)"
           log
