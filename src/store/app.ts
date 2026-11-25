@@ -42,7 +42,7 @@ export interface AppState {
   isBooted: boolean
   isLoading: boolean
   isExchangesReady: boolean
-  showSearch: boolean
+  showTimeframeDialog: boolean
   historicalMarkets: string[]
   apiSupportedTimeframes: string[]
   version: string
@@ -55,7 +55,7 @@ const state = {
   isBooted: false,
   isLoading: false,
   isExchangesReady: false,
-  showSearch: false,
+  showTimeframeDialog: false,
   notices: [],
   historicalMarkets: [],
   apiSupportedTimeframes: [],
@@ -153,44 +153,25 @@ const actions = {
       notice
     })
   },
-  async showSearch(
-    { commit, state },
-    { paneId, pristine = false, input = null } = {}
-  ) {
-    if (state.showSearch) {
-      return
-    }
-
-    commit('TOGGLE_SEARCH', true)
-
-    if (typeof paneId === 'undefined' && input && state.focusedPaneId) {
-      paneId = state.focusedPaneId
-    }
-
-    dialogService.open(
-      (await import('@/components/SearchDialog.vue')).default,
-      { paneId, pristine, input }
-    )
-  },
   showTimeframe({ commit, state, rootState }) {
     if (
-      state.showSearch ||
+      state.showTimeframeDialog ||
       !state.focusedPaneId ||
       !rootState[state.focusedPaneId]
     ) {
       return
     }
 
-    commit('TOGGLE_SEARCH', true)
+    commit('TOGGLE_TIMEFRAME_DIALOG', true)
 
     dialogService.open(TimeframeDialog)
   },
-  hideSearch({ commit, state }) {
-    if (!state.showSearch) {
+  hideTimeframe({ commit, state }) {
+    if (!state.showTimeframeDialog) {
       return
     }
 
-    commit('TOGGLE_SEARCH', false)
+    commit('TOGGLE_TIMEFRAME_DIALOG', false)
   },
   async getApiSupportedPairs({ commit }) {
     const markets = await getApiSupportedMarkets()
@@ -221,8 +202,9 @@ const mutations = {
       state.notices.splice(index, 1)
     }
   },
-  TOGGLE_SEARCH(state, value) {
-    state.showSearch = typeof value === 'boolean' ? value : !state.showSearch
+  TOGGLE_TIMEFRAME_DIALOG(state, value) {
+    state.showTimeframeDialog =
+      typeof value === 'boolean' ? value : !state.showTimeframeDialog
   },
   SET_HISTORICAL_MARKETS(state, value) {
     state.historicalMarkets = value

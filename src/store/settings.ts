@@ -39,9 +39,6 @@ export interface SettingsState {
   disableAnimations?: boolean
   autoHideHeaders?: boolean
   autoHideNames?: boolean
-  searchTypes?: any
-  searchQuotes?: any
-  searchExchanges?: any
   timeframes?: { label: string; value: string }[]
   favoriteTimeframes?: { [timeframe: number]: string }
   alerts: number | boolean
@@ -440,33 +437,6 @@ const mutations = {
   },
   TOGGLE_AUTO_HIDE_NAMES(state) {
     state.autoHideNames = !state.autoHideNames
-  },
-  TOGGLE_SEARCH_TYPE(state, key: string) {
-    Vue.set(state.searchTypes, key, !state.searchTypes[key])
-  },
-  TOGGLE_SEARCH_QUOTE(state, { key, value }: { key: string; value: boolean }) {
-    Vue.set(state.searchQuotes, key, value)
-  },
-  TOGGLE_SEARCH_EXCHANGE(state, key: string) {
-    Vue.set(
-      state.searchExchanges,
-      key,
-      typeof state.searchExchanges[key] === 'boolean'
-        ? !state.searchExchanges[key]
-        : false
-    )
-  },
-  CLEAR_SEARCH_FILTERS(state) {
-    for (const key in state.searchTypes) {
-      if (key === 'normalize') {
-        continue
-      }
-
-      state.searchTypes[key] = false
-    }
-
-    Vue.set(state, 'searchTypes', state.searchTypes)
-    Vue.set(state, 'searchQuotes', {})
   },
   TOGGLE_FAVORITE_TIMEFRAME(state, value) {
     if (typeof state.favoriteTimeframes[value] === 'undefined') {

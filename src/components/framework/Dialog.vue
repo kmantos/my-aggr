@@ -57,7 +57,7 @@
 
 <script lang="ts">
 import dialogService, { DialogPosition } from '@/services/dialogService'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import { getEventCords } from '../../utils/helpers'
 
 @Component({
@@ -126,6 +126,12 @@ export default class Dialog extends Vue {
     if (this.size) {
       this.impliedSize = this.size
     }
+  }
+
+  // ex: pane dialogs widen while their Sources tab is open
+  @Watch('size')
+  onSizeChange(size: string) {
+    this.impliedSize = size
   }
 
   async mounted() {

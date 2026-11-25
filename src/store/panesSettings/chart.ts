@@ -72,7 +72,6 @@ export interface ChartPaneState {
   showAlerts?: boolean
   showAlertsLabel?: boolean
   showIndicators: boolean
-  hiddenMarkets: { [indicatorId: string]: boolean }
   barSpacing: number
 }
 
@@ -95,7 +94,6 @@ const state = {
   timeframe: 60,
   showAlerts: true,
   showAlertsLabel: true,
-  hiddenMarkets: {},
   barSpacing: null
 } as ChartPaneState
 
@@ -346,49 +344,6 @@ const actions = {
 
     commit('SET_INDICATOR_SCRIPT', { id: indicatorId })
   },
-  toggleMarkets(
-    { state, rootState, commit },
-    { type, id, inverse }: { type: string; id: string; inverse: boolean }
-  ) {
-    const containsHidden =
-      typeof rootState.panes.panes[state._id].markets.find(
-        market => state.hiddenMarkets[market] === true
-      ) !== 'undefined'
-
-    for (const market of rootState.panes.panes[state._id].markets) {
-      const isHidden = state.hiddenMarkets[market] === true
-
-      if (!type) {
-        if (!inverse) {
-          if (market !== id) {
-            continue
-          }
-
-          // toggle selected market
-          Vue.set(state.hiddenMarkets, market, !isHidden)
-        } else if (!isHidden && market !== id) {
-          // hide market other than selected
-          Vue.set(state.hiddenMarkets, market, true)
-        } else if (isHidden && market === id) {
-          // show current market
-          Vue.set(state.hiddenMarkets, market, false)
-        }
-      } else if (type === 'all') {
-        if (containsHidden !== !isHidden) {
-          Vue.set(state.hiddenMarkets, market, !containsHidden)
-        }
-      } else {
-        const indexedMarket = rootState.panes.marketsListeners[market]
-
-        const hide = type !== indexedMarket.type
-
-        if (hide !== isHidden) {
-          Vue.set(state.hiddenMarkets, market, hide)
-        }
-      }
-    }
-    commit('TOGGLE_MARKET')
-  },
   setTimeframe({ rootState, commit }, timeframe) {
     if ((window.event as any).shiftKey) {
       for (const id in rootState.panes.panes) {
@@ -485,11 +440,6 @@ const mutations = {
       (match, key) => state.indicators[id].options[key] || ''
     )
     Vue.set(state.indicators[id], 'displayName', displayName)
-  },
-  TOGGLE_MARKET(state, marketId) {
-    if (marketId) {
-      Vue.set(state.hiddenMarkets, marketId, !state.hiddenMarkets[marketId])
-    }
   },
   SET_PRICE_SCALE(state, { id, priceScale }) {
     if (!priceScale) {

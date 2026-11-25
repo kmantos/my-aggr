@@ -2,7 +2,7 @@
   <Dialog
     @clickOutside="close"
     class="pane-dialog"
-    size="small"
+    :size="tab === 'sources' ? 'wide' : 'small'"
     @mousedown="clickOutsideClose = false"
     @mouseup="clickOutsideClose = true"
   >

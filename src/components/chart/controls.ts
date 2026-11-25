@@ -110,7 +110,6 @@ export default class ChartControl {
           break
         case 'panes/SET_PANE_MARKETS':
           if (mutation.payload.id === this.chart.paneId) {
-            store.state[this.chart.paneId].hiddenMarkets = {}
             this.chart.refreshMarkets()
 
             this.chart.clear()
@@ -132,7 +131,6 @@ export default class ChartControl {
         case 'settings/SET_ALERTS_COLOR':
         case 'settings/SET_ALERTS_LINESTYLE':
         case 'settings/SET_ALERTS_LINEWIDTH':
-        case this.chart.paneId + '/TOGGLE_MARKET':
           this.chart.refreshMarkets()
           this.chart.refreshAllIndicatorAdapters()
           this.chart.renderAll()

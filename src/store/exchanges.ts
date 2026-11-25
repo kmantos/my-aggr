@@ -42,10 +42,6 @@ const actions = {
 
     for (const id of getters.getExchanges) {
       if (supportedExchanges.indexOf(id) === -1) {
-        if (rootState.settings.searchExchanges[id]) {
-          delete rootState.settings.searchExchanges[id]
-        }
-
         if (rootState.exchanges[id]) {
           delete rootState.exchanges[id]
         }

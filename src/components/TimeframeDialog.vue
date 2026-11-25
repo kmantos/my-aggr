@@ -60,7 +60,7 @@ export default {
     }
   },
   watch: {
-    '$store.state.app.showSearch': function (value) {
+    '$store.state.app.showTimeframeDialog': function (value) {
       if (!value) {
         this.close(false)
       }
@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     hide() {
-      this.$store.dispatch('app/hideSearch')
+      this.$store.dispatch('app/hideTimeframe')
     },
     onTimeframe(timeframe) {
       this.newTimeframe = timeframe ? timeframe.value : null

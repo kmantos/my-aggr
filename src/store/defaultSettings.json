@@ -22,14 +22,6 @@
     "LowPassFilter": false
   },
   "sections": ["settings-workspaces", "settings-trades", "timeframe-minutes"],
-  "searchTypes": {
-    "spots": true,
-    "perpetuals": true,
-    "normalize": true,
-    "mergeUsdt": true
-  },
-  "searchQuotes": {},
-  "searchExchanges": {},
   "timeframes": [
     { "label": "1s", "value": "1" },
     { "label": "3s", "value": "3" },

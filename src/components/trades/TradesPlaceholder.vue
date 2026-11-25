@@ -56,16 +56,13 @@ export default class TradesPlaceholder extends Vue {
   }
 
   get pairs() {
-    const mergeUsdt = this.$store.state.settings.searchTypes.mergeUsdt
-
     return this.paneMarkets.reduce((pairs, marketKey) => {
       const market = this.$store.state.panes.marketsListeners[marketKey]
 
       let localPair = market ? market.local : marketKey
 
-      if (mergeUsdt) {
-        localPair = stripStablePair(localPair)
-      }
+      // stablecoin quotes count as USD
+      localPair = stripStablePair(localPair)
 
       if (pairs.indexOf(localPair) === -1) {
         pairs.push(localPair)

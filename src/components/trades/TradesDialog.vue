@@ -1,5 +1,9 @@
 <template>
-  <Dialog @clickOutside="close" class="pane-dialog" size="medium">
+  <Dialog
+    @clickOutside="close"
+    class="pane-dialog"
+    :size="tab === 'sources' ? 'wide' : 'medium'"
+  >
     <template v-slot:header>
       <div class="dialog__title" v-text="name"></div>
       <div class="column -center"></div>

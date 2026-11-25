@@ -665,5 +665,24 @@ export const workspaceUpgrades = {
         delete state.audioPitch
       }
     }
+  },
+  22: (workspace: Workspace) => {
+    // market search removed (markets are picked in each pane's Sources tab)
+    // and charts can't hide markets anymore (unhide them all)
+    const settings = workspace.states.settings
+
+    if (settings) {
+      delete settings.searchTypes
+      delete settings.searchQuotes
+      delete settings.searchExchanges
+    }
+
+    for (const paneId in workspace.states) {
+      const state = workspace.states[paneId]
+
+      if (state && typeof state === 'object' && 'hiddenMarkets' in state) {
+        delete state.hiddenMarkets
+      }
+    }
   }
 }

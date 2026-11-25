@@ -82,10 +82,6 @@ export default class App extends Vue {
   private mainPair: string
   private favicons: { up?: string; down?: string }
 
-  get showSearch() {
-    return this.$store.state.app.showSearch
-  }
-
   get isBooted() {
     const isBooted = this.$store.state.app && this.$store.state.app.isBooted
 
@@ -219,7 +215,7 @@ export default class App extends Vue {
     const activeElement = document.activeElement as HTMLElement
 
     if (
-      this.$store.state.app.showSearch ||
+      this.$store.state.app.showTimeframeDialog ||
       event.metaKey ||
       event.ctrlKey ||
       event.altKey ||
@@ -233,12 +229,7 @@ export default class App extends Vue {
 
     event = event || (window.event as any)
 
-    if (/^[a-z]$/i.test(event.key)) {
-      this.$store.dispatch('app/showSearch', {
-        pristine: true,
-        input: event.key
-      })
-    } else if (/^[0-9]$/i.test(event.key)) {
+    if (/^[0-9]$/i.test(event.key)) {
       this.$store.dispatch('app/showTimeframe')
     }
   }

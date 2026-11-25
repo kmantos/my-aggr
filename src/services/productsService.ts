@@ -566,16 +566,8 @@ export async function resolvePairs(pairs: string[]) {
   const markets = []
 
   const historicalMarkets = store.state.app.historicalMarkets
-  const searchPreference = store.state.settings.searchTypes
   // only markets with historical data (all markets until that list loads)
   const historicalOnly = historicalMarkets.length > 0
-  const searchTypes = {
-    spot: searchPreference.spots,
-    perp: searchPreference.perpetuals
-  }
-  const allTypes = !(searchTypes.spot || searchTypes.perp)
-  const searchQuotes = store.state.settings.searchQuotes
-  const allQuotes = !Object.values(searchQuotes).find(filtered => !!filtered)
 
   for (const exchangeId of store.getters['exchanges/getExchanges']) {
     const symbols = await getExchangeSymbols(exchangeId)
@@ -593,14 +585,6 @@ export async function resolvePairs(pairs: string[]) {
       }
 
       if (historicalOnly && historicalMarkets.indexOf(product.id) === -1) {
-        continue
-      }
-
-      if (!allTypes && !searchTypes[product.type]) {
-        continue
-      }
-
-      if (!allQuotes && !searchQuotes[product.quote]) {
         continue
       }
 
