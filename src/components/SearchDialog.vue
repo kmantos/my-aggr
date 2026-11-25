@@ -146,16 +146,6 @@
           <div></div>
           <span>Perpetuals</span>
         </label>
-        <label class="checkbox-control -small mb4">
-          <input
-            type="checkbox"
-            class="form-control"
-            :checked="searchTypes.futures"
-            @change="$store.commit('settings/TOGGLE_SEARCH_TYPE', 'futures')"
-          />
-          <div></div>
-          <span>Futures</span>
-        </label>
       </ToggableSection>
 
       <ToggableSection id="search-quotes">
@@ -576,15 +566,8 @@ export default {
       const hasHistorical = this.searchTypes.historical
       const hasSpot = this.searchTypes.spots
       const hasPerpetuals = this.searchTypes.perpetuals
-      const hasFutures = this.searchTypes.futures
       const isMergeStables = this.searchTypes.mergeUsdt
-      return (
-        isMergeStables ||
-        hasHistorical ||
-        hasSpot ||
-        hasPerpetuals ||
-        hasFutures
-      )
+      return isMergeStables || hasHistorical || hasSpot || hasPerpetuals
     },
     historicalMarkets() {
       return this.$store.state.app.historicalMarkets
@@ -608,10 +591,9 @@ export default {
       const hasHistorical = this.searchTypes.historical
       const hasSpot = this.searchTypes.spots
       const hasPerpetuals = this.searchTypes.perpetuals
-      const hasFutures = this.searchTypes.futures
 
       const exchanges = this.searchExchanges
-      const hasTypeFilters = hasSpot || hasPerpetuals || hasFutures
+      const hasTypeFilters = hasSpot || hasPerpetuals
 
       const searchQuotes = this.searchQuotes
       const allQuotes = this.allQuotes
@@ -637,10 +619,14 @@ export default {
           return false
         }
 
+        // dated (expiring) futures contracts are never listed
+        if (a.type === 'future') {
+          return false
+        }
+
         if (
           hasTypeFilters &&
-          ((!hasFutures && a.type === 'future') ||
-            (!hasPerpetuals && a.type === 'perp') ||
+          ((!hasPerpetuals && a.type === 'perp') ||
             (!hasSpot && a.type === 'spot'))
         ) {
           return false

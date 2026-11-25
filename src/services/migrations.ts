@@ -556,5 +556,13 @@ export const workspaceUpgrades = {
         delete state.showAvgPrice
       }
     }
+  },
+  15: (workspace: Workspace) => {
+    // futures (dated contracts) search filter removed
+    const settings = workspace.states.settings
+
+    if (settings && settings.searchTypes) {
+      delete settings.searchTypes.futures
+    }
   }
 }

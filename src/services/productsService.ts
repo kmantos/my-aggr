@@ -564,10 +564,9 @@ export async function resolvePairs(pairs: string[]) {
   const historicalOnly = searchPreference.historical
   const searchTypes = {
     spot: searchPreference.spots,
-    perp: searchPreference.perpetuals,
-    future: searchPreference.futures
+    perp: searchPreference.perpetuals
   }
-  const allTypes = !(searchTypes.spot || searchTypes.perp || searchTypes.future)
+  const allTypes = !(searchTypes.spot || searchTypes.perp)
   const searchQuotes = store.state.settings.searchQuotes
   const allQuotes = !Object.values(searchQuotes).find(filtered => !!filtered)
 
@@ -581,7 +580,8 @@ export async function resolvePairs(pairs: string[]) {
     for (const symbol of symbols) {
       const product = getMarketProduct(exchangeId, symbol, true)
 
-      if (!product) {
+      // dated (expiring) futures contracts are never used
+      if (!product || product.type === 'future') {
         continue
       }
 
