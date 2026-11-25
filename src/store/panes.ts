@@ -11,6 +11,7 @@ import { ListenedProduct } from './app'
 import { getMarketProduct, parseMarket } from '../services/productsService'
 import { GridItem, GridSpace, findOrCreateSpace } from '@/utils/grid'
 import dialogService from '@/services/dialogService'
+import { IS_CAR_BROWSER } from '@/utils/constants'
 
 enum StaticPaneType {
   website = 'website',
@@ -387,8 +388,11 @@ const actions = {
 
     let initialZoom = 1
     const innerWidth = window.innerWidth
+    // car screens (wide but short, ex: 853x336) use the phone layout too
+    const isCarScreen =
+      IS_CAR_BROWSER || (innerWidth >= 768 && window.innerHeight < 500)
 
-    if (innerWidth >= 768) {
+    if (innerWidth >= 768 && !isCarScreen) {
       // start with desktop layout
       state.layout = layoutDesktop
 
@@ -396,7 +400,7 @@ const actions = {
         initialZoom = 1.25
       }
     } else {
-      // start with mobile layout
+      // start with mobile layout (phones and car screens)
       state.layout = layoutMobile
 
       // only keep the panes used by the mobile layout
