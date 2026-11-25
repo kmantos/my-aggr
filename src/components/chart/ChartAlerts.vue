@@ -40,8 +40,7 @@
       </form>
 
       <p v-if="!alerts.length" class="text-color-50 mb0">
-        No {{ market }} alert yet. Add one above, or Alt+click on the chart (one
-        tap when "1 click" is on in Settings › Alerts).
+        No {{ market }} alert yet.
       </p>
 
       <table v-else class="table chart-alerts__table">
@@ -57,14 +56,30 @@
                 type="text"
                 inputmode="decimal"
                 class="form-control"
-                :value="formatPrice(alert.price)"
+                :value="
+                  typeof drafts[alert.price] === 'string'
+                    ? drafts[alert.price]
+                    : formatPrice(alert.price)
+                "
                 :disabled="alert.triggered"
-                title="Edit to move the alert"
-                @change="moveAlert(alert, $event)"
-                @keydown.enter="$event.target.blur()"
+                title="Edit, then Save to move the alert"
+                @input="$set(drafts, alert.price, $event.target.value)"
               />
             </td>
-            <td class="chart-alerts__status" :class="'-' + getStatus(alert)">
+            <td v-if="isEdited(alert)" class="chart-alerts__save">
+              <button
+                type="button"
+                class="btn -green -small"
+                @click="saveAlert(alert)"
+              >
+                Save
+              </button>
+            </td>
+            <td
+              v-else
+              class="chart-alerts__status"
+              :class="'-' + getStatus(alert)"
+            >
               {{ statusLabels[getStatus(alert)] }}
               <button
                 v-if="getStatus(alert) === 'missing'"
@@ -130,6 +145,8 @@ export default class ChartAlerts extends Vue {
   statuses: { [price: string]: AlertStatus } = {}
   newPrice = ''
   isAdding = false
+  // edited prices, by original price
+  drafts: { [price: string]: string } = {}
   priceFormat: (price: number) => string = null
 
   statusLabels = {
@@ -290,12 +307,21 @@ export default class ChartAlerts extends Vue {
     }
   }
 
-  async moveAlert(alert: MarketAlert, event: Event) {
-    const input = event.target as HTMLInputElement
-    const price = this.parsePrice(input.value)
+  // price typed but not saved yet
+  isEdited(alert: MarketAlert) {
+    const draft = this.drafts[alert.price]
+
+    return typeof draft === 'string' && draft !== this.formatPrice(alert.price)
+  }
+
+  // the alert only moves when Save is clicked
+  async saveAlert(alert: MarketAlert) {
+    const draft = this.drafts[alert.price]
+    const price = this.parsePrice(draft || '')
+
+    this.$delete(this.drafts, alert.price)
 
     if (!price || price === alert.price) {
-      input.value = this.formatPrice(alert.price)
       return
     }
 
@@ -422,6 +448,10 @@ export default class ChartAlerts extends Vue {
         border-color: var(--theme-background-200);
       }
     }
+  }
+
+  &__save {
+    text-align: right;
   }
 
   &__status {
