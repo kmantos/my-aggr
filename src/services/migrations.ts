@@ -10,6 +10,7 @@ import {
 } from './productsService'
 import { MarketAlert } from './alertService'
 import defaultThresholds from '@/store/defaultThresholds.json'
+import { IS_CAR_BROWSER } from '@/utils/constants'
 
 export const databaseUpgrades = {
   0: (db: IDBPDatabase<any>) => {
@@ -811,5 +812,24 @@ export const workspaceUpgrades = {
     if (settings.alertsLineStyle === 1) {
       settings.alertsLineStyle = 2
     }
+  },
+  28: (workspace: Workspace) => {
+    // car screens use the phone layout (BTC chart + FUTURES): on a car screen,
+    // drop the saved panes so they are rebuilt with that layout. Other devices
+    // keep their panes
+    const isCarScreen =
+      IS_CAR_BROWSER || (window.innerWidth >= 768 && window.innerHeight < 500)
+
+    if (!isCarScreen) {
+      return
+    }
+
+    const panes = workspace.states.panes ? workspace.states.panes.panes : null
+
+    for (const paneId in panes || {}) {
+      delete workspace.states[paneId]
+    }
+
+    delete workspace.states.panes
   }
 }
