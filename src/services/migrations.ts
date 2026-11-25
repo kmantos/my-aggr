@@ -2,7 +2,12 @@ import { Workspace } from '@/types/types'
 import { IDBPDatabase, IDBPTransaction } from 'idb'
 import { AggrDB } from './workspacesService'
 import { Threshold, TradesPaneState } from '@/store/panesSettings/trades'
-import { getMarketProduct, parseMarket } from './productsService'
+import {
+  getMarketProduct,
+  isAllowedQuote,
+  parseMarket,
+  QUOTE_CURRENCIES
+} from './productsService'
 import { MarketAlert } from './alertService'
 
 export const databaseUpgrades = {
@@ -580,6 +585,45 @@ export const workspaceUpgrades = {
       delete settings.searchTypes.recent
       delete settings.searchTypes.recentSearches
       delete settings.searchTypes.historical
+    }
+  },
+  17: (workspace: Workspace) => {
+    // only USD, USDT and USDC quoted markets are used, and charts zoom from 1x
+    // to 10x starting at 3x (barSpacing null = default zoom)
+    const settings = workspace.states.settings
+
+    if (settings && settings.searchQuotes) {
+      for (const quote in settings.searchQuotes) {
+        if (QUOTE_CURRENCIES.indexOf(quote) === -1) {
+          delete settings.searchQuotes[quote]
+        }
+      }
+    }
+
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+
+    for (const paneId in panes) {
+      const pane = panes[paneId]
+
+      if (Array.isArray(pane.markets)) {
+        const markets = pane.markets.filter(market => {
+          const [exchange, pair] = parseMarket(market)
+          const product = getMarketProduct(exchange, pair)
+
+          return (
+            !product || exchange === 'AGGR' || isAllowedQuote(product.quote)
+          )
+        })
+
+        // never leave a pane without markets
+        if (markets.length) {
+          pane.markets = markets
+        }
+      }
+
+      if (pane.type === 'chart' && workspace.states[paneId]) {
+        workspace.states[paneId].barSpacing = null
+      }
     }
   }
 }

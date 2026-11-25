@@ -52,6 +52,16 @@ const reverseStablecoins = stablecoins.filter(
   s => !normalStablecoinLookup.test(s)
 )
 
+/**
+ * the only quote currencies used: markets quoted in anything else are never
+ * listed in search nor added to panes
+ */
+export const QUOTE_CURRENCIES = ['USD', 'USDT', 'USDC']
+
+export function isAllowedQuote(quote: string) {
+  return QUOTE_CURRENCIES.indexOf(quote) !== -1
+}
+
 const currencies = ['EUR', 'USD', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNH']
 
 const genericQuoteCurrencyLookup = new RegExp(
@@ -581,8 +591,12 @@ export async function resolvePairs(pairs: string[]) {
     for (const symbol of symbols) {
       const product = getMarketProduct(exchangeId, symbol, true)
 
-      // dated (expiring) futures contracts are never used
-      if (!product || product.type === 'future') {
+      // dated (expiring) futures contracts and other quotes are never used
+      if (
+        !product ||
+        product.type === 'future' ||
+        !isAllowedQuote(product.quote)
+      ) {
         continue
       }
 
@@ -668,7 +682,8 @@ export async function resolveAutoMarkets() {
         if (
           product &&
           pairs.indexOf(product.local) !== -1 &&
-          types.indexOf(product.type) !== -1
+          types.indexOf(product.type) !== -1 &&
+          isAllowedQuote(product.quote)
         ) {
           markets.push(product.id)
         }

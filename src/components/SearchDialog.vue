@@ -84,7 +84,10 @@
           <label
             class="checkbox-control -small mb4 -custom hide-scrollbar"
             :key="id"
-            v-if="!$store.state.exchanges[id].disabled"
+            v-if="
+              !$store.state.exchanges[id].disabled &&
+              hiddenExchanges.indexOf(id) === -1
+            "
           >
             <input
               type="checkbox"
@@ -130,7 +133,7 @@
             @change="$store.commit('settings/TOGGLE_SEARCH_TYPE', 'spots')"
           />
           <div></div>
-          <span>Spots</span>
+          <span>Spot</span>
         </label>
         <label class="checkbox-control -small mb4">
           <input
@@ -140,7 +143,7 @@
             @change="$store.commit('settings/TOGGLE_SEARCH_TYPE', 'perpetuals')"
           />
           <div></div>
-          <span>Perpetuals</span>
+          <span>Perpetual</span>
         </label>
       </ToggableSection>
 
@@ -345,13 +348,24 @@ import {
   getExchangeSymbols,
   ensureIndexedProducts,
   parseMarket,
-  stripStableQuote
+  stripStableQuote,
+  QUOTE_CURRENCIES,
+  isAllowedQuote
 } from '@/services/productsService'
 import ToggableSection from '@/components/framework/ToggableSection.vue'
 import { isTouchSupported } from '@/utils/touchevent'
 import noResultsPng from '@/assets/noresults.png'
 
 const RESULTS_PER_PAGE = 25
+
+// not listed when connecting a chart
+const CHART_HIDDEN_EXCHANGES = [
+  'AGGR',
+  'HITBTC',
+  'BITMEX',
+  'BITMART',
+  'WHITEBIT'
+]
 
 const selectedProducts = {}
 let flattenedProducts = []
@@ -397,22 +411,7 @@ export default {
     activeIndex: null,
     mobileShowFilters: false,
     canRefreshProducts: true,
-    quoteCurrencies: [
-      'USD',
-      'USDT',
-      'FDUSD',
-      'UST',
-      'USDC',
-      'USDD',
-      'TUSD',
-      'ETH',
-      'BTC',
-      'BNB',
-      'EUR',
-      'AUD',
-      'GBP',
-      'OTHERS'
-    ]
+    quoteCurrencies: QUOTE_CURRENCIES
   }),
   computed: {
     paneName() {
@@ -466,6 +465,15 @@ export default {
     },
     searchTypes() {
       return this.$store.state.settings.searchTypes
+    },
+    // exchanges without historical data are of no use to a chart (no results)
+    // but still feed the trades panes
+    hiddenExchanges() {
+      const pane =
+        this.selectedPaneId &&
+        this.$store.state.panes.panes[this.selectedPaneId]
+
+      return pane && pane.type === 'chart' ? CHART_HIDDEN_EXCHANGES : []
     },
     searchQuotes() {
       const searchQuotesPreferences = this.$store.state.settings.searchQuotes
@@ -539,6 +547,7 @@ export default {
       const hasPerpetuals = this.searchTypes.perpetuals
 
       const exchanges = this.searchExchanges
+      const hiddenExchanges = this.hiddenExchanges
       const hasTypeFilters = hasSpot || hasPerpetuals
 
       const searchQuotes = this.searchQuotes
@@ -553,17 +562,19 @@ export default {
           return false
         }
 
-        if (
-          !allQuotes &&
-          ((typeof searchQuotes[a.quote] === 'boolean' &&
-            searchQuotes[a.quote] === false) ||
-            (typeof searchQuotes[a.quote] !== 'boolean' &&
-              !searchQuotes.OTHERS))
-        ) {
+        // only USD, USDT and USDC quoted markets
+        if (!isAllowedQuote(a.quote)) {
           return false
         }
 
-        if (!exchanges[a.exchange]) {
+        if (!allQuotes && !searchQuotes[a.quote]) {
+          return false
+        }
+
+        if (
+          !exchanges[a.exchange] ||
+          hiddenExchanges.indexOf(a.exchange) !== -1
+        ) {
           return false
         }
 

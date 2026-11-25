@@ -6,7 +6,11 @@ import { MouseEventParams } from 'lightweight-charts'
 import Chart from './chart'
 import AlertEventHandler from './controls/alertEventHandler'
 import MeasurementEventHandler from './controls/measurementEventHandler'
-import { getChartCustomColorsOptions } from './options'
+import {
+  DEFAULT_BAR_SPACING,
+  MAX_ZOOM,
+  getChartCustomColorsOptions
+} from './options'
 import { components, controlledCharts, syncCrosshair } from './common'
 import iframeService from '@/services/iframeService'
 
@@ -243,11 +247,21 @@ export default class ChartControl {
   }
 
   onPan(visibleLogicalRange) {
-    if (
-      !visibleLogicalRange ||
-      this.chart.panPrevented ||
-      this.chart.isLoading
-    ) {
+    if (!visibleLogicalRange) {
+      return
+    }
+
+    // max zoom (lightweight-charts only has a min bar spacing option)
+    const maxBarSpacing = MAX_ZOOM * DEFAULT_BAR_SPACING
+
+    if (this.chart.getBarSpacing(visibleLogicalRange) > maxBarSpacing + 0.01) {
+      this.chart.chartInstance
+        .timeScale()
+        .applyOptions({ barSpacing: maxBarSpacing })
+      return
+    }
+
+    if (this.chart.panPrevented || this.chart.isLoading) {
       return
     }
 

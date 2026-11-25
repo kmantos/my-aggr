@@ -26,19 +26,18 @@
           <button
             type="button"
             class="btn -text -small"
-            title="Candle width of a new chart, back to the latest candle"
+            title="Default candle width, back to the latest candle"
             v-tippy
             @click="resetZoom"
           >
-            Reset to 1x
+            Reset to {{ defaultZoom }}x
           </button>
         </label>
         <slider
           class="mt8"
-          :min="0.1"
-          :max="50"
-          :step="0.1"
-          log
+          :min="minZoom"
+          :max="maxZoom"
+          :step="0.5"
           :value="zoom"
           @input="setZoom"
           @reset="resetZoom"
@@ -71,22 +70,30 @@ import ChartSettings from './ChartSettings.vue'
 import ChartIndicatorsSettings from './ChartIndicatorsSettings.vue'
 import Slider from '@/components/framework/picker/Slider.vue'
 import paneActions from '@/utils/paneActions'
-import { DEFAULT_BAR_SPACING } from './options'
+import {
+  DEFAULT_BAR_SPACING,
+  DEFAULT_ZOOM,
+  MAX_ZOOM,
+  MIN_ZOOM
+} from './options'
 
 export default {
   components: { ChartSettings, ChartIndicatorsSettings, Slider },
   mixins: [DialogMixin, PaneDialogMixin],
+  data: () => ({
+    defaultZoom: DEFAULT_ZOOM,
+    minZoom: MIN_ZOOM,
+    maxZoom: MAX_ZOOM
+  }),
   computed: {
-    // candle width relative to a new chart's (1x)
+    // candle width relative to DEFAULT_BAR_SPACING (1x)
     zoom() {
-      return (
-        (this.$store.state[this.paneId].barSpacing || DEFAULT_BAR_SPACING) /
-        DEFAULT_BAR_SPACING
-      )
+      const barSpacing = this.$store.state[this.paneId].barSpacing
+
+      return barSpacing ? barSpacing / DEFAULT_BAR_SPACING : DEFAULT_ZOOM
     },
     zoomLabel() {
-      const zoom = this.zoom
-      return (zoom < 10 ? Math.round(zoom * 10) / 10 : Math.round(zoom)) + 'x'
+      return Math.round(this.zoom * 10) / 10 + 'x'
     }
   },
   methods: {
@@ -94,7 +101,10 @@ export default {
       paneActions.emit('zoom', this.paneId, { zoom })
     },
     resetZoom() {
-      paneActions.emit('zoom', this.paneId, { zoom: 1, scrollToLatest: true })
+      paneActions.emit('zoom', this.paneId, {
+        zoom: DEFAULT_ZOOM,
+        scrollToLatest: true
+      })
     },
     arrange() {
       this.$store.commit(this.paneId + '/TOGGLE_LAYOUTING')

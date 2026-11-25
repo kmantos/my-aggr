@@ -27,6 +27,8 @@ import merge from 'lodash.merge'
 
 import {
   DEFAULT_BAR_SPACING,
+  MAX_ZOOM,
+  MIN_ZOOM,
   defaultChartOptions,
   getChartBarSpacingOptions,
   getChartFontSize,
@@ -2473,7 +2475,8 @@ export default class Chart {
       return
     }
 
-    const barSpacing = zoom * DEFAULT_BAR_SPACING
+    const barSpacing =
+      Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom)) * DEFAULT_BAR_SPACING
     const timeScale = this.chartInstance.timeScale()
 
     if (scrollToLatest) {
@@ -2496,11 +2499,12 @@ export default class Chart {
       return defaultChartOptions.timeScale.barSpacing
     }
 
-    const canvasWidth = this.getChartCanvas().clientWidth
-    const barSpacing =
-      canvasWidth / (visibleLogicalRange.to - visibleLogicalRange.from)
-
-    return barSpacing
+    // visible range = width / barSpacing - 1 bars (see lightweight-charts'
+    // TimeScale._updateVisibleRange)
+    return (
+      this.chartInstance.timeScale().width() /
+      (visibleLogicalRange.to - visibleLogicalRange.from + 1)
+    )
   }
 
   trimChart() {

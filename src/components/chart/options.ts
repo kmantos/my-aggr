@@ -57,8 +57,8 @@ export const defaultChartOptions: DeepPartial<ChartOptions> = {
     }
   },
   timeScale: {
-    barSpacing: 4,
-    minBarSpacing: 0,
+    barSpacing: 9, // DEFAULT_ZOOM * DEFAULT_BAR_SPACING
+    minBarSpacing: 3, // MIN_ZOOM * DEFAULT_BAR_SPACING (max: see ChartControl.onPan)
     rightOffset: 12,
     lockVisibleTimeRangeOnResize: false,
     borderVisible: true,
@@ -277,13 +277,21 @@ export function getChartBorderOptions(paneId?: string) {
 }
 
 /**
- * candle width (px) at zoom 1x, also the zoom of a new chart
+ * candle width (px) at zoom 1x
  */
 export const DEFAULT_BAR_SPACING = 3
 
+/**
+ * zoom of a new chart (and of "reset"), zoom range (mouse wheel, pinch, slider)
+ */
+export const DEFAULT_ZOOM = 3
+export const MIN_ZOOM = 1
+export const MAX_ZOOM = 10
+
 export function getChartBarSpacingOptions(paneId, chartWidth: number) {
   const chartOptions = store.state[paneId] as ChartPaneState
-  const barSpacing = chartOptions.barSpacing || DEFAULT_BAR_SPACING
+  const barSpacing =
+    chartOptions.barSpacing || DEFAULT_ZOOM * DEFAULT_BAR_SPACING
   return {
     timeScale: {
       barSpacing: barSpacing,
