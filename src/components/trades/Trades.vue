@@ -54,7 +54,6 @@ export default class Trades extends Mixins(PaneMixin) {
 
     this._onStoreMutation = this.$store.subscribe(mutation => {
       switch (mutation.type) {
-        case 'app/EXCHANGE_UPDATED':
         case 'settings/TOGGLE_SLIPPAGE':
         case this.paneId + '/TOGGLE_PREFERENCE':
           this.feed.cachePreferences()

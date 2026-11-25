@@ -84,10 +84,7 @@
           <label
             class="checkbox-control -small mb4 -custom hide-scrollbar"
             :key="id"
-            v-if="
-              !$store.state.exchanges[id].disabled &&
-              hiddenExchanges.indexOf(id) === -1
-            "
+            v-if="hiddenExchanges.indexOf(id) === -1"
           >
             <input
               type="checkbox"
@@ -496,11 +493,7 @@ export default {
     searchExchanges() {
       const searchExchanges = this.$store.state.settings.searchExchanges
 
-      return Object.keys(this.$store.state.exchanges).reduce((output, id) => {
-        if (this.$store.state.exchanges[id].disabled) {
-          return output
-        }
-
+      return this.exchanges.reduce((output, id) => {
         output[id] =
           typeof searchExchanges[id] === 'undefined'
             ? true

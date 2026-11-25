@@ -1,11 +1,10 @@
 import aggregatorService from '@/services/aggregatorService'
-import Vue from 'vue'
-import { ActionTree, GetterTree, Module, MutationTree } from 'vuex'
+import { ActionTree, GetterTree, Module } from 'vuex'
 import { ModulesState } from '.'
 
-export interface ExchangeSettings {
-  disabled?: boolean
-}
+// every supported exchange is always available: markets are picked per pane
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type ExchangeSettings = {}
 
 export type ExchangesState = { [exchangeId: string]: ExchangeSettings } & {
   _id: string
@@ -18,10 +17,7 @@ export const supportedExchanges = import.meta.env.VITE_APP_EXCHANGES.split(
 
 const state = supportedExchanges.reduce(
   (exchangesState: ExchangesState, id: string) => {
-    // every supported exchange is enabled by default
-    exchangesState[id] = {
-      disabled: false
-    }
+    exchangesState[id] = {}
 
     return exchangesState
   },
@@ -58,19 +54,7 @@ const actions = {
       }
 
       state._exchanges.push(id)
-      rootState.app.activeExchanges[id] = !state[id].disabled
     }
-  },
-  async toggleExchange({ commit, state, dispatch }, id: string) {
-    commit('TOGGLE_EXCHANGE', id)
-
-    if (state[id].disabled) {
-      await dispatch('disconnect', id)
-    } else {
-      await dispatch('connect', id)
-    }
-
-    this.commit('app/EXCHANGE_UPDATED', id)
   },
   async disconnect({ rootState }, id: string) {
     const exchangeRegex = new RegExp(`^${id}:`, 'i')
@@ -96,22 +80,9 @@ const actions = {
   }
 } as ActionTree<ExchangesState, ModulesState>
 
-const mutations = {
-  TOGGLE_EXCHANGE: (state, id: string) => {
-    let disabled = true
-
-    if (typeof state[id].disabled === 'boolean') {
-      disabled = !state[id].disabled
-    }
-
-    Vue.set(state[id], 'disabled', disabled)
-  }
-} as MutationTree<ExchangesState>
-
 export default {
   namespaced: true,
   getters,
   state,
-  actions,
-  mutations
+  actions
 } as Module<ExchangesState, ModulesState>

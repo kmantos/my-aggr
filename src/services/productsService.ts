@@ -550,11 +550,7 @@ export async function ensureIndexedProducts(filter?: {
   let indexChanged = false
 
   for (const exchangeId of store.getters['exchanges/getExchanges']) {
-    if (
-      (filter && !filter[exchangeId]) ||
-      store.state.exchanges[exchangeId].disabled === true ||
-      indexedProducts[exchangeId]
-    ) {
+    if ((filter && !filter[exchangeId]) || indexedProducts[exchangeId]) {
       continue
     }
 
@@ -582,10 +578,6 @@ export async function resolvePairs(pairs: string[]) {
   const allQuotes = !Object.values(searchQuotes).find(filtered => !!filtered)
 
   for (const exchangeId of store.getters['exchanges/getExchanges']) {
-    if (store.state.exchanges[exchangeId].disabled === true) {
-      continue
-    }
-
     const symbols = await getExchangeSymbols(exchangeId)
 
     for (const symbol of symbols) {
@@ -640,9 +632,7 @@ export async function resolveAutoMarkets() {
     return
   }
 
-  const exchanges = store.getters['exchanges/getExchanges'].filter(
-    (exchangeId: string) => !store.state.exchanges[exchangeId].disabled
-  )
+  const exchanges = store.getters['exchanges/getExchanges']
 
   // one slow or broken exchange must not block the others
   const timeout = (ms: number) =>
@@ -716,7 +706,7 @@ export async function resolvePair(base: string, quote: string) {
   const stripedStableQuote = stripStableQuote(quote)
 
   for (const exchangeId in indexedProducts) {
-    if (store.state.exchanges[exchangeId].disabled === true) {
+    if (!store.state.exchanges[exchangeId]) {
       continue
     }
 

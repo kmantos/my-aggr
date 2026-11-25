@@ -252,10 +252,7 @@ const actions = {
           }
         }
 
-        if (
-          !rootState.exchanges[marketsListeners[marketKey].exchange] ||
-          rootState.exchanges[marketsListeners[marketKey].exchange].disabled
-        ) {
+        if (!rootState.exchanges[marketsListeners[marketKey].exchange]) {
           continue
         }
 

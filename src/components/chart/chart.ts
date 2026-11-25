@@ -206,8 +206,7 @@ export default class Chart {
 
       // build up markets
       marketsFilters[marketKey] =
-        store.state.exchanges[exchange] &&
-        !store.state.exchanges[exchange].disabled &&
+        !!store.state.exchanges[exchange] &&
         !store.state[this.paneId].hiddenMarkets[marketKey]
 
       // find main pair

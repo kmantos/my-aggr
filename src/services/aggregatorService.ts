@@ -10,7 +10,6 @@ import {
   countDecimals,
   marketDecimals,
   getStoredProductsOrFetch,
-  parseMarket,
   stripStablePair
 } from './productsService'
 import workspacesService from './workspacesService'
@@ -169,27 +168,6 @@ class AggregatorService extends EventEmitter {
   async connect(markets: string[]): Promise<any> {
     if (!markets.length) {
       return
-    }
-
-    for (let i = 0; i < markets.length; i++) {
-      const [exchange] = parseMarket(markets[i])
-
-      if (
-        store.state.exchanges[exchange] &&
-        store.state.exchanges[exchange].disabled
-      ) {
-        const panes = []
-        for (const paneId in store.state.panes.panes) {
-          if (
-            store.state.panes.panes[paneId].markets.indexOf(markets[i]) !== -1
-          ) {
-            panes.push(paneId)
-          }
-        }
-
-        markets.splice(i, 1)
-        i--
-      }
     }
 
     await this.dispatchAsync({

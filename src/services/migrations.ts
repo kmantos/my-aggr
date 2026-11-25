@@ -637,5 +637,17 @@ export const workspaceUpgrades = {
         )
       }
     }
+  },
+  19: (workspace: Workspace) => {
+    // exchanges can't be disabled globally anymore (markets are picked per pane)
+    const exchanges = workspace.states.exchanges
+
+    if (exchanges) {
+      for (const id in exchanges) {
+        if (exchanges[id] && typeof exchanges[id] === 'object') {
+          delete exchanges[id].disabled
+        }
+      }
+    }
   }
 }

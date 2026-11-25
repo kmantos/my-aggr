@@ -163,7 +163,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
             this.renderHistory()
           }
           break
-        case 'app/EXCHANGE_UPDATED':
         case this.paneId + '/SET_MAX_ROWS':
         case this.paneId + '/TOGGLE_PREFERENCE':
           this.prepareTypeFilter(true)
@@ -389,13 +388,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
     this.paneMarkets = this.$store.state.panes.panes[
       this.paneId
     ].markets.reduce((output, marketKey) => {
-      const [exchange] = marketKey.split(':')
-
-      if (!this.$store.state.app.activeExchanges[exchange]) {
-        output[marketKey] = false
-        return output
-      }
-
       output[marketKey] = true
       return output
     }, {})

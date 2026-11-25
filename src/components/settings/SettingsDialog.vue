@@ -342,21 +342,6 @@
       </div>
     </ToggableSection>
 
-    <ToggableSection
-      id="settings-exchanges"
-      title="Exchanges"
-      description="enable/disable exchange globally"
-      inset
-    >
-      <div class="settings-exchanges">
-        <Exchange
-          v-for="exchangeId of exchanges"
-          :key="exchangeId"
-          :id="exchangeId"
-        />
-      </div>
-    </ToggableSection>
-
     <ToggableSection id="settings-other" title="Other" inset>
       <other-settings />
     </ToggableSection>
@@ -400,7 +385,6 @@
 import { ago, browseFile } from '../../utils/helpers'
 
 import Dialog from '@/components/framework/Dialog.vue'
-import Exchange from './Exchange.vue'
 import dialogService from '../../services/dialogService'
 import AudioSettings from './AudioSettings.vue'
 import OtherSettings from './OtherSettings.vue'
@@ -419,7 +403,6 @@ export default {
     Btn,
     // eslint-disable-next-line vue/no-reserved-component-names
     Dialog,
-    Exchange,
     AudioSettings,
     OtherSettings,
     ChartsSettings,
@@ -436,10 +419,6 @@ export default {
     }
   },
   computed: {
-    exchanges() {
-      return this.$store.getters['exchanges/getExchanges']
-    },
-
     version() {
       return this.$store.state.app.version
     },
@@ -791,12 +770,5 @@ export default {
   opacity: 0.5;
   line-height: 1;
   align-self: center;
-}
-
-.settings-exchanges {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-start;
 }
 </style>

@@ -45,7 +45,6 @@ export interface AppState {
   showSearch: boolean
   historicalMarkets: string[]
   apiSupportedTimeframes: string[]
-  activeExchanges: { [exchangeId: string]: boolean }
   version: string
   buildDate: number | string
   notices: Notice[]
@@ -57,7 +56,6 @@ const state = {
   isLoading: false,
   isExchangesReady: false,
   showSearch: false,
-  activeExchanges: {},
   notices: [],
   historicalMarkets: [],
   apiSupportedTimeframes: [],
@@ -206,13 +204,6 @@ const mutations = {
   },
   SET_EXCHANGES_READY(state) {
     state.isExchangesReady = true
-  },
-  EXCHANGE_UPDATED(state, exchangeId: string) {
-    Vue.set(
-      state.activeExchanges,
-      exchangeId,
-      !this.state.exchanges[exchangeId].disabled
-    )
   },
   TOGGLE_LOADING(state, value) {
     state.isLoading = value ? true : false

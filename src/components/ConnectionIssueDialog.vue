@@ -73,24 +73,6 @@
                 </button>
               </li>
               <li>
-                <p>
-                  Disable all {{ exchangeId }}'s pairs so you won't see the
-                  issue anymore
-                </p>
-
-                <button
-                  type="button"
-                  class="btn -red -cases"
-                  @click="disableExchange"
-                  :disable="selectedAction"
-                >
-                  <i class="icon-cross mr8"></i> Disable&nbsp;
-                  <span>{{ exchangeId }}</span>
-                  <i class="ml4" :class="'icon-' + exchangeId"></i>
-                </button>
-              </li>
-
-              <li>
                 <p>Use a VPN</p>
 
                 <button
@@ -269,19 +251,6 @@ export default {
     },
     prev() {
       this.stepIndex = Math.max(0, this.stepIndex - 1)
-    },
-    async disableExchange() {
-      this.selectedAction = 'disable'
-      try {
-        await this.$store.dispatch('exchanges/toggleExchange', this.exchangeId)
-        this.hide()
-      } catch (error) {
-        this.$store.dispatch('app/showNotice', {
-          title: error.message
-        })
-      } finally {
-        this.selectedAction = null
-      }
     },
     async refreshExchange() {
       this.selectedAction = 'disable'

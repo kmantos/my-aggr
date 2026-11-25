@@ -132,7 +132,6 @@ export default class ChartControl {
         case 'settings/SET_ALERTS_COLOR':
         case 'settings/SET_ALERTS_LINESTYLE':
         case 'settings/SET_ALERTS_LINEWIDTH':
-        case 'app/EXCHANGE_UPDATED':
         case this.chart.paneId + '/TOGGLE_MARKET':
           this.chart.refreshMarkets()
           this.chart.refreshAllIndicatorAdapters()

@@ -517,13 +517,6 @@ export default class TradesFeed {
   cachePaneMarkets() {
     this.paneMarkets = store.state.panes.panes[this.paneId].markets.reduce(
       (output, marketKey) => {
-        const [exchange] = marketKey.split(':')
-
-        if (!store.state.app.activeExchanges[exchange]) {
-          output[marketKey] = false
-          return output
-        }
-
         output[marketKey] = true
         return output
       },
