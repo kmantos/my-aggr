@@ -405,6 +405,11 @@ const actions = {
           delete state.panes[paneId]
         }
       }
+
+      // no liquidations pane (REKTS) on mobile: show them in FUTURES
+      if (state.panes.futures && state.panes.futures.settings) {
+        state.panes.futures.settings.showLiquidations = true
+      }
     }
 
     if (initialZoom > 1) {

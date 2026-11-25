@@ -9,6 +9,7 @@ import {
   QUOTE_CURRENCIES
 } from './productsService'
 import { MarketAlert } from './alertService'
+import defaultThresholds from '@/store/defaultThresholds.json'
 
 export const databaseUpgrades = {
   0: (db: IDBPDatabase<any>) => {
@@ -683,6 +684,43 @@ export const workspaceUpgrades = {
       if (state && typeof state === 'object' && 'hiddenMarkets' in state) {
         delete state.hiddenMarkets
       }
+    }
+  },
+  23: (workspace: Workspace) => {
+    // liquidations thresholds of every trades pane: 1 / 10K / 20K / 50K
+    // (colors and sounds kept), and FUTURES shows liquidations when there is
+    // no liquidations pane (mobile layout)
+    const amounts = [1, 10000, 20000, 50000]
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+    let hasLiquidationsPane = false
+
+    for (const paneId in panes) {
+      const state = workspace.states[paneId]
+
+      if (!/^trades/.test(panes[paneId].type) || !state) {
+        continue
+      }
+
+      if (Array.isArray(state.liquidations) && state.liquidations.length) {
+        state.liquidations = amounts.map((amount, index) => ({
+          ...JSON.parse(JSON.stringify(defaultThresholds.liquidations[index])),
+          ...(state.liquidations[index] || {}),
+          amount
+        }))
+      }
+
+      if (state.showTrades === false) {
+        hasLiquidationsPane = true
+      }
+    }
+
+    if (
+      !hasLiquidationsPane &&
+      panes.futures &&
+      /^trades/.test(panes.futures.type) &&
+      workspace.states.futures
+    ) {
+      workspace.states.futures.showLiquidations = true
     }
   }
 }

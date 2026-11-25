@@ -127,7 +127,7 @@
         "liquidations": [
           {
             "id": "liquidation_threshold",
-            "amount": 5000000,
+            "amount": 1,
             "buyColor": "rgba(236,64,122,0.5)",
             "sellColor": "rgba(255,152,0,0.5)",
             "buyAudio": "var srqtR = Math.min(1, gain / 4)\nplay(329.63, srqtR, srqtR*2,0,,,'sine')\nplay(329.63, srqtR, srqtR*4,0.08,,,'sine')",
@@ -135,7 +135,7 @@
           },
           {
             "id": "liquidation_significant",
-            "amount": 10000000,
+            "amount": 10000,
             "buyColor": "rgba(236,64,122,0.6)",
             "sellColor": "rgba(255,152,0,0.7)",
             "buyAudio": "var srqtR = Math.min(1, gain / 4)\nplay(329.63, srqtR, srqtR*4,0,,,'sine')\nplay(329.63, srqtR, srqtR*6,0.08,,,'sine')",
@@ -143,7 +143,7 @@
           },
           {
             "id": "liquidation_huge",
-            "amount": 20000000,
+            "amount": 20000,
             "buyGif": "flying money",
             "sellGif": "flying money",
             "buyColor": "rgba(236,64,122,0.7)",
@@ -153,7 +153,7 @@
           },
           {
             "id": "liquidation_rare",
-            "amount": 50000000,
+            "amount": 50000,
             "buyGif": "explosion",
             "sellGif": "explosion",
             "buyColor": "rgb(156,39,176)",
@@ -232,7 +232,7 @@
         "liquidations": [
           {
             "id": "liquidation_threshold",
-            "amount": 500000,
+            "amount": 1,
             "buyColor": "rgba(236,64,122,0.5)",
             "sellColor": "rgba(255,152,0,0.5)",
             "buyAudio": "var srqtR = Math.min(1, gain / 4)\nplay(329.63, srqtR, srqtR*2,0,,,'sine')\nplay(329.63, srqtR, srqtR*4,0.08,,,'sine')",
@@ -240,7 +240,7 @@
           },
           {
             "id": "liquidation_significant",
-            "amount": 1000000,
+            "amount": 10000,
             "buyColor": "rgba(236,64,122,0.6)",
             "sellColor": "rgba(255,152,0,0.7)",
             "buyAudio": "var srqtR = Math.min(1, gain / 4)\nplay(329.63, srqtR, srqtR*4,0,,,'sine')\nplay(329.63, srqtR, srqtR*6,0.08,,,'sine')",
@@ -248,7 +248,7 @@
           },
           {
             "id": "liquidation_huge",
-            "amount": 2000000,
+            "amount": 20000,
             "buyGif": "flying money",
             "sellGif": "flying money",
             "buyColor": "rgba(236,64,122,0.7)",
@@ -258,7 +258,7 @@
           },
           {
             "id": "liquidation_rare",
-            "amount": 5000000,
+            "amount": 50000,
             "buyGif": "explosion",
             "sellGif": "explosion",
             "buyColor": "rgb(156,39,176)",
