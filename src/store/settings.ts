@@ -322,10 +322,9 @@ const actions = {
 
     audioService.setVolume(volume)
 
+    // 0% is just silent, sound stays on (raising the volume again works)
     if (volume && !state.useAudio) {
       commit('TOGGLE_AUDIO', true)
-    } else if (!volume && state.useAudio) {
-      commit('TOGGLE_AUDIO', false)
     }
   }
 } as ActionTree<SettingsState, ModulesState>

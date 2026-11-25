@@ -1,36 +1,21 @@
 <template>
   <div class="settings-audio" :class="{ active: useAudio }">
     <div class="-fill">
-      <div class="column">
-        <div class="form-group -tight">
-          <label
-            class="checkbox-control checkbox-control-input flex-right"
-            v-tippy="{ placement: 'bottom' }"
-            title="Enable audio"
-          >
-            <input
-              type="checkbox"
-              class="form-control"
-              :checked="useAudio"
-              @change="
-                $store.commit('settings/TOGGLE_AUDIO', $event.target.checked)
-              "
-            />
-            <div></div>
-          </label>
-        </div>
-        <div class="form-group -fill -center">
-          <slider
-            :min="0"
-            :max="3"
-            :step="0.01"
-            :label="true"
-            :value="audioVolume"
-            @input="$store.dispatch('settings/setAudioVolume', $event)"
-            @reset="$store.dispatch('settings/setAudioVolume', 1)"
-            log
-          ></slider>
-        </div>
+      <div class="form-group">
+        <label class="settings-audio__label">
+          Volume
+          <code class="text-color-base">{{ volumePercent }}%</code>
+        </label>
+        <slider
+          class="mt8"
+          :min="0"
+          :max="3"
+          :step="0.01"
+          :value="audioVolume"
+          @input="$store.dispatch('settings/setAudioVolume', $event)"
+          @reset="$store.dispatch('settings/setAudioVolume', 1)"
+          log
+        ></slider>
       </div>
 
       <div class="mt8" v-if="useAudio">
@@ -91,6 +76,10 @@ export default class AudioSettings extends Vue {
 
   get audioVolume() {
     return this.$store.state.settings.audioVolume
+  }
+
+  get volumePercent() {
+    return Math.round(this.audioVolume * 100)
   }
 
   created() {

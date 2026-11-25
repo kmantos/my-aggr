@@ -446,11 +446,7 @@ export default class TradesFeed {
   async cacheAudio(prepareThresholds = true) {
     const audioThreshold = store.state[this.paneId].audioThreshold
 
-    if (
-      !store.state.settings.useAudio ||
-      store.state[this.paneId].muted ||
-      store.state[this.paneId].audioVolume === 0
-    ) {
+    if (!store.state.settings.useAudio || store.state[this.paneId].muted) {
       this.audioThreshold = Infinity
       return
     }
@@ -481,22 +477,16 @@ export default class TradesFeed {
 
   async cacheAudioThresholds(thresholds) {
     const audios = []
-    // pane volume (ex: 2 = twice as loud), on top of the main volume
-    const volume = store.state[this.paneId].audioVolume
 
     for (let i = 0; i < thresholds.length; i++) {
       audios.push({
         buy: await audioService.buildAudioFunction(
           thresholds[i].buyAudio,
-          'buy',
-          null,
-          volume
+          'buy'
         ),
         sell: await audioService.buildAudioFunction(
           thresholds[i].sellAudio,
-          'sell',
-          null,
-          volume
+          'sell'
         )
       })
     }

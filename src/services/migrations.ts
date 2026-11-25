@@ -774,5 +774,25 @@ export const workspaceUpgrades = {
       delete state.showAlerts
       delete state.showAlertsLabel
     }
+  },
+  26: (workspace: Workspace) => {
+    // per pane volume removed (one volume in settings): a pane at 0% is muted
+    for (const paneId in workspace.states) {
+      const state = workspace.states[paneId]
+
+      if (!state || typeof state !== 'object' || !('audioVolume' in state)) {
+        continue
+      }
+
+      if (paneId === 'settings') {
+        continue
+      }
+
+      if (state.audioVolume === 0) {
+        state.muted = true
+      }
+
+      delete state.audioVolume
+    }
   }
 }

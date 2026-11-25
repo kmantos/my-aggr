@@ -26,7 +26,6 @@ export interface TradesPaneState {
   thresholds: Threshold[]
   audioThreshold: number
   muted: boolean
-  audioVolume: number
   maxRows: number
   showPairs: boolean
   showPrices: boolean
@@ -58,7 +57,6 @@ const state = {
   audioThreshold: null,
   maxRows: 10,
   muted: false,
-  audioVolume: null,
   showPairs: false,
   showTrades: true,
   // new trades panes: trades only (liquidations have their own pane)
@@ -166,27 +164,6 @@ const mutations = {
   },
   TOGGLE_MUTED(state) {
     state.muted = !state.muted
-
-    if (!state.muted && state.audioVolume === 0) {
-      state.audioVolume = null
-    }
-  },
-  SET_AUDIO_VOLUME(state, value) {
-    if (typeof value === 'string') {
-      value = value.replace(/[^0-9-.]/g, '')
-    }
-
-    if (isNaN(+value) || value === null) {
-      state.audioVolume = null
-    } else {
-      state.audioVolume = +(+value).toFixed(2)
-
-      if (state.audioVolume === 0 && !state.muted) {
-        state.muted = true
-      } else if (state.audioVolume > 0 && state.muted) {
-        state.muted = false
-      }
-    }
   },
   TOGGLE_PREFERENCE(state, key) {
     state[key] = !state[key]

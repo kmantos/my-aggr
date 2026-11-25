@@ -215,9 +215,6 @@ export default {
     amounts: function () {
       return this.thresholds.map(t => t.amount)
     },
-    audioVolume: function () {
-      return this.$store.state[this.paneId].audioVolume
-    },
     index: function () {
       return this.amounts.indexOf(this.threshold.amount)
     },
@@ -377,7 +374,7 @@ export default {
           litteral,
           side,
           null,
-          this.audioVolume,
+          null,
           true
         )
 

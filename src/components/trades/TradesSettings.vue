@@ -114,39 +114,6 @@
             <span>Mute pane</span>
           </label>
         </div>
-        <div class="-fill ml16">
-          <label class="mt8 d-block text-color-base">Pane volume</label>
-          <div class="column">
-            <slider
-              class="mrauto -fill mt8 mb8"
-              :min="0"
-              :max="400"
-              :step="1"
-              :label="true"
-              :disabled="muted"
-              :value="audioVolume * 100"
-              @input="
-                $store.commit(
-                  paneId + '/SET_AUDIO_VOLUME',
-                  +($event / 100).toFixed(2)
-                )
-              "
-              @reset="$store.commit(paneId + '/SET_AUDIO_VOLUME', null)"
-              log
-            >
-              <template v-slot:tooltip>
-                {{ audioVolume > 1 ? '+' : '' }}
-                {{ +(audioVolume * 100).toFixed(2) }}%
-              </template>
-            </slider>
-            <editable
-              class="-center text-nowrap ml8"
-              style="line-height: 1"
-              :value="'× ' + audioVolume"
-              @input="$store.commit(paneId + '/SET_AUDIO_VOLUME', $event)"
-            ></editable>
-          </div>
-        </div>
       </div>
       <div class="form-group" v-if="useAudio && !muted">
         <label>
@@ -291,7 +258,6 @@
 import { TradesPaneState } from '@/store/panesSettings/trades'
 import { isTouchSupported } from '@/utils/touchevent'
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import Slider from '@/components/framework/picker/Slider.vue'
 import Thresholds from '@/components/settings/Thresholds.vue'
 import { formatAmount } from '@/services/productsService'
 import ToggableSection from '@/components/framework/ToggableSection.vue'
@@ -302,7 +268,6 @@ import ToggableGroup from '@/components/framework/ToggableGroup.vue'
 @Component({
   components: {
     Thresholds,
-    Slider,
     ThresholdColor,
     ToggableSection,
     ColorPickerControl,
@@ -377,16 +342,6 @@ export default class TradesSettings extends Vue {
 
   get muted() {
     return (this.$store.state[this.paneId] as TradesPaneState).muted
-  }
-
-  get audioVolume() {
-    const volume = (this.$store.state[this.paneId] as TradesPaneState)
-      .audioVolume
-
-    if (volume === null) {
-      return this.$store.state.settings.audioVolume
-    }
-    return volume
   }
 
   get disableAnimations() {
