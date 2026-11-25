@@ -3,7 +3,9 @@
     <!-- coin -->
     <div class="pane-sources__section">
       <div class="pane-sources__section-header">
-        <span class="pane-sources__title">Coin</span>
+        <span class="pane-sources__title"
+          >Coins<template v-if="coinsCount"> · {{ coinsCount }}</template></span
+        >
         <input
           v-model="coinQuery"
           type="search"
@@ -31,6 +33,16 @@
           No coin found
         </span>
       </div>
+      <p v-if="moreCoins" class="pane-sources__more">
+        + {{ moreCoins }} more {{ coinQuery.trim() ? 'matching ' : '' }}coin{{
+          moreCoins === 1 ? '' : 's'
+        }},
+        {{
+          coinQuery.trim()
+            ? 'refine your search'
+            : 'use the search to find them'
+        }}
+      </p>
     </div>
 
     <!-- filters + summary -->
@@ -58,20 +70,25 @@
           {{ quote }}
         </button>
       </div>
-      <span class="pane-sources__count">{{ label }}</span>
-      <label
-        v-if="shownMarkets.length"
-        class="checkbox-control -small pane-sources__all"
-      >
-        <input
-          type="checkbox"
-          class="form-control"
-          :checked="allSelected"
-          @change="toggleAll"
-        />
-        <div></div>
-        <span>All</span>
-      </label>
+      <div class="pane-sources__summary">
+        <span class="pane-sources__count">{{ label }}</span>
+        <label
+          class="checkbox-control -small pane-sources__all"
+          :class="{ '-disabled': !shownMarkets.length }"
+          title="Add (or remove) every market shown below"
+          v-tippy
+        >
+          <input
+            type="checkbox"
+            class="form-control"
+            :checked="allSelected"
+            :disabled="!shownMarkets.length"
+            @change="toggleAll"
+          />
+          <div></div>
+          <span>Select all</span>
+        </label>
+      </div>
     </div>
 
     <p v-if="isLoading" class="pane-sources__loading">
@@ -177,23 +194,32 @@ const COIN_ICONS = {
   IOTA: 'iota'
 }
 
-// coins listed first (when available), the rest by number of markets
-const MAJOR_COINS = [
-  'BTC',
-  'ETH',
-  'SOL',
-  'XRP',
-  'BNB',
-  'DOGE',
-  'ADA',
-  'TRX',
-  'LINK',
-  'AVAX',
-  'SUI',
-  'LTC'
-]
+// listed first, then A to Z (names starting with a digit, ex: 1000SHIB, last)
+const FIRST_COINS = ['BTC', 'ETH', 'SOL']
 
+// coins tiles shown at once (the coins with the most markets), others are
+// found with the search
 const MAX_COINS = 24
+
+function compareCoins(a: string, b: string) {
+  const firstA = FIRST_COINS.indexOf(a)
+  const firstB = FIRST_COINS.indexOf(b)
+
+  if (firstA !== -1 || firstB !== -1) {
+    return (
+      (firstA === -1 ? Infinity : firstA) - (firstB === -1 ? Infinity : firstB)
+    )
+  }
+
+  const digitA = /^\d/.test(a)
+  const digitB = /^\d/.test(b)
+
+  if (digitA !== digitB) {
+    return digitA ? 1 : -1
+  }
+
+  return a.localeCompare(b)
+}
 
 interface MarketChip {
   id: string
@@ -308,63 +334,67 @@ export default class PaneSources extends Vue {
     return products
   }
 
-  get coinTiles() {
-    const counts: { [base: string]: number } = {}
+  get coinCounts(): { [base: string]: number } {
+    const counts = {}
 
     for (const product of this.products) {
       counts[product.base] = (counts[product.base] || 0) + 1
     }
 
+    return counts
+  }
+
+  get coinsCount() {
+    return Object.keys(this.coinCounts).length
+  }
+
+  get coinsList(): string[] {
+    const counts = this.coinCounts
     const query = this.coinQuery.trim().toUpperCase()
-    let bases = Object.keys(counts)
 
-    if (query) {
-      bases = bases
-        .filter(base => base.indexOf(query) !== -1)
-        .sort(
-          (a, b) =>
-            +b.startsWith(query) - +a.startsWith(query) || counts[b] - counts[a]
-        )
-    } else {
-      bases.sort((a, b) => {
-        const majorA = MAJOR_COINS.indexOf(a)
-        const majorB = MAJOR_COINS.indexOf(b)
+    // most listed first, to pick which coins get a tile
+    const bases = Object.keys(counts)
+      .filter(base => !query || base.indexOf(query) !== -1)
+      .sort((a, b) => counts[b] - counts[a])
 
-        if (majorA !== -1 || majorB !== -1) {
-          return (
-            (majorA === -1 ? Infinity : majorA) -
-            (majorB === -1 ? Infinity : majorB)
-          )
+    return bases
+  }
+
+  get coinTiles() {
+    const counts = this.coinCounts
+    const query = this.coinQuery.trim()
+    const bases = this.coinsList.slice(0, MAX_COINS)
+
+    // BTC, ETH, SOL and the pane's coin always get a tile
+    if (!query) {
+      for (const base of [...FIRST_COINS, this.coin]) {
+        if (counts[base] && bases.indexOf(base) === -1) {
+          bases.push(base)
         }
-
-        return counts[b] - counts[a]
-      })
+      }
     }
 
-    bases = bases.slice(0, MAX_COINS)
-
-    // the pane's coin is always shown
-    if (!query && counts[this.coin] && bases.indexOf(this.coin) === -1) {
-      bases.unshift(this.coin)
-    }
-
-    return bases.map(base => ({
+    return bases.sort(compareCoins).map(base => ({
       base,
       icon: COIN_ICONS[base] || null,
       count: counts[base]
     }))
   }
 
+  get moreCoins() {
+    return Math.max(0, this.coinsList.length - this.coinTiles.length)
+  }
+
   /**
-   * markets of the selected coin shown in the grid: those passing the filters,
-   * plus the ones already in the pane
+   * markets of the selected coin passing the filters (filtered out markets
+   * stay in the pane, they're just not listed)
    */
   get shownMarkets(): Product[] {
     return this.products.filter(
       product =>
         product.base === this.coin &&
-        (this.selection[product.id] ||
-          (this.types[product.type] && this.quotes[product.quote]))
+        this.types[product.type] &&
+        this.quotes[product.quote]
     )
   }
 
@@ -405,18 +435,21 @@ export default class PaneSources extends Vue {
     )
   }
 
-  // pane markets not listed in the grid (another coin, unknown market...)
+  // pane markets of another coin or not listed at all (ex: exchange hidden
+  // for charts), filtered out markets of the coin aren't included
   get otherMarkets() {
     if (this.isLoading) {
       return []
     }
 
-    const listed = this.shownMarkets.reduce((acc, product) => {
-      acc[product.id] = true
+    const coinMarkets = this.products.reduce((acc, product) => {
+      if (product.base === this.coin) {
+        acc[product.id] = true
+      }
       return acc
     }, {})
 
-    return this.markets.filter(market => !listed[market])
+    return this.markets.filter(market => !coinMarkets[market])
   }
 
   get label() {
@@ -490,13 +523,6 @@ export default class PaneSources extends Vue {
 
   toggleFilter(filters: { [key: string]: boolean }, key: string) {
     Vue.set(filters, key, !filters[key])
-
-    // never filter everything out
-    if (!Object.values(filters).some(value => value)) {
-      for (const other in filters) {
-        Vue.set(filters, other, other !== key)
-      }
-    }
   }
 
   setMarkets(markets: string[]) {
@@ -701,10 +727,31 @@ export default class PaneSources extends Vue {
     background-color: var(--theme-background-200);
   }
 
-  &__count {
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     margin-left: auto;
+  }
+
+  &__count {
     opacity: 0.75;
     white-space: nowrap;
+  }
+
+  &__all {
+    margin: 0;
+    white-space: nowrap;
+
+    &.-disabled {
+      opacity: 0.5;
+    }
+  }
+
+  &__more {
+    margin: 0;
+    opacity: 0.6;
+    font-size: 0.8125rem;
   }
 
   &__loading,
