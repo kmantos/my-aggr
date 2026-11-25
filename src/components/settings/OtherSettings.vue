@@ -80,18 +80,6 @@
         <input
           type="checkbox"
           class="form-control"
-          :checked="!showThresholdsAsTable"
-          @change="$store.commit('settings/TOGGLE_THRESHOLDS_TABLE')"
-        />
-        <div></div>
-        <span>Use slider for thresholds</span>
-      </label>
-    </div>
-    <div class="form-group mb8">
-      <label class="checkbox-control flex-left">
-        <input
-          type="checkbox"
-          class="form-control"
           :checked="showResolution"
           @change="$store.commit('settings/TOGGLE_RESOLUTION')"
         />
@@ -137,10 +125,6 @@ export default class OtherSettings extends Vue {
 
   get showResolution() {
     return this.$store.state.settings.showResolution
-  }
-
-  get showThresholdsAsTable() {
-    return this.$store.state.settings.showThresholdsAsTable
   }
 }
 </script>

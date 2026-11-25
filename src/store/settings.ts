@@ -50,7 +50,6 @@ export interface SettingsState {
   alertsColor: string
   alertsClick: boolean
   alertSound: string
-  showThresholdsAsTable: boolean
   showResolution: boolean
   chartRefreshRate: number
   showCountdown: boolean
@@ -524,9 +523,6 @@ const mutations = {
   },
   TOGGLE_RESOLUTION(state) {
     state.showResolution = !state.showResolution
-  },
-  TOGGLE_THRESHOLDS_TABLE(state) {
-    state.showThresholdsAsTable = !state.showThresholdsAsTable
   },
   SET_INDICATOR_DIALOG_NAVIGATION(state, value) {
     state.indicatorDialogNavigation = JSON.stringify(value)

@@ -649,5 +649,11 @@ export const workspaceUpgrades = {
         }
       }
     }
+  },
+  20: (workspace: Workspace) => {
+    // thresholds are always edited as a table
+    if (workspace.states.settings) {
+      delete workspace.states.settings.showThresholdsAsTable
+    }
   }
 }
