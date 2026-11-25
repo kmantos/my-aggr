@@ -198,9 +198,6 @@ function getCoinIcon(base: string) {
     : null
 }
 
-// listed first, then A to Z (names starting with a digit, ex: 1000SHIB, last)
-const FIRST_COINS = ['BTC', 'ETH', 'SOL']
-
 // stablecoins are quotes, never a pane's coin
 const STABLECOINS = [
   'USDT',
@@ -223,18 +220,18 @@ const STABLECOINS = [
 ]
 
 // coin tiles shown at once, others are found with the search
-const MAX_COINS = 24
+const MAX_COINS = 33
 
-// biggest coins by market cap (Nov 2026, stablecoins and wrapped tokens
-// excluded, BTC / ETH / SOL kept first), they get the tiles. When fewer are
-// available (ex: charts only list coins with historical data), the coins
-// listed on the most exchanges fill the remaining tiles
+// biggest coins by market cap, in that order (Nov 2026, stablecoins and
+// wrapped tokens excluded), they get the tiles. When fewer are available
+// (ex: charts only list coins with historical data), the coins listed on the
+// most exchanges fill the remaining tiles
 const TOP_COINS = [
   'BTC',
   'ETH',
-  'SOL',
   'BNB',
   'XRP',
+  'SOL',
   'TRX',
   'HYPE',
   'ZEC',
@@ -257,28 +254,20 @@ const TOP_COINS = [
   'UNI',
   'AAVE',
   'CRO',
-  'TAO'
+  'TAO',
+  'PEPE',
+  'ETC',
+  'APT',
+  'ICP',
+  'ONDO',
+  'ENA',
+  'POL',
+  'ATOM',
+  'ARB',
+  'KAS',
+  'FIL',
+  'WLD'
 ]
-
-function compareCoins(a: string, b: string) {
-  const firstA = FIRST_COINS.indexOf(a)
-  const firstB = FIRST_COINS.indexOf(b)
-
-  if (firstA !== -1 || firstB !== -1) {
-    return (
-      (firstA === -1 ? Infinity : firstA) - (firstB === -1 ? Infinity : firstB)
-    )
-  }
-
-  const digitA = /^\d/.test(a)
-  const digitB = /^\d/.test(b)
-
-  if (digitA !== digitB) {
-    return digitA ? 1 : -1
-  }
-
-  return a.localeCompare(b)
-}
 
 interface MarketChip {
   id: string
@@ -448,7 +437,7 @@ export default class PaneSources extends Vue {
       }
     }
 
-    return bases.sort(compareCoins).map(base => ({
+    return bases.map(base => ({
       base,
       icon: getCoinIcon(base),
       count: counts[base]
