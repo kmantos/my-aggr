@@ -6,6 +6,7 @@ import { defineConfig, loadEnv } from 'vite'
 import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 import { qrcode } from 'vite-plugin-qrcode'
 import svgLoader from 'vite-svg-loader'
+import coinIcons from './vite.coin-icons'
 
 let date
 
@@ -91,6 +92,7 @@ export default defineConfig(({ mode }) => {
       visualizer(),
       monacoEditorPlugin.default({}),
       qrcode(), // only applies in dev mode
+      coinIcons(),
       {
         name: 'version-json',
         apply: 'build',

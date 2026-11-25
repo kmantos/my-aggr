@@ -49,6 +49,7 @@
     "@types/sharedworker": "0.0.29",
     "@vitejs/plugin-vue2": "^2.2.0",
     "@vue/cli-plugin-eslint": "^5.0.8",
+    "@web3icons/core": "4.0.61",
     "cors-anywhere": "^0.4.4",
     "dexie": "^3.2.1",
     "dexie-export-import": "^1.0.3",

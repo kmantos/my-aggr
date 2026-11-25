@@ -23,7 +23,7 @@
           :title="item.count + ' markets'"
           @click="selectCoin(item.base)"
         >
-          <i v-if="item.icon" :class="'icon-' + item.icon"></i>
+          <img v-if="item.icon" :src="item.icon" alt="" loading="lazy" />
           <span>{{ item.base }}</span>
         </button>
         <span
@@ -175,23 +175,27 @@ import {
   QUOTE_CURRENCIES
 } from '@/services/productsService'
 import { Product } from '@/store/app'
+import coinIconsSymbols from 'virtual:coin-icons'
 
 // exchanges without historical data: not listed for charts
 const CHART_HIDDEN_EXCHANGES = ['HITBTC', 'BITMEX', 'BITMART', 'WHITEBIT']
 
-// coins with a logo in the icon font
-const COIN_ICONS = {
-  BTC: 'btc',
-  ETH: 'eth',
-  SOL: 'sol',
-  XRP: 'xrp',
-  ADA: 'ada',
-  LTC: 'ltc',
-  TRX: 'trx',
-  XMR: 'xmr',
-  EOS: 'eos',
-  NEO: 'neo',
-  IOTA: 'iota'
+// colored coin logos (see vite.coin-icons.js)
+const COIN_ICONS = coinIconsSymbols.reduce(
+  (acc, symbol) => {
+    acc[symbol] = true
+    return acc
+  },
+  {} as { [symbol: string]: boolean }
+)
+
+function getCoinIcon(base: string) {
+  // ex: 1000SHIB -> SHIB
+  const symbol = base.replace(/^\d+M?(?=[A-Z])/, '')
+
+  return COIN_ICONS[symbol]
+    ? `${import.meta.env.BASE_URL}coins/${symbol}.svg`
+    : null
 }
 
 // listed first, then A to Z (names starting with a digit, ex: 1000SHIB, last)
@@ -446,7 +450,7 @@ export default class PaneSources extends Vue {
 
     return bases.sort(compareCoins).map(base => ({
       base,
-      icon: COIN_ICONS[base] || null,
+      icon: getCoinIcon(base),
       count: counts[base]
     }))
   }
@@ -734,9 +738,11 @@ export default class PaneSources extends Vue {
     font-size: 0.75rem;
     cursor: pointer;
 
-    i {
-      font-size: 1.25rem;
-      line-height: 1;
+    img {
+      width: 1.5rem;
+      height: 1.5rem;
+      // keeps dark logos (ex: XLM) visible on the dark theme
+      filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
     }
 
     span {
