@@ -49,7 +49,15 @@
             @change="$store.commit('settings/TOGGLE_SEARCH_TYPE', 'normalize')"
           />
           <div></div>
-          <span>Group by pair</span>
+          <span>
+            Group by pair
+            <i
+              class="icon-info info-tap"
+              v-tippy="infoTippy"
+              @click.stop.prevent="showInfo"
+              title="One row per pair across every exchange (ex: BTCUSDT on Binance, Bybit, OKX...), a click adds them all at once.<br>Off: one row per exchange market."
+            ></i>
+          </span>
         </label>
         <label class="checkbox-control -small mb4">
           <input
@@ -59,7 +67,15 @@
             @change="$store.commit('settings/TOGGLE_SEARCH_TYPE', 'mergeUsdt')"
           />
           <div></div>
-          <span>Merge stablecoins</span>
+          <span>
+            Merge stablecoins
+            <i
+              class="icon-info info-tap"
+              v-tippy="infoTippy"
+              @click.stop.prevent="showInfo"
+              title="Treat USDT, USDC, USD and other stablecoins as the same quote, so BTCUSDT, BTCUSDC and BTCUSD end up in a single BTCUSD row"
+            ></i>
+          </span>
         </label>
         <label class="checkbox-control -small mb4">
           <input
@@ -69,7 +85,15 @@
             @change="$store.commit('settings/TOGGLE_SEARCH_TYPE', 'historical')"
           />
           <div></div>
-          <span>With historical data</span>
+          <span>
+            With historical data
+            <i
+              class="icon-info info-tap"
+              v-tippy="infoTippy"
+              @click.stop.prevent="showInfo"
+              title="Only list markets with past data available, so charts can show candles from before the page was opened"
+            ></i>
+          </span>
         </label>
         <label class="checkbox-control -small mb4">
           <input
@@ -79,7 +103,15 @@
             @change="$store.commit('settings/TOGGLE_SEARCH_TYPE', 'recent')"
           />
           <div></div>
-          <span>Show recents</span>
+          <span>
+            Show recents
+            <i
+              class="icon-info info-tap"
+              v-tippy="infoTippy"
+              @click.stop.prevent="showInfo"
+              title="Show your previous market selections (search history) above the results while the search box is empty, to bring them back in one click"
+            ></i>
+          </span>
         </label>
       </ToggableSection>
 
@@ -401,6 +433,7 @@ import {
   stripStableQuote
 } from '@/services/productsService'
 import ToggableSection from '@/components/framework/ToggableSection.vue'
+import { isTouchSupported } from '@/utils/touchevent'
 import noResultsPng from '@/assets/noresults.png'
 
 const RESULTS_PER_PAGE = 25
@@ -430,6 +463,9 @@ export default {
     }
   },
   data: () => ({
+    // info icons: hover on desktop; on touch screens tippy is manual (its touch
+    // handling hides it right away) and a tap shows it without toggling the checkbox
+    infoTippy: isTouchSupported() ? { trigger: 'manual' } : {},
     page: 0,
     query: '',
     markets: [],
@@ -839,6 +875,13 @@ export default {
     }
   },
   methods: {
+    showInfo(event) {
+      const tip = event.currentTarget._tippy
+
+      if (tip) {
+        tip.show()
+      }
+    },
     onInput(event) {
       this.page = 0
       this.query = event.target.value
