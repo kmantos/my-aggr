@@ -1,13 +1,25 @@
 <template>
   <transition name="draggable-market">
     <div class="draggable-market" :style="styles">
-      <i :class="`icon-${market.exchange}`" class="draggable-market__icon"></i>
+      <img
+        v-if="logos[market.exchange]"
+        :src="logos[market.exchange]"
+        class="draggable-market__icon"
+        alt=""
+      />
+      <i
+        v-else
+        :class="`icon-${market.exchange}`"
+        class="draggable-market__icon"
+      ></i>
       {{ market.id }}
     </div>
   </transition>
 </template>
 
 <script>
+import logos from '@/assets/exchanges'
+
 export default {
   name: 'DraggableMarket',
   props: {
@@ -20,6 +32,7 @@ export default {
   },
   data() {
     return {
+      logos,
       position: {
         x: this.target.x,
         y: this.target.y
@@ -83,6 +96,11 @@ export default {
 
   &__icon {
     font-size: 1.25rem;
+  }
+
+  img#{&}__icon {
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
   &-enter-active {

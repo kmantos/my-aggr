@@ -113,7 +113,12 @@
           "
           @click="toggleExchange(group)"
         >
-          <i :class="'icon-' + group.exchange"></i>
+          <img
+            v-if="exchangeLogos[group.exchange]"
+            :src="exchangeLogos[group.exchange]"
+            alt=""
+          />
+          <i v-else :class="'icon-' + group.exchange"></i>
           <span class="pane-sources__tile-name">{{ group.name }}</span>
           <span class="pane-sources__tile-count"
             >{{ group.selected }}/{{ group.markets.length }}</span
@@ -176,6 +181,7 @@ import {
 } from '@/services/productsService'
 import { Product } from '@/store/app'
 import coinIconsSymbols from 'virtual:coin-icons'
+import exchangeLogos from '@/assets/exchanges'
 import {
   COPY_TOKENS,
   FALLBACK_TOP_COINS,
@@ -253,6 +259,7 @@ export default class PaneSources extends Vue {
   topCoins: string[] = FALLBACK_TOP_COINS
   // stablecoins and wrapped / staked tokens, never listed as coins
   excludedCoins: string[] = STABLECOINS.concat(COPY_TOKENS)
+  exchangeLogos = exchangeLogos
   loadedCount = 0
   productsVersion = 0
 
@@ -807,6 +814,11 @@ export default class PaneSources extends Vue {
 
     i {
       font-size: 1.125rem;
+    }
+
+    img {
+      width: 1.125rem;
+      height: 1.125rem;
     }
   }
 
