@@ -61,7 +61,8 @@ const state = {
   audioVolume: null,
   showPairs: false,
   showTrades: true,
-  showLiquidations: true,
+  // new trades panes: trades only (liquidations have their own pane)
+  showLiquidations: false,
   showLogos: true,
   showPrices: true,
   showHistograms: true

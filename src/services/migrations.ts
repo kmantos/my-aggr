@@ -722,5 +722,32 @@ export const workspaceUpgrades = {
     ) {
       workspace.states.futures.showLiquidations = true
     }
+  },
+  24: (workspace: Workspace) => {
+    // new trades panes hide liquidations by default: keep them shown in the
+    // existing panes that relied on the old default. Trades thresholds of the
+    // liquidations pane (REKTS, trades hidden): same as FUTURES
+    const amounts = [1000000, 2500000, 5000000, 10000000]
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+
+    for (const paneId in panes) {
+      const state = workspace.states[paneId]
+
+      if (!/^trades/.test(panes[paneId].type) || !state) {
+        continue
+      }
+
+      if (typeof state.showLiquidations === 'undefined') {
+        state.showLiquidations = true
+      }
+
+      if (state.showTrades === false && Array.isArray(state.thresholds)) {
+        state.thresholds = amounts.map((amount, index) => ({
+          ...JSON.parse(JSON.stringify(defaultThresholds.thresholds[index])),
+          ...(state.thresholds[index] || {}),
+          amount
+        }))
+      }
+    }
   }
 }
