@@ -176,6 +176,12 @@ import {
 } from '@/services/productsService'
 import { Product } from '@/store/app'
 import coinIconsSymbols from 'virtual:coin-icons'
+import {
+  COPY_TOKENS,
+  FALLBACK_TOP_COINS,
+  getTopCoins,
+  STABLECOINS
+} from '@/services/marketCapService'
 
 // exchanges without historical data: not listed for charts
 const CHART_HIDDEN_EXCHANGES = ['HITBTC', 'BITMEX', 'BITMART', 'WHITEBIT']
@@ -198,76 +204,8 @@ function getCoinIcon(base: string) {
     : null
 }
 
-// stablecoins are quotes, never a pane's coin
-const STABLECOINS = [
-  'USDT',
-  'USDC',
-  'USDE',
-  'USDS',
-  'DAI',
-  'FDUSD',
-  'TUSD',
-  'USDD',
-  'USDP',
-  'BUSD',
-  'PYUSD',
-  'RLUSD',
-  'USD1',
-  'USDG',
-  'UST',
-  'EURC',
-  'EURT'
-]
-
 // coin tiles shown at once, others are found with the search
 const MAX_COINS = 33
-
-// biggest coins by market cap, in that order (Nov 2026, stablecoins and
-// wrapped tokens excluded), they get the tiles. When fewer are available
-// (ex: charts only list coins with historical data), the coins listed on the
-// most exchanges fill the remaining tiles
-const TOP_COINS = [
-  'BTC',
-  'ETH',
-  'BNB',
-  'XRP',
-  'SOL',
-  'TRX',
-  'HYPE',
-  'ZEC',
-  'XMR',
-  'DOGE',
-  'BCH',
-  'LINK',
-  'ADA',
-  'XLM',
-  'LEO',
-  'NEAR',
-  'SUI',
-  'AVAX',
-  'LTC',
-  'HBAR',
-  'GRAM', // formerly TON
-  'TON',
-  'SHIB',
-  'DOT',
-  'UNI',
-  'AAVE',
-  'CRO',
-  'TAO',
-  'PEPE',
-  'ETC',
-  'APT',
-  'ICP',
-  'ONDO',
-  'ENA',
-  'POL',
-  'ATOM',
-  'ARB',
-  'KAS',
-  'FIL',
-  'WLD'
-]
 
 interface MarketChip {
   id: string
@@ -311,6 +249,10 @@ export default class PaneSources extends Vue {
     { id: 'perp', label: 'Perpetual' }
   ]
   quoteFilters = QUOTE_CURRENCIES
+  // biggest coins by market cap (CoinGecko), they get the tiles
+  topCoins: string[] = FALLBACK_TOP_COINS
+  // stablecoins and wrapped / staked tokens, never listed as coins
+  excludedCoins: string[] = STABLECOINS.concat(COPY_TOKENS)
   loadedCount = 0
   productsVersion = 0
 
@@ -386,7 +328,7 @@ export default class PaneSources extends Vue {
     const counts = {}
 
     for (const product of this.products) {
-      if (STABLECOINS.indexOf(product.base) === -1) {
+      if (this.excludedCoins.indexOf(product.base) === -1) {
         counts[product.base] = (counts[product.base] || 0) + 1
       }
     }
@@ -418,8 +360,9 @@ export default class PaneSources extends Vue {
     if (query) {
       bases = this.coinsList.slice(0, MAX_COINS)
     } else {
-      // biggest coins by market cap, then the most listed ones
-      bases = TOP_COINS.filter(base => counts[base]).slice(0, MAX_COINS)
+      // biggest coins by market cap, then the most listed ones (when fewer
+      // are available, ex: charts only list coins with historical data)
+      bases = this.topCoins.filter(base => counts[base]).slice(0, MAX_COINS)
 
       for (const base of this.coinsList) {
         if (bases.length >= MAX_COINS) {
@@ -529,6 +472,11 @@ export default class PaneSources extends Vue {
   created() {
     this.initializeFromPane()
     this.loadProducts()
+
+    getTopCoins().then(({ coins, excluded }) => {
+      this.topCoins = coins
+      this.excludedCoins = excluded
+    })
   }
 
   /**
