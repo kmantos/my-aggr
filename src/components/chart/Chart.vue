@@ -114,6 +114,7 @@ export default class ChartComponent extends Mixins(PaneMixin) {
 
     paneActions.on('restart', this.onRestartAction)
     paneActions.on('zoom', this.onZoomAction)
+    paneActions.on('alerts-context', this.onAlertsContextAction)
   }
 
   destroyChart() {
@@ -125,11 +126,32 @@ export default class ChartComponent extends Mixins(PaneMixin) {
   beforeDestroy() {
     paneActions.off('restart', this.onRestartAction)
     paneActions.off('zoom', this.onZoomAction)
+    paneActions.off('alerts-context', this.onAlertsContextAction)
 
     this.destroyChart()
   }
 
   // actions triggered from the chart settings dialog
+  // the alerts tab needs the chart's alerts market, current price and format
+  onAlertsContextAction(
+    paneId: string,
+    callback: (context: {
+      market: string
+      price: number
+      format: (price: number) => string
+    }) => void
+  ) {
+    if (paneId === this.paneId) {
+      const api = this.chart.getPriceApi()
+
+      callback({
+        market: this.chart.mainIndex,
+        price: this.chart.getPrice(),
+        format: api ? price => api.priceFormatter().format(price) : null
+      })
+    }
+  }
+
   onRestartAction(paneId: string) {
     if (paneId === this.paneId) {
       this.restart()

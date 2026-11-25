@@ -126,8 +126,7 @@ export default class ChartControl {
           this.chart.fetch()
           break
         case 'settings/TOGGLE_ALERTS':
-        case this.chart.paneId + '/TOGGLE_ALERTS':
-        case this.chart.paneId + '/TOGGLE_ALERTS_LABEL':
+        case 'settings/TOGGLE_ALERTS_LABEL':
         case 'settings/SET_ALERTS_COLOR':
         case 'settings/SET_ALERTS_LINESTYLE':
         case 'settings/SET_ALERTS_LINEWIDTH':

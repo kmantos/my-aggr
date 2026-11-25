@@ -46,6 +46,7 @@ export interface SettingsState {
   alertsLineWidth: number
   alertsColor: string
   alertsClick: boolean
+  showAlertsLabel: boolean
   alertSound: string
   showResolution: boolean
   chartRefreshRate: number
@@ -463,6 +464,9 @@ const mutations = {
   },
   TOGGLE_ALERTS_CLICK(state) {
     state.alertsClick = !state.alertsClick
+  },
+  TOGGLE_ALERTS_LABEL(state) {
+    state.showAlertsLabel = !state.showAlertsLabel
   },
   SET_ALERT_SOUND(state, value) {
     state.alertSound = value

@@ -46,6 +46,18 @@
         ></color-picker-control>
       </div>
     </div>
+    <div class="form-group mt16">
+      <label class="checkbox-control">
+        <input
+          type="checkbox"
+          class="form-control"
+          :checked="showAlertsLabel"
+          @change="$store.commit('settings/TOGGLE_ALERTS_LABEL')"
+        />
+        <div></div>
+        <span class="-inline">Show alert labels</span>
+      </label>
+    </div>
 
     <div class="column">
       <div class="form-group mb16 mt16">
@@ -155,6 +167,10 @@ export default class AlertsSettings extends Vue {
 
   get alertsClick() {
     return this.$store.state.settings.alertsClick
+  }
+
+  get showAlertsLabel() {
+    return this.$store.state.settings.showAlertsLabel
   }
 
   get displayAlertSound() {

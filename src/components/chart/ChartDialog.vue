@@ -63,14 +63,14 @@
       v-else-if="tab === 'indicators'"
       :pane-id="paneId"
     />
-    <chart-settings v-else :pane-id="paneId" tab="alerts" />
+    <chart-alerts v-else :pane-id="paneId" />
   </Dialog>
 </template>
 
 <script>
 import DialogMixin from '../../mixins/dialogMixin'
 import PaneDialogMixin from '../../mixins/paneDialogMixin'
-import ChartSettings from './ChartSettings.vue'
+import ChartAlerts from './ChartAlerts.vue'
 import ChartIndicatorsSettings from './ChartIndicatorsSettings.vue'
 import Slider from '@/components/framework/picker/Slider.vue'
 import paneActions from '@/utils/paneActions'
@@ -82,7 +82,7 @@ import {
 } from './options'
 
 export default {
-  components: { ChartSettings, ChartIndicatorsSettings, Slider },
+  components: { ChartAlerts, ChartIndicatorsSettings, Slider },
   mixins: [DialogMixin, PaneDialogMixin],
   data: () => ({
     defaultZoom: DEFAULT_ZOOM,

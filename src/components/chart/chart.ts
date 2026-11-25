@@ -1596,11 +1596,7 @@ export default class Chart {
   }
 
   async renderAlerts() {
-    if (
-      this._alertsRendered ||
-      !store.state.settings.alerts ||
-      !store.state[this.paneId].showAlerts
-    ) {
+    if (this._alertsRendered || !store.state.settings.alerts) {
       return
     }
 
@@ -1733,7 +1729,7 @@ export default class Chart {
         )
     }
 
-    const showLabel = store.state[this.paneId].showAlertsLabel
+    const showLabel = store.state.settings.showAlertsLabel
     let title = ''
 
     if (showLabel && alert.message && alert.message.length < 3) {

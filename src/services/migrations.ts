@@ -749,5 +749,30 @@ export const workspaceUpgrades = {
         }))
       }
     }
+  },
+  25: (workspace: Workspace) => {
+    // alerts are always shown on charts, alert labels is one setting for every
+    // chart (main settings): keep the first chart's choice
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+    let copied = false
+
+    for (const paneId in panes) {
+      const state = workspace.states[paneId]
+
+      if (panes[paneId].type !== 'chart' || !state) {
+        continue
+      }
+
+      if (!copied && typeof state.showAlertsLabel === 'boolean') {
+        const settings =
+          workspace.states.settings || (workspace.states.settings = {})
+
+        settings.showAlertsLabel = state.showAlertsLabel
+        copied = true
+      }
+
+      delete state.showAlerts
+      delete state.showAlertsLabel
+    }
   }
 }

@@ -57,6 +57,7 @@
   "alertsLineStyle": 1,
   "alertsLineWidth": 1,
   "alertsClick": false,
+  "showAlertsLabel": true,
   "alertSound": null,
   "showResolution": false,
   "chartRefreshRate": 1000,

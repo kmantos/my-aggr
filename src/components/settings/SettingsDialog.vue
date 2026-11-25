@@ -259,6 +259,15 @@
     </ToggableSection>
 
     <ToggableSection
+      id="settings-alerts"
+      title="Alerts"
+      description="price alerts look & control"
+      inset
+    >
+      <alerts-settings />
+    </ToggableSection>
+
+    <ToggableSection
       id="settings-audio"
       title="Audio"
       description="main volume"
@@ -389,6 +398,7 @@ import dialogService from '../../services/dialogService'
 import AudioSettings from './AudioSettings.vue'
 import OtherSettings from './OtherSettings.vue'
 import ChartsSettings from './ChartsSettings.vue'
+import AlertsSettings from '@/components/alerts/AlertsSettings.vue'
 import ColorPickerControl from '../framework/picker/ColorPickerControl.vue'
 import ToggableSection from '@/components/framework/ToggableSection.vue'
 import Btn from '@/components/framework/Btn.vue'
@@ -406,6 +416,7 @@ export default {
     AudioSettings,
     OtherSettings,
     ChartsSettings,
+    AlertsSettings,
     ColorPickerControl,
     ToggableSection
   },

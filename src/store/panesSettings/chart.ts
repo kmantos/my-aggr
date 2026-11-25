@@ -69,8 +69,6 @@ export interface ChartPaneState {
   layouting: boolean | string
   timeframe: number
   indicatorsErrors: { [indicatorId: string]: string }
-  showAlerts?: boolean
-  showAlertsLabel?: boolean
   showIndicators: boolean
   barSpacing: number
 }
@@ -92,8 +90,6 @@ const state = {
   layouting: false,
   showIndicators: true,
   timeframe: 60,
-  showAlerts: true,
-  showAlertsLabel: true,
   barSpacing: null
 } as ChartPaneState
 
@@ -359,12 +355,6 @@ const actions = {
 } as ActionTree<ChartPaneState, ModulesState>
 
 const mutations = {
-  TOGGLE_ALERTS(state) {
-    state.showAlerts = !state.showAlerts
-  },
-  TOGGLE_ALERTS_LABEL(state) {
-    state.showAlertsLabel = !state.showAlertsLabel
-  },
   TOGGLE_INDICATORS(state, value) {
     state.showIndicators = value
   },
