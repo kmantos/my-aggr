@@ -831,5 +831,32 @@ export const workspaceUpgrades = {
     }
 
     delete workspace.states.panes
+  },
+  29: (workspace: Workspace) => {
+    // trades and liquidations of every trades pane use the same green / red
+    // colors (per level, like the default trades thresholds)
+    const colors = defaultThresholds.thresholds.map(threshold => ({
+      buyColor: threshold.buyColor,
+      sellColor: threshold.sellColor
+    }))
+    const panes = workspace.states.panes ? workspace.states.panes.panes : {}
+
+    for (const paneId in panes) {
+      const state = workspace.states[paneId]
+
+      if (!/^trades/.test(panes[paneId].type) || !state) {
+        continue
+      }
+
+      for (const key of ['thresholds', 'liquidations']) {
+        if (!Array.isArray(state[key])) {
+          continue
+        }
+
+        state[key].forEach((threshold, index) => {
+          Object.assign(threshold, colors[Math.min(index, colors.length - 1)])
+        })
+      }
+    }
   }
 }
