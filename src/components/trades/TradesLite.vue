@@ -928,11 +928,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
 
   drawAmount(trade: Trade, height) {
     this.ctx.textAlign = 'left'
-    const backupFont = this.ctx.font
-    this.ctx.font = this.ctx.font.replace(
-      new RegExp(`^(${this.fontSize}px)`),
-      'bold $1'
-    )
     const amount = this.baseSizingCurrency
       ? Math.round(trade.amount * 1e6) / 1e6
       : formatAmount(trade.amount)
@@ -943,8 +938,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
       this.drawOffset + height / 2 + 1,
       this.maxWidth
     )
-
-    this.ctx.font = backupFont
   }
 
   renderHistory() {
