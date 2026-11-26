@@ -285,10 +285,9 @@ export default class TradesLite extends Mixins(PaneMixin) {
       if (!date) {
         date = new Date(+trades[i].timestamp)
 
-        trade.time = `${date.getHours().toString().padStart(2, '0')}:${date
-          .getMinutes()
-          .toString()
-          .padStart(2, '0')}`
+        trade.time = [date.getHours(), date.getMinutes(), date.getSeconds()]
+          .map(value => value.toString().padStart(2, '0'))
+          .join(':')
       }
 
       if (trade.amount > this.minAudio) {
@@ -728,7 +727,8 @@ export default class TradesLite extends Mixins(PaneMixin) {
     this.timeWidth = contentWidth * 0.2 - this.paddingLeft
 
     this.priceOffset = this.margin + this.logoWidth + this.paddingLeft
-    this.amountOffset = this.margin + firstColumnWidth + amountColumnWidth
+    // amounts left aligned at the start of the 2nd column
+    this.amountOffset = this.margin + firstColumnWidth
 
     // text width available in the first column (price, then pair if shown)
     const firstColumnText =
@@ -847,7 +847,8 @@ export default class TradesLite extends Mixins(PaneMixin) {
 
     const paddingTop =
       this.paddingTop + Math.round((trade.step / 2) * this.pxRatio)
-    const height = this.lineHeight + paddingTop * 2
+    // + 3px for a bit taller rows
+    const height = this.lineHeight + paddingTop * 2 + 3 * this.pxRatio
 
     this.ctx.drawImage(this.ctx.canvas, 0, height)
     this.ctx.fillStyle = trade.background
@@ -877,13 +878,22 @@ export default class TradesLite extends Mixins(PaneMixin) {
     }
   }
 
+  // time (hh:mm:ss) in a smaller 10px font
   drawTime(trade, height) {
+    const zoom = this.$store.state.panes.panes[this.paneId].zoom || 1
+    const backupFont = this.ctx.font
+    this.ctx.font = this.ctx.font.replace(
+      new RegExp(`${this.fontSize}px`),
+      `${Math.round(10 * zoom * this.pxRatio)}px`
+    )
+    this.ctx.textAlign = 'right'
     this.ctx.fillText(
       trade.time,
       this.width - this.margin,
       this.drawOffset + height / 2 + 1,
       this.timeWidth
     )
+    this.ctx.font = backupFont
   }
 
   drawHistogram(trade, height) {
@@ -917,7 +927,7 @@ export default class TradesLite extends Mixins(PaneMixin) {
   }
 
   drawAmount(trade: Trade, height) {
-    this.ctx.textAlign = 'right'
+    this.ctx.textAlign = 'left'
     const backupFont = this.ctx.font
     this.ctx.font = this.ctx.font.replace(
       new RegExp(`^(${this.fontSize}px)`),
