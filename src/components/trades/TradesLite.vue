@@ -7,6 +7,7 @@
     >
       <hr />
     </pane-header>
+    <div v-if="paused" class="pane-trades__paused">Paused</div>
     <canvas ref="canvas" @dblclick="prepareEverything" />
   </div>
 </template>
@@ -1107,6 +1108,20 @@ canvas {
 
 .pane-trades {
   position: relative;
+}
 
+.pane-trades__paused {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  pointer-events: none;
 }
 </style>
