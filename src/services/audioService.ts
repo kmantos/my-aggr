@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Tuna from 'tunajs'
 import store from '../store'
 import {
   findClosingBracketMatchIndex,
@@ -127,12 +128,39 @@ class AudioService {
       this.output = null
     }
 
-    // sounds -> volume -> speakers
-    this.gainNode = this.context.createGain()
-    this.gainNode.gain.value = store.state.settings.audioVolume
+    // fixed sound effects (same as the former default settings):
+    // sounds -> ping pong delay -> high pass filter -> volume -> speakers
+    const tuna = new Tuna(this.context)
+
+    const effects = [
+      new tuna.PingPongDelay({
+        wetLevel: 0.5,
+        feedback: 0.01,
+        delayTimeLeft: 175,
+        delayTimeRight: 100
+      }),
+      new tuna.Filter({
+        frequency: 700,
+        Q: 10,
+        gain: -10,
+        filterType: 'highpass',
+        bypass: 0
+      })
+    ]
+
+    this.gainNode = new tuna.Gain({
+      gain: store.state.settings.audioVolume
+    })
+
+    effects.push(this.gainNode)
+
+    for (let i = 0; i < effects.length - 1; i++) {
+      effects[i].connect(effects[i + 1])
+    }
+
     this.gainNode.connect(this.context.destination)
 
-    this.output = this.gainNode
+    this.output = effects[0]
   }
 
   setVolume(gain: number) {
