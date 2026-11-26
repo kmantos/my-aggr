@@ -1,6 +1,6 @@
 import aggregatorService from '@/services/aggregatorService'
 import workspacesService from '@/services/workspacesService'
-import { getBucketId, slugify, uniqueName } from '@/utils/helpers'
+import { slugify, uniqueName } from '@/utils/helpers'
 import { registerModule } from '@/utils/store'
 import Vue from 'vue'
 import { MutationTree, ActionTree, GetterTree, Module } from 'vuex'
@@ -13,20 +13,10 @@ import { GridItem, GridSpace, findOrCreateSpace } from '@/utils/grid'
 import dialogService from '@/services/dialogService'
 import { IS_CAR_BROWSER } from '@/utils/constants'
 
-enum StaticPaneType {
-  website = 'website',
-  alerts = 'alerts'
-}
-
+// the site has chart panes and trades panes (the "trades-lite" feed)
 export enum PaneType {
-  trades = 'trades',
   chart = 'chart',
-  stats = 'stats',
-  counters = 'counters',
-  prices = 'prices',
-  website = 'website',
-  alerts = 'alerts',
-  'trades-list' = 'trades-lite'
+  trades = 'trades-lite'
 }
 
 export type MarketsListeners = { [market: string]: ListenedProduct }
@@ -55,14 +45,14 @@ export interface PanesState {
 const layoutDesktop = [
   { i: 'chart', type: 'chart', x: 0, y: 0, w: 20, h: 16 },
   { i: 'chart-eth', type: 'chart', x: 0, y: 16, w: 20, h: 8 },
-  { i: 'spot', type: 'trades', x: 20, y: 0, w: 4, h: 5 },
-  { i: 'futures', type: 'trades', x: 20, y: 5, w: 4, h: 13 },
-  { i: 'liquidations', type: 'trades', x: 20, y: 18, w: 4, h: 6 }
+  { i: 'spot', type: 'trades-lite', x: 20, y: 0, w: 4, h: 5 },
+  { i: 'futures', type: 'trades-lite', x: 20, y: 5, w: 4, h: 13 },
+  { i: 'liquidations', type: 'trades-lite', x: 20, y: 18, w: 4, h: 6 }
 ]
 
 const layoutMobile = [
   { i: 'chart', type: 'chart', x: 0, y: 0, w: 24, h: 16 },
-  { i: 'futures', type: 'trades', x: 0, y: 16, w: 24, h: 8 }
+  { i: 'futures', type: 'trades-lite', x: 0, y: 16, w: 24, h: 8 }
 ]
 
 const state: PanesState = JSON.parse(JSON.stringify(defaultPanes))
@@ -139,10 +129,7 @@ const actions = {
       type: options.type,
       zoom: options.zoom,
       settings: options.settings,
-      markets:
-        options.type in StaticPaneType
-          ? []
-          : options.markets || Object.keys(state.marketsListeners)
+      markets: options.markets || Object.keys(state.marketsListeners)
     }
 
     const item = { pane, space: null }
@@ -218,25 +205,10 @@ const actions = {
     // new listeners stored here
     const marketsListeners: MarketsListeners = {}
 
-    // bucketed markets stored here
-    const buckets = {}
-
     for (const paneId in state.panes) {
       let paneMarkets = state.panes[paneId].markets
       if (markets && (!id || paneId === id)) {
         paneMarkets = markets
-      }
-
-      if (
-        state.panes[paneId].type === 'counters' ||
-        state.panes[paneId].type === 'stats'
-      ) {
-        // market used in a bucket
-        const bucketId = getBucketId(paneMarkets)
-
-        if (!buckets[bucketId]) {
-          buckets[bucketId] = paneMarkets
-        }
       }
 
       for (const marketKey of paneMarkets) {
@@ -290,11 +262,6 @@ const actions = {
     aggregatorService.connect(toConnect)
     aggregatorService.disconnect(toDisconnect)
 
-    aggregatorService.dispatch({
-      op: 'updateBuckets',
-      data: buckets
-    })
-
     commit('SET_MARKETS_LISTENERS', marketsListeners)
 
     if (markets) {
@@ -309,13 +276,9 @@ const actions = {
     return dispatch('refreshMarketsListeners', { markets })
   },
   setMarketsForPane(
-    { dispatch, state },
+    { dispatch },
     { id, markets }: { id: string; markets: string[] }
   ) {
-    if (state.panes[id].type in StaticPaneType) {
-      return dispatch('refreshMarketsListeners', { id, markets: [] })
-    }
-
     return dispatch('refreshMarketsListeners', { id, markets })
   },
   async resetPane(

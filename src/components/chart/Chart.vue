@@ -52,7 +52,6 @@ import { AlertEvent } from '@/services/alertService'
 import PaneMixin from '@/mixins/paneMixin'
 import PaneHeader from '@/components/panes/PaneHeader.vue'
 import ChartLayout from '@/components/chart/Layout.vue'
-import AlertsList from '@/components/alerts/AlertsList.vue'
 import Btn from '@/components/framework/Btn.vue'
 
 import { Trade } from '@/types/types'
@@ -62,7 +61,6 @@ import { Trade } from '@/types/types'
   components: {
     ChartLayout,
     PaneHeader,
-    AlertsList,
     Btn
   }
 })

@@ -33,124 +33,23 @@
         </button>
         <button
           class="dropdown-item dropdown-item--space-between"
-          @click="addPane('trades')"
-        >
-          <div>
-            <div>Trades</div>
-            <div class="dropdown-item__subtitle">Legacy trades feed</div>
-          </div>
-          <i class="icon-plus" />
-        </button>
-        <button
-          class="dropdown-item dropdown-item--space-between"
           @click="addPane('trades-lite')"
         >
           <div>
-            <div>Trades <span>LITE ⚡️</span></div>
-            <div class="dropdown-item__subtitle">Minimal but faster</div>
-          </div>
-          <i class="icon-plus" />
-        </button>
-        <button
-          class="dropdown-item dropdown-item--space-between"
-          @click="addPane('prices')"
-        >
-          <div>
-            <div>Watchlist</div>
-            <div class="dropdown-item__subtitle">% change & volume</div>
-          </div>
-          <i class="icon-plus" />
-        </button>
-        <button
-          class="dropdown-item dropdown-item--space-between"
-          @click="addPane('website')"
-        >
-          <div>
-            <div>Website</div>
-            <div class="dropdown-item__subtitle">Embed website</div>
-          </div>
-          <i class="icon-plus" />
-        </button>
-        <button
-          class="dropdown-item dropdown-item--space-between"
-          @click="addPane('stats')"
-        >
-          <div>
-            <div>Stats</div>
-            <div class="dropdown-item__subtitle">Custom rolling metrics</div>
-          </div>
-          <i class="icon-plus" />
-        </button>
-        <button
-          class="dropdown-item dropdown-item--space-between"
-          @click="addPane('counters')"
-        >
-          <div>
-            <div>Counters</div>
-            <div class="dropdown-item__subtitle">Buys/sells by intervals</div>
-          </div>
-          <i class="icon-plus" />
-        </button>
-        <button
-          class="dropdown-item dropdown-item--space-between"
-          @click="addPane('alerts')"
-        >
-          <div>
-            <div>Alerts</div>
-            <div class="dropdown-item__subtitle">Manage alerts</div>
+            <div>Trade</div>
+            <div class="dropdown-item__subtitle">Live trades feed</div>
           </div>
           <i class="icon-plus" />
         </button>
       </dropdown>
 
-      <dropdown
-        v-model="volumeSliderOpened"
-        v-on="volumeSliderEvents"
-        @mousedown.native.stop
-        @touchstart.native.stop
-        @mouseleave.native="volumeSliderTriggerEvents.mouseleave"
-        ref="volumeSlider"
-        class="volume-slider"
-        interactive
-        no-scroll
-        transparent
-        on-sides
-      >
-        <slider
-          style="width: 100px"
-          :min="0"
-          :max="3"
-          :step="0.01"
-          :label="true"
-          :value="audioVolume"
-          @input="$store.dispatch('settings/setAudioVolume', $event)"
-          @reset="$store.dispatch('settings/setAudioVolume', 1)"
-          log
-        />
-      </dropdown>
-
-      <button
-        type="button"
-        class="dropdown-item dropdown-item--space-between"
-        ref="volumeSliderTrigger"
-        v-on="volumeSliderTriggerEvents"
-        @click="toggleAudio"
-      >
-        <span class="mr4">Audio</span>
-        <i v-if="!useAudio" class="icon-volume-off"></i>
-        <i
-          v-else
-          class="icon-volume-medium"
-          :class="{ 'icon-volume-high': audioVolume > 1 }"
-        ></i>
-      </button>
       <button
         type="button"
         class="dropdown-item dropdown-item--space-between"
         @click="toggleFullscreen"
       >
         <span class="mr4">{{
-          isFullscreen ? 'Exit\xa0fullscreen' : 'Go\xa0fullscreen'
+          isFullscreen ? 'Exit\xa0fullscreen' : 'Fullscreen'
         }}</span>
         <i class="icon-enlarge"></i>
       </button>
@@ -170,84 +69,21 @@
 import dialogService from '@/services/dialogService'
 import { PaneType } from '@/store/panes'
 import { Component, Vue } from 'vue-property-decorator'
-import { isTouchSupported } from '../utils/touchevent'
-import Slider from './framework/picker/Slider.vue'
 import SettingsDialog from './settings/SettingsDialog.vue'
 
 @Component({
-  name: 'Menu',
-  components: {
-    Slider
-  }
+  name: 'Menu'
 })
 export default class Menu extends Vue {
-  volumeSliderOpened = false
   isFullscreen = false
   open = false
 
-  $refs!: {
-    volumeSlider: any
-    volumeSliderTrigger: HTMLElement
-  }
   mounted() {
     document.addEventListener(
       'webkitfullscreenchange',
       this.handleFullScreenChange
     )
     document.addEventListener('fullscreenchange', this.handleFullScreenChange)
-  }
-
-  get useAudio() {
-    return this.$store.state.settings.useAudio
-  }
-
-  get audioVolume() {
-    return this.$store.state.settings.audioVolume
-  }
-
-  get volumeSliderEvents() {
-    if (!this.volumeSliderOpened) {
-      return null
-    }
-
-    return {
-      [isTouchSupported() ? 'touchstart' : 'mousedown']: event => {
-        event.stopPropagation()
-      },
-      mouseleave: event => {
-        if (
-          event.toElement === this.$refs.volumeSliderTrigger ||
-          this.$refs.volumeSliderTrigger.contains(event.toElement)
-        ) {
-          return
-        }
-
-        this.volumeSliderOpened = null
-      }
-    }
-  }
-
-  get volumeSliderTriggerEvents() {
-    if (this.volumeSliderOpened) {
-      return {
-        mouseleave: event => {
-          if (
-            event.toElement === this.$refs.volumeSlider.$el ||
-            this.$refs.volumeSlider.$el.contains(event.toElement)
-          ) {
-            return
-          }
-
-          this.volumeSliderOpened = null
-        }
-      }
-    } else {
-      return {
-        mouseenter: event => {
-          this.volumeSliderOpened = event.currentTarget
-        }
-      }
-    }
   }
 
   showSettings() {
@@ -308,10 +144,6 @@ export default class Menu extends Vue {
   addPane(type: PaneType) {
     this.$store.dispatch('panes/addPane', { type })
   }
-
-  toggleAudio() {
-    this.$store.commit('settings/TOGGLE_AUDIO', !this.useAudio)
-  }
 }
 </script>
 
@@ -348,9 +180,5 @@ export default class Menu extends Vue {
       color: var(--theme-accent-color);
     }
   }
-}
-
-.volume-slider {
-  padding: 1rem;
 }
 </style>

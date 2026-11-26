@@ -33,17 +33,6 @@
           type="thresholds"
         />
       </div>
-
-      <div v-if="displayGifWarning" class="d-flex help-text">
-        <p class="mt0 mb0 text-success">
-          <i class="icon-info mr8"></i>
-          <a
-            href="javascript:void(0);"
-            @click="$store.commit('settings/TOGGLE_ANIMATIONS')"
-            >Enable animations to show gifs</a
-          >
-        </p>
-      </div>
     </ToggableSection>
     <ToggableSection
       v-if="!tab || tab === 'thresholds'"
@@ -79,17 +68,6 @@
           label="Liquidations"
           type="liquidations"
         />
-      </div>
-
-      <div v-if="displayGifWarning" class="d-flex help-text">
-        <p class="mt0 mb0 text-success">
-          <i class="icon-info mr8"></i>
-          <a
-            href="javascript:void(0);"
-            @click="$store.commit('settings/TOGGLE_ANIMATIONS')"
-            >Enable animations to show gifs</a
-          >
-        </p>
       </div>
     </ToggableSection>
 
@@ -161,7 +139,6 @@
       </div>
 
       <div
-        v-if="!isLegacy"
         class="form-group column mb8"
         @click.stop="
           $store.commit(paneId + '/TOGGLE_PREFERENCE', 'showHistograms')
@@ -230,26 +207,6 @@
           </span>
         </label>
       </div>
-      <div v-if="isLegacy" class="form-group mb8 mt16">
-        <label class="checkbox-control -small">
-          <input
-            type="checkbox"
-            class="form-control"
-            :checked="showLogos"
-            @change="$store.commit(paneId + '/TOGGLE_PREFERENCE', 'showLogos')"
-          />
-          <div></div>
-          <span>
-            Show logos
-            <i
-              class="icon-info info-tap"
-              v-tippy="infoTippy"
-              @click.stop.prevent="showInfo"
-              title="Show the exchange's logo on each trade instead of its name"
-            ></i>
-          </span>
-        </label>
-      </div>
     </template>
   </div>
 </template>
@@ -312,10 +269,6 @@ export default class TradesSettings extends Vue {
     return (this.$store.state[this.paneId] as TradesPaneState).liquidations
   }
 
-  get showLogos() {
-    return (this.$store.state[this.paneId] as TradesPaneState).showLogos
-  }
-
   get showPrices() {
     return (this.$store.state[this.paneId] as TradesPaneState).showPrices
   }
@@ -342,23 +295,6 @@ export default class TradesSettings extends Vue {
 
   get muted() {
     return (this.$store.state[this.paneId] as TradesPaneState).muted
-  }
-
-  get disableAnimations() {
-    return this.$store.state.settings.disableAnimations
-  }
-
-  get isLegacy() {
-    return this.$store.state.panes.panes[this.paneId].type === 'trades'
-  }
-
-  get displayGifWarning() {
-    return (
-      this.isLegacy &&
-      this.disableAnimations &&
-      (this.thresholds.filter(t => !!t.buyGif && !!t.sellGif).length ||
-        this.liquidations.filter(t => !!t.buyGif && !!t.sellGif).length)
-    )
   }
 
   get thresholdsBuyColor() {

@@ -66,7 +66,7 @@
     "spot": {
       "id": "spot",
       "name": "SPOT",
-      "type": "trades",
+      "type": "trades-lite",
       "markets": [
         "BINANCE:btcusdt",
         "COINBASE:BTC-USD",
@@ -106,8 +106,6 @@
           {
             "id": "huge",
             "amount": 1000000,
-            "buyGif": "cash bullish",
-            "sellGif": "cash bearish",
             "buyColor": "rgb(59, 202, 109)",
             "sellColor": "rgb(235, 30, 47)",
             "buyAudio": "play(659.26, 0.05 + gain / 25, 0.1 + ratio * 0.23, 0,,0); play(830.6, 0.05 + gain / 25, 0.1 + ratio * 0.23, 0.08,,0); play(987.76, 0.05 + gain / 25, 0.1 + ratio * 0.23, 0.16,,0); play(1318.52, 0.05 + gain / 10, 0.1 + ratio * 0.23, 0.24,,0)",
@@ -116,8 +114,6 @@
           {
             "id": "rare",
             "amount": 2000000,
-            "buyGif": "explosion",
-            "sellGif": "explosion",
             "buyColor": "rgb(0, 255, 127)",
             "sellColor": "rgb(217, 31, 28)",
             "buyAudio": "play(659.26, 0.05 + gain / 25, 0.1 + ratio * 0.13, 0,,0); play(830.6, 0.05 + gain / 25, 0.1 + ratio * 0.13, 0.08,,0); play(987.76, 0.05 + gain / 25, 0.1 + ratio * 0.13, 0.16,,0); play(1318.52, 0.05 + gain / 10, 0.1 + ratio * 0.13, 0.24,,0)",
@@ -144,8 +140,6 @@
           {
             "id": "liquidation_huge",
             "amount": 20000,
-            "buyGif": "flying money",
-            "sellGif": "flying money",
             "buyColor": "rgb(59, 202, 109)",
             "sellColor": "rgb(235, 30, 47)",
             "buyAudio": "var srqtR = Math.min(1, gain / 4)\nplay(329.63, srqtR, srqtR*4,0,,,'sine')\nplay(329.63, srqtR, srqtR*8,0.08,,,'sine')",
@@ -154,8 +148,6 @@
           {
             "id": "liquidation_rare",
             "amount": 50000,
-            "buyGif": "explosion",
-            "sellGif": "explosion",
             "buyColor": "rgb(0, 255, 127)",
             "sellColor": "rgb(217, 31, 28)",
             "buyAudio": "var srqtR = Math.min(1, gain / 10)\nplay(329.63, srqtR, 1,0,,,'sine')\nplay(329.63, srqtR, srqtR*10,0.08,,,'sine')",
@@ -167,7 +159,7 @@
     "futures": {
       "id": "futures",
       "name": "FUTURES",
-      "type": "trades",
+      "type": "trades-lite",
       "markets": [
         "BINANCE_FUTURES:btcusdt",
         "BINANCE_FUTURES:btcusd_perp",
@@ -211,8 +203,6 @@
           {
             "id": "huge",
             "amount": 5000000,
-            "buyGif": "cash bullish",
-            "sellGif": "cash bearish",
             "buyColor": "rgb(59, 202, 109)",
             "sellColor": "rgb(235, 30, 47)",
             "buyAudio": "play(659.26, 0.05 + gain / 25, 0.1 + ratio * 0.23, 0,,0); play(830.6, 0.05 + gain / 25, 0.1 + ratio * 0.23, 0.08,,0); play(987.76, 0.05 + gain / 25, 0.1 + ratio * 0.23, 0.16,,0); play(1318.52, 0.05 + gain / 10, 0.1 + ratio * 0.23, 0.24,,0)",
@@ -221,8 +211,6 @@
           {
             "id": "rare",
             "amount": 10000000,
-            "buyGif": "explosion",
-            "sellGif": "explosion",
             "buyColor": "rgb(0, 255, 127)",
             "sellColor": "rgb(217, 31, 28)",
             "buyAudio": "play(659.26, 0.05 + gain / 25, 0.1 + ratio * 0.13, 0,,0); play(830.6, 0.05 + gain / 25, 0.1 + ratio * 0.13, 0.08,,0); play(987.76, 0.05 + gain / 25, 0.1 + ratio * 0.13, 0.16,,0); play(1318.52, 0.05 + gain / 10, 0.1 + ratio * 0.13, 0.24,,0)",
@@ -249,8 +237,6 @@
           {
             "id": "liquidation_huge",
             "amount": 20000,
-            "buyGif": "flying money",
-            "sellGif": "flying money",
             "buyColor": "rgb(59, 202, 109)",
             "sellColor": "rgb(235, 30, 47)",
             "buyAudio": "var srqtR = Math.min(1, gain / 4)\nplay(329.63, srqtR, srqtR*4,0,,,'sine')\nplay(329.63, srqtR, srqtR*8,0.08,,,'sine')",
@@ -259,8 +245,6 @@
           {
             "id": "liquidation_rare",
             "amount": 50000,
-            "buyGif": "explosion",
-            "sellGif": "explosion",
             "buyColor": "rgb(0, 255, 127)",
             "sellColor": "rgb(217, 31, 28)",
             "buyAudio": "var srqtR = Math.min(1, gain / 10)\nplay(329.63, srqtR, 1,0,,,'sine')\nplay(329.63, srqtR, srqtR*10,0.08,,,'sine')",
@@ -272,7 +256,7 @@
     "liquidations": {
       "id": "liquidations",
       "name": "REKTS",
-      "type": "trades",
+      "type": "trades-lite",
       "markets": [
         "BINANCE_FUTURES:btcusdt",
         "BINANCE_FUTURES:btcusd_perp",
@@ -317,8 +301,6 @@
           {
             "id": "liquidation_huge",
             "amount": 20000,
-            "buyGif": "flying money",
-            "sellGif": "flying money",
             "buyColor": "rgb(59, 202, 109)",
             "sellColor": "rgb(235, 30, 47)",
             "buyAudio": "var srqtR = Math.min(1, gain / 4)\nplay(329.63, srqtR, srqtR*4,0,,,'sine')\nplay(329.63, srqtR, srqtR*8,0.08,,,'sine')",
@@ -327,8 +309,6 @@
           {
             "id": "liquidation_rare",
             "amount": 50000,
-            "buyGif": "explosion",
-            "sellGif": "explosion",
             "buyColor": "rgb(0, 255, 127)",
             "sellColor": "rgb(217, 31, 28)",
             "buyAudio": "var srqtR = Math.min(1, gain / 10)\nplay(329.63, srqtR, 1,0,,,'sine')\nplay(329.63, srqtR, srqtR*10,0.08,,,'sine')",
@@ -355,8 +335,6 @@
           {
             "id": "huge",
             "amount": 5000000,
-            "buyGif": "cash bullish",
-            "sellGif": "cash bearish",
             "buyColor": "rgb(59, 202, 109)",
             "sellColor": "rgb(235, 30, 47)",
             "buyAudio": "play(659.26, 0.05 + gain / 25, 0.1 + ratio * 0.23, 0,,0); play(830.6, 0.05 + gain / 25, 0.1 + ratio * 0.23, 0.08,,0); play(987.76, 0.05 + gain / 25, 0.1 + ratio * 0.23, 0.16,,0); play(1318.52, 0.05 + gain / 10, 0.1 + ratio * 0.23, 0.24,,0)",
@@ -365,8 +343,6 @@
           {
             "id": "rare",
             "amount": 10000000,
-            "buyGif": "explosion",
-            "sellGif": "explosion",
             "buyColor": "rgb(0, 255, 127)",
             "sellColor": "rgb(217, 31, 28)",
             "buyAudio": "play(659.26, 0.05 + gain / 25, 0.1 + ratio * 0.13, 0,,0); play(830.6, 0.05 + gain / 25, 0.1 + ratio * 0.13, 0.08,,0); play(987.76, 0.05 + gain / 25, 0.1 + ratio * 0.13, 0.16,,0); play(1318.52, 0.05 + gain / 10, 0.1 + ratio * 0.13, 0.24,,0)",

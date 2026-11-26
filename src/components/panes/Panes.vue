@@ -54,13 +54,7 @@ import { getSiblings } from '@/utils/helpers'
     GridLayout: VueGridLayout.GridLayout,
     GridItem: VueGridLayout.GridItem,
     Chart: () => import('@/components/chart/Chart.vue'),
-    Trades: () => import('@/components/trades/Trades.vue'),
-    Stats: () => import('@/components/stats/Stats.vue'),
-    Counters: () => import('@/components/counters/Counters.vue'),
-    Prices: () => import('@/components/prices/Prices.vue'),
-    Website: () => import('@/components/website/Website.vue'),
-    TradesLite: () => import('@/components/trades/TradesLite.vue'),
-    Alerts: () => import('@/components/alerts/Alerts.vue')
+    TradesLite: () => import('@/components/trades/TradesLite.vue')
   }
 })
 export default class Panes extends Vue {

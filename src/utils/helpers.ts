@@ -170,15 +170,6 @@ export function sleep(duration = 1000): Promise<void> {
   })
 }
 
-export function getBucketId(markets: string[]) {
-  return markets
-    .map(m => m.replace(/[^a-zA-Z]+/gi, ''))
-    .sort(function (mA, mB) {
-      return mA.localeCompare(mB)
-    })
-    .join('')
-}
-
 export function openBase64InNewTab(data, mimeType) {
   const byteCharacters = atob(data)
   const byteNumbers = new Array(byteCharacters.length)

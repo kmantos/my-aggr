@@ -4,7 +4,6 @@ import defaultPanes from '@/store/defaultPanes.json'
 import store, { boot } from '@/store'
 import { IndicatorSettings } from '@/store/panesSettings/chart'
 import {
-  GifsStorage,
   ImportedSound,
   Preset,
   ProductsStorage,
@@ -28,10 +27,6 @@ import notificationService from './notificationService'
 export interface AggrDB extends DBSchema {
   products: {
     value: ProductsStorage
-    key: string
-  }
-  gifs: {
-    value: GifsStorage
     key: string
   }
   workspaces: {
@@ -587,22 +582,6 @@ class WorkspacesService {
 
   deleteProducts(exchangeId: string) {
     return this.db.delete('products', exchangeId)
-  }
-
-  saveGifs(storage: GifsStorage) {
-    return this.db.put('gifs', storage)
-  }
-
-  getGifs(slug: string) {
-    return this.db.get('gifs', slug)
-  }
-
-  getGifsKeywords() {
-    return this.db.getAllKeys('gifs')
-  }
-
-  deleteGifs(slug: string) {
-    return this.db.delete('gifs', slug)
   }
 
   async saveIndicator(indicator: IndicatorSettings, silent = false) {

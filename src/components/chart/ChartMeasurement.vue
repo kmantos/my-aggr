@@ -93,14 +93,6 @@ export default {
       } else {
         this.timeframeDropdownTrigger = event.currentTarget
       }
-    },
-
-    toggleAlertsDropdown(event) {
-      if (this.alertsDropdownTrigger) {
-        this.alertsDropdownTrigger = null
-      } else {
-        this.alertsDropdownTrigger = event.currentTarget
-      }
     }
   }
 }

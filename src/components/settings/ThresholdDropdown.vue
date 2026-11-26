@@ -1,42 +1,6 @@
 <template>
   <div class="threshold-dropdown">
     <h3>@ {{ formatAmount(threshold.amount) }}</h3>
-    <div class="form-group mb8 threshold-panel__gif">
-      <div class="column">
-        <div class="form-group" v-if="isLegacy">
-          <label>Buy gif</label>
-          <input
-            type="text"
-            class="form-control w-100"
-            placeholder="Giphy keyword"
-            :value="threshold.buyGif"
-            @change="
-              $store.commit(paneId + '/SET_THRESHOLD_GIF', {
-                id: threshold.id,
-                side: 'buy',
-                value: $event.target.value
-              })
-            "
-          />
-        </div>
-        <div class="form-group" v-if="isLegacy">
-          <label>Sell gif</label>
-          <input
-            type="text"
-            class="form-control w-100"
-            placeholder="Giphy keyword"
-            :value="threshold.sellGif"
-            @change="
-              $store.commit(paneId + '/SET_THRESHOLD_GIF', {
-                id: threshold.id,
-                side: 'sell',
-                value: $event.target.value
-              })
-            "
-          />
-        </div>
-      </div>
-    </div>
     <div class="form-group mb8 threshold-panel__colors">
       <label>Custom colors</label>
       <div class="column mt8">
@@ -113,10 +77,6 @@ export default class ThresholdDropdown extends Vue {
   private paneId: string
   private threshold: Threshold
   private canDelete: boolean
-
-  get isLegacy() {
-    return this.$store.state.panes.panes[this.paneId].type === 'trades'
-  }
 
   formatAmount(value) {
     return formatAmount(value)
@@ -204,9 +164,6 @@ export default class ThresholdDropdown extends Vue {
   }
 
   &.-minimum {
-    .threshold-panel__gif {
-      display: none;
-    }
   }
 }
 </style>

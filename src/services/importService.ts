@@ -99,14 +99,6 @@ class ImportService {
       throw new Error('Workspace seems empty')
     }
 
-    for (const paneId in workspace.states) {
-      const pane = workspace.states[paneId]
-
-      if (pane.type === 'website') {
-        pane.locked = true
-      }
-    }
-
     if (
       (await workspacesService.getWorkspace(workspace.id)) &&
       !(await dialogService.confirm({

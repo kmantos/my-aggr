@@ -13,8 +13,6 @@ export interface Threshold {
   sellColor: string
   buyAudio: string
   sellAudio: string
-  buyGif?: string
-  sellGif?: string
   max?: boolean
 }
 
@@ -32,7 +30,6 @@ export interface TradesPaneState {
   showHistograms: boolean
   showTrades: boolean
   showLiquidations: boolean
-  showLogos: boolean
 }
 
 const getters = {
@@ -61,7 +58,6 @@ const state = {
   showTrades: true,
   // new trades panes: trades only (liquidations have their own pane)
   showLiquidations: false,
-  showLogos: true,
   showPrices: true,
   showHistograms: true
 } as TradesPaneState
@@ -180,22 +176,6 @@ const mutations = {
 
     if (threshold) {
       Vue.set(threshold, 'max', !threshold.max)
-    }
-  },
-  SET_THRESHOLD_GIF(state, payload) {
-    const threshold = this.getters[state._id + '/getThreshold'](payload.id)
-
-    const key = payload.side + 'Gif'
-
-    if (threshold) {
-      if (payload.value.trim().length) {
-        threshold[key] = payload.value
-      } else {
-        payload.value = threshold.gif
-        payload.isDeleted = true
-
-        threshold[key] = null
-      }
     }
   },
   SET_THRESHOLD_COLOR(state, { id, side, value }) {

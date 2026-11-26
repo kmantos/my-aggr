@@ -117,6 +117,12 @@ export const databaseUpgrades = {
     if (volume && volume.enabled) {
       await objectStore.put({ ...volume, enabled: false })
     }
+  },
+  10: (db: IDBPDatabase<AggrDB>) => {
+    // gifs (trades animations) removed
+    if (db.objectStoreNames.contains('gifs' as any)) {
+      ;(db as any).deleteObjectStore('gifs')
+    }
   }
 }
 
@@ -857,6 +863,52 @@ export const workspaceUpgrades = {
           Object.assign(threshold, colors[Math.min(index, colors.length - 1)])
         })
       }
+    }
+  },
+  30: (workspace: Workspace) => {
+    // the site has chart and trades ("trades-lite") panes only: legacy trades
+    // panes become trades-lite, watchlist / website / stats / counters /
+    // alerts panes are removed, gifs and logos options are gone
+    const removedTypes = ['prices', 'website', 'stats', 'counters', 'alerts']
+    const panesState = workspace.states.panes
+
+    if (!panesState || !panesState.panes) {
+      return
+    }
+
+    for (const paneId in panesState.panes) {
+      const pane = panesState.panes[paneId]
+
+      if (removedTypes.indexOf(pane.type) !== -1) {
+        delete panesState.panes[paneId]
+        delete workspace.states[paneId]
+        continue
+      }
+
+      if (pane.type === 'trades') {
+        pane.type = 'trades-lite'
+      }
+
+      const state = workspace.states[paneId]
+
+      if (pane.type === 'trades-lite' && state) {
+        delete state.showLogos
+
+        for (const key of ['thresholds', 'liquidations']) {
+          if (Array.isArray(state[key])) {
+            for (const threshold of state[key]) {
+              delete threshold.buyGif
+              delete threshold.sellGif
+            }
+          }
+        }
+      }
+    }
+
+    if (Array.isArray(panesState.layout)) {
+      panesState.layout = panesState.layout
+        .filter(item => panesState.panes[item.i])
+        .map(item => ({ ...item, type: panesState.panes[item.i].type }))
     }
   }
 }

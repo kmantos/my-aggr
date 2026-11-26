@@ -77,12 +77,6 @@ export interface ProductsStorage {
   data: ProductsData
 }
 
-export interface GifsStorage {
-  slug: string
-  keyword: string
-  timestamp?: number
-  data: string[]
-}
 export interface Workspace {
   version?: number
   createdAt: number

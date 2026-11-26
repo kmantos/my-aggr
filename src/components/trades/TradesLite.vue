@@ -683,6 +683,7 @@ export default class TradesLite extends Mixins(PaneMixin) {
       (this.$el.clientHeight - headerHeight) * this.pxRatio
     this.fontSize = Math.round(12 * zoom * this.pxRatio)
     this.logoWidth = this.fontSize
+    this.preloadLogos()
     this.paddingTop = Math.round(
       Math.max(this.width * 0.005 * zoom, 2) * this.pxRatio
     )
@@ -1076,8 +1077,9 @@ export default class TradesLite extends Mixins(PaneMixin) {
     this.$el.addEventListener('mouseleave', this.blurHandler)
   }
 
-  drawLogo(exchange, x, y) {
-    if (!LOGOS[exchange]) {
+  // logo rendered once into a small canvas (loads asynchronously)
+  getLogo(exchange) {
+    if (!LOGOS[exchange] && logos[exchange]) {
       const canvas = document.createElement('canvas')
       canvas.width = this.logoWidth
       canvas.height = this.logoWidth
@@ -1090,8 +1092,24 @@ export default class TradesLite extends Mixins(PaneMixin) {
       image.src = logos[exchange]
 
       LOGOS[exchange] = canvas
-    } else {
-      this.ctx.drawImage(LOGOS[exchange], x, y, this.logoWidth, this.logoWidth)
+    }
+
+    return LOGOS[exchange]
+  }
+
+  // load every exchange logo upfront: the first trade of an exchange
+  // already gets its logo
+  preloadLogos() {
+    for (const exchange in logos) {
+      this.getLogo(exchange)
+    }
+  }
+
+  drawLogo(exchange, x, y) {
+    const logo = this.getLogo(exchange)
+
+    if (logo) {
+      this.ctx.drawImage(logo, x, y, this.logoWidth, this.logoWidth)
     }
   }
 }
