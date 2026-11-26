@@ -3,6 +3,10 @@ import Exchange from '../exchange'
 export default class WHITEBIT extends Exchange {
   id = 'WHITEBIT'
 
+  // WhiteBIT sends the latest past trades right after subscribing: remember
+  // when each pair was subscribed to drop that backlog (not live trades)
+  private subscribedAt: { [pair: string]: number } = {}
+
   protected endpoints = {
     PRODUCTS: [
         'https://whitebit.com/api/v4/public/markets'
@@ -28,6 +32,8 @@ export default class WHITEBIT extends Exchange {
     if (!(await super.subscribe(api, pair))) {
       return
     }
+
+    this.subscribedAt[pair] = Date.now()
 
     api.send(
       JSON.stringify({
@@ -81,12 +87,19 @@ export default class WHITEBIT extends Exchange {
     }
 
     const market = json.params[0]
-    const trades = json.params[1]
+    let trades = json.params[1].map(trade => this.formatTrade(market, trade))
 
-    return this.emitTrades(
-      api.id,
-      trades.map(trade => this.formatTrade(market, trade))
-    )
+    // first update after subscribing = backlog of past trades: keep only the
+    // ones from the subscription on (2s margin for clocks differences)
+    if (this.subscribedAt[market]) {
+      const since = this.subscribedAt[market] - 2000
+
+      delete this.subscribedAt[market]
+
+      trades = trades.filter(trade => trade.timestamp >= since)
+    }
+
+    return this.emitTrades(api.id, trades)
   }
 
   onApiCreated(api) {
