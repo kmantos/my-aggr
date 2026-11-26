@@ -676,11 +676,16 @@ export default class TradesLite extends Mixins(PaneMixin) {
     this.width = canvas.width = this.$el.clientWidth * this.pxRatio
     this.height = canvas.height =
       (this.$el.clientHeight - headerHeight) * this.pxRatio
-    this.fontSize = Math.round(12 * zoom * this.pxRatio)
-    this.logoWidth = this.fontSize
+    this.fontSize = Math.round(14 * zoom * this.pxRatio)
+    // logos a bit bigger than the text
+    this.logoWidth = Math.round(this.fontSize * 1.3)
     this.preloadLogos()
+    // vertical padding of a row: a bit more on wide panes, capped
     this.paddingTop = Math.round(
-      Math.max(this.width * 0.005 * zoom, 2) * this.pxRatio
+      Math.min(
+        Math.max(this.width * 0.006, 3 * this.pxRatio),
+        6 * this.pxRatio * zoom
+      )
     )
     this.lineHeight = Math.round(this.fontSize + this.paddingTop)
     this.drawOffset = 0
@@ -703,25 +708,42 @@ export default class TradesLite extends Mixins(PaneMixin) {
     }
 
     const zoom = this.$store.state.panes.panes[this.paneId].zoom || 1
-    const count = (this.showPairs ? 1 : 0) + (this.showPrices ? 1 : 0) + 2
 
-    this.paddingLeft =
-      Math.round(Math.max(this.width * 0.01 * zoom, 2) * this.pxRatio) *
-      (count < 3 ? 4 : 1)
+    // side margin and gap after the logo: grow with the pane, capped
     this.margin = Math.round(
-      Math.max(this.width * 0.01 * zoom, 4) * this.pxRatio
+      Math.min(
+        Math.max(this.width * 0.02, 6 * this.pxRatio),
+        12 * this.pxRatio * zoom
+      )
+    )
+    this.paddingLeft = Math.round(
+      Math.min(
+        Math.max(this.width * 0.02, 4 * this.pxRatio),
+        10 * this.pxRatio * zoom
+      )
     )
 
-    const contentWidth =
-      this.width - this.margin * 2 - this.logoWidth - this.paddingLeft * count
-    this.timeWidth = contentWidth * (0.75 / count)
-    this.maxWidth = (contentWidth - this.timeWidth) / (count - 1)
-    this.amountOffset =
-      this.width - this.timeWidth - this.margin - this.paddingLeft
+    // 3 columns: logo + price (left) | amount (right aligned) | time (smaller)
+    const contentWidth = this.width - this.margin * 2
+    const firstColumnWidth = contentWidth * 0.45
+    const amountColumnWidth = contentWidth * 0.35
+    this.timeWidth = contentWidth * 0.2 - this.paddingLeft
+
     this.priceOffset = this.margin + this.logoWidth + this.paddingLeft
+    this.amountOffset = this.margin + firstColumnWidth + amountColumnWidth
+
+    // text width available in the first column (price, then pair if shown)
+    const firstColumnText =
+      firstColumnWidth - this.logoWidth - this.paddingLeft * 2
+    const firstColumnItems =
+      (this.showPrices ? 1 : 0) + (this.showPairs ? 1 : 0) || 1
+    this.maxWidth = Math.min(
+      firstColumnText / firstColumnItems,
+      amountColumnWidth - this.paddingLeft
+    )
     this.pairOffset =
       this.priceOffset +
-      (this.showPrices ? this.paddingLeft + this.maxWidth : 0)
+      (this.showPrices ? this.maxWidth + this.paddingLeft : 0)
   }
 
   getColors(amount, side, type) {
