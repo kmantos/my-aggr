@@ -137,32 +137,6 @@
           @keydown.enter="setMaxRows"
         />
       </div>
-
-      <div
-        class="form-group column mb8"
-        @click.stop="
-          $store.commit(paneId + '/TOGGLE_PREFERENCE', 'showHistograms')
-        "
-      >
-        <label class="-fill -center -inline">Histogram</label>
-        <div
-          class="checkbox-control checkbox-control-input"
-          title="Rolling delta histogram"
-          v-tippy
-          @click.stop
-        >
-          <input
-            type="checkbox"
-            class="form-control"
-            :checked="showHistograms"
-          />
-          <div
-            @click="
-              $store.commit(paneId + '/TOGGLE_PREFERENCE', 'showHistograms')
-            "
-          ></div>
-        </div>
-      </div>
     </template>
 
     <template v-if="!tab || tab === 'general'">
@@ -283,10 +257,6 @@ export default class TradesSettings extends Vue {
 
   get showPairs() {
     return (this.$store.state[this.paneId] as TradesPaneState).showPairs
-  }
-
-  get showHistograms() {
-    return (this.$store.state[this.paneId] as TradesPaneState).showHistograms
   }
 
   get audioThreshold() {

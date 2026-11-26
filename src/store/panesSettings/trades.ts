@@ -27,7 +27,6 @@ export interface TradesPaneState {
   maxRows: number
   showPairs: boolean
   showPrices: boolean
-  showHistograms: boolean
   showTrades: boolean
   showLiquidations: boolean
 }
@@ -58,8 +57,7 @@ const state = {
   showTrades: true,
   // new trades panes: trades only (liquidations have their own pane)
   showLiquidations: false,
-  showPrices: true,
-  showHistograms: true
+  showPrices: true
 } as TradesPaneState
 
 const actions = {

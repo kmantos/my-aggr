@@ -78,7 +78,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
   private renderTrades: boolean
   private showPairs: boolean
   private showPrices: boolean
-  private showHistograms: boolean
   private drawOffset: number
 
   // prepared thresholds by type (trade or liquidation)
@@ -310,8 +309,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
       this.insignificantVolumeBySide[side] = 0
       this.renderTradesBatch()
     }
-
-    this.renderVolumeBySide()
   }
 
   getThresholdsByType(type: TradeType | string): Threshold[] {
@@ -646,13 +643,11 @@ export default class TradesLite extends Mixins(PaneMixin) {
   prepareDisplaySettings() {
     const pane = this.$store.state[this.paneId] as TradesPaneState
     this.maxHistory = pane.maxRows
-    this.showHistograms = pane.showHistograms
     this.showPairs = pane.showPairs
-    this.renderTrades =
-      !pane.showHistograms || this.height > window.innerHeight / 24
+    this.renderTrades = true
     this.showPrices = pane.showPrices
     this.offset = 0
-    this.drawOffset = this.showHistograms ? this.lineHeight : 0
+    this.drawOffset = 0
 
     this.refreshColumnsWidth()
   }
@@ -688,11 +683,9 @@ export default class TradesLite extends Mixins(PaneMixin) {
       Math.max(this.width * 0.005 * zoom, 2) * this.pxRatio
     )
     this.lineHeight = Math.round(this.fontSize + this.paddingTop)
-    this.drawOffset = this.showHistograms ? this.lineHeight : 0
+    this.drawOffset = 0
     this.maxLines = Math.ceil(this.height / this.lineHeight)
-    this.renderTrades =
-      !this.$store.state[this.paneId].showHistograms ||
-      this.height > window.innerHeight / 24
+    this.renderTrades = true
     this.offset = this.offset || 0
     this.limit = this.offset + this.maxLines
 
@@ -950,34 +943,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
 
       this.renderTrade(this.tradesHistory[i])
     }
-  }
-
-  renderVolumeBySide() {
-    if (!this.showHistograms) {
-      return
-    }
-
-    const insignificantVolume =
-      this.insignificantVolumeBySide.buy + this.insignificantVolumeBySide.sell
-    const volume = this.volumeBySide.buy + this.volumeBySide.sell
-    const total = insignificantVolume + volume
-    const buyWidth = this.width * (this.volumeBySide.buy / total)
-    const buyWidthFast =
-      this.width * (this.insignificantVolumeBySide.buy / total)
-    const sellWidthFast =
-      this.width * (this.insignificantVolumeBySide.sell / total)
-    const sellWidth = this.width * (this.volumeBySide.sell / total)
-
-    const lineHeight = this.renderTrades ? this.lineHeight : this.height
-
-    this.ctx.fillStyle = this.buyColorBase
-    this.ctx.fillRect(0, 0, buyWidth, lineHeight)
-    this.ctx.fillStyle = this.buyColor100
-    this.ctx.fillRect(buyWidth, 0, buyWidthFast, lineHeight)
-    this.ctx.fillStyle = this.sellColor100
-    this.ctx.fillRect(buyWidth + buyWidthFast, 0, sellWidthFast, lineHeight)
-    this.ctx.fillStyle = this.sellColorBase
-    this.ctx.fillRect(this.width - sellWidth, 0, sellWidth, lineHeight)
   }
 
   renderDebug() {

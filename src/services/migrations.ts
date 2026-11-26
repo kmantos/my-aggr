@@ -910,5 +910,15 @@ export const workspaceUpgrades = {
         .filter(item => panesState.panes[item.i])
         .map(item => ({ ...item, type: panesState.panes[item.i].type }))
     }
+  },
+  31: (workspace: Workspace) => {
+    // trades panes histogram (buy / sell volume bar) removed
+    for (const paneId in workspace.states) {
+      const state = workspace.states[paneId]
+
+      if (state && typeof state === 'object' && 'showHistograms' in state) {
+        delete state.showHistograms
+      }
+    }
   }
 }
