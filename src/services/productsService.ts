@@ -58,6 +58,23 @@ const reverseStablecoins = stablecoins.filter(
  */
 export const QUOTE_CURRENCIES = ['USD', 'USDT', 'USDC']
 
+// names shown to the user when they differ from the exchange id (the id
+// stays the same: saved markets and the history server use it)
+const EXCHANGE_NAMES = {
+  OKEX: 'OKX'
+}
+
+export function getExchangeName(exchangeId: string) {
+  return EXCHANGE_NAMES[exchangeId] || exchangeId.replace(/_/g, ' ')
+}
+
+// ex: OKEX:BTC-USDT-SWAP -> OKX:BTC-USDT-SWAP
+export function getMarketLabel(market: string) {
+  const [exchangeId, pair] = parseMarket(market)
+
+  return `${getExchangeName(exchangeId)}:${pair}`
+}
+
 export function isAllowedQuote(quote: string) {
   return QUOTE_CURRENCIES.indexOf(quote) !== -1
 }

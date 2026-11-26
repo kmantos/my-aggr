@@ -160,7 +160,7 @@
           v-tippy
           @click="toggleMarket(market)"
         >
-          {{ market }} <i class="icon-cross"></i>
+          {{ getMarketLabel(market) }} <i class="icon-cross"></i>
         </button>
       </div>
     </div>
@@ -171,7 +171,9 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import {
+  getExchangeName,
   getExchangeSymbols,
+  getMarketLabel,
   getMarketProduct,
   indexedProducts,
   indexProducts,
@@ -260,6 +262,7 @@ export default class PaneSources extends Vue {
   // stablecoins and wrapped / staked tokens, never listed as coins
   excludedCoins: string[] = STABLECOINS.concat(COPY_TOKENS)
   exchangeLogos = exchangeLogos
+  getMarketLabel = getMarketLabel
   loadedCount = 0
   productsVersion = 0
 
@@ -418,7 +421,7 @@ export default class PaneSources extends Vue {
       if (!groups[product.exchange]) {
         groups[product.exchange] = {
           exchange: product.exchange,
-          name: product.exchange.replace(/_/g, ' '),
+          name: getExchangeName(product.exchange),
           markets: [],
           selected: 0
         }

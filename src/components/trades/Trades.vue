@@ -204,10 +204,6 @@ export default class Trades extends Mixins(PaneMixin) {
   scrollbar-width: none;
 
   &:not(.-logos) {
-    .trade__side + div {
-      padding-left: 1em;
-    }
-
     .trade__exchange,
     .trade__pair {
       font-size: 75%;
@@ -272,7 +268,7 @@ export default class Trades extends Mixins(PaneMixin) {
   background-size: cover;
   background-blend-mode: overlay;
   position: relative;
-  padding: 0 2rem 0 1.25rem;
+  padding: 0 2rem 0 0.5rem;
 
   &:after {
     content: '';
@@ -287,40 +283,14 @@ export default class Trades extends Mixins(PaneMixin) {
     pointer-events: none;
   }
 
-  &.-liquidation {
-    .icon-side {
-      font-size: inherit;
-
-      &:after {
-        margin-left: 1rem;
-      }
-    }
-
-    &.-buy .icon-side:before {
-      content: $icon-bear;
-    }
-
-    &.-sell .icon-side:before {
-      content: $icon-bull;
-    }
-  }
-
   &.-sell {
     background-color: lighten($red, 35%);
     color: $red;
-
-    .icon-side:before {
-      content: $icon-down;
-    }
   }
 
   &.-buy {
     background-color: lighten($green, 50%);
     color: $green;
-
-    .icon-side:before {
-      content: $icon-up;
-    }
   }
 
   &.-level-0 {
@@ -355,16 +325,6 @@ export default class Trades extends Mixins(PaneMixin) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .trade__side {
-    position: absolute;
-    left: 0.5rem;
-    line-height: inherit;
-  }
-
-  .icon-side {
-    font-size: 75%;
   }
 
   .icon-quote,

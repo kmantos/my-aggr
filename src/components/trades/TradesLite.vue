@@ -856,7 +856,7 @@ export default class TradesLite extends Mixins(PaneMixin) {
       this.drawPrice(trade, market, height)
     }
 
-    this.drawAmount(trade, height, trade.type === TradeType.liquidation)
+    this.drawAmount(trade, height)
 
     if (trade.time) {
       this.drawTime(trade, height)
@@ -902,7 +902,7 @@ export default class TradesLite extends Mixins(PaneMixin) {
     )
   }
 
-  drawAmount(trade: Trade, height, liquidation) {
+  drawAmount(trade: Trade, height) {
     this.ctx.textAlign = 'right'
     const backupFont = this.ctx.font
     this.ctx.font = this.ctx.font.replace(
@@ -914,7 +914,7 @@ export default class TradesLite extends Mixins(PaneMixin) {
       : formatAmount(trade.amount)
 
     this.ctx.fillText(
-      amount + (liquidation ? (trade.side === 'buy' ? '🐻' : '🐂') : ''),
+      amount,
       this.amountOffset,
       this.drawOffset + height / 2 + 1,
       this.maxWidth

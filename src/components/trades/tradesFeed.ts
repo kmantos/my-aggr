@@ -1,6 +1,10 @@
 import audioService, { AudioFunction } from '@/services/audioService'
 import gifsService from '@/services/gifsService'
-import { formatAmount, formatMarketPrice } from '@/services/productsService'
+import {
+  formatAmount,
+  formatMarketPrice,
+  getExchangeName
+} from '@/services/productsService'
 import store from '@/store'
 import { SlippageMode, Trade } from '@/types/types'
 import {
@@ -66,7 +70,6 @@ export default class TradesFeed {
 
   private audioThreshold: number
 
-  private lastSide: 'buy' | 'sell' | 'lbuy' | 'lsell'
   private lastTimestamp: number
 
   constructor(paneId: string, containerElement: HTMLElement, maxCount: number) {
@@ -276,15 +279,7 @@ export default class TradesFeed {
     let exchangeName = ''
 
     if (!this.showLogos) {
-      exchangeName = trade.exchange.replace('_', ' ')
-    }
-
-    let sideClass = ''
-
-    const sideType: any = trade.side
-    if (trade.liquidation || sideType !== this.lastSide) {
-      sideClass = ' icon-side'
-      this.lastSide = sideType
+      exchangeName = getExchangeName(trade.exchange)
     }
 
     let pairName = ''
@@ -298,14 +293,13 @@ export default class TradesFeed {
 
     return `<li class="trade -${trade.exchange} -${trade.side} -level-${
       colorStep.level
-    }${trade.liquidation ? ' -liquidation' : ''}" title="${trade.exchange}:${
-      trade.pair
-    }" style="${this.getTradeInlineStyles(
+    }${trade.liquidation ? ' -liquidation' : ''}" title="${getExchangeName(
+      trade.exchange
+    )}:${trade.pair}" style="${this.getTradeInlineStyles(
       trade,
       colorStep,
       significantAmount
     )}">
-    <div class="trade__side${sideClass}"></div>
     <div class="trade__exchange">${exchangeName}</div>
     ${pairName}
     ${

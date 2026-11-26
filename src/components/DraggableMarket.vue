@@ -12,13 +12,14 @@
         :class="`icon-${market.exchange}`"
         class="draggable-market__icon"
       ></i>
-      {{ market.id }}
+      {{ label }}
     </div>
   </transition>
 </template>
 
 <script>
 import logos from '@/assets/exchanges'
+import { getMarketLabel } from '@/services/productsService'
 
 export default {
   name: 'DraggableMarket',
@@ -40,6 +41,9 @@ export default {
     }
   },
   computed: {
+    label() {
+      return getMarketLabel(this.market.id)
+    },
     styles() {
       return {
         top: Math.round(this.position.y) + 'px',

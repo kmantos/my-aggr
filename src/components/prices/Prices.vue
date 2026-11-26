@@ -24,7 +24,7 @@
           :key="market.id"
           class="market"
           :class="market.status"
-          :title="market.id"
+          :title="getMarketLabel(market.id)"
           :data-market="market.id"
           v-draggable-market
         >
@@ -70,7 +70,8 @@ import {
   formatAmount,
   formatMarketPrice,
   parseMarket,
-  getMarketProduct
+  getMarketProduct,
+  getMarketLabel
 } from '@/services/productsService'
 
 type TickerStatus = '-pending' | '-up' | '-down' | '-neutral'
@@ -460,6 +461,10 @@ export default class Prices extends Mixins(PaneMixin) {
 
   formatAmount(amount) {
     return formatAmount(amount, 0)
+  }
+
+  getMarketLabel(market: string) {
+    return getMarketLabel(market)
   }
 
   onResize(width: number, height: number) {

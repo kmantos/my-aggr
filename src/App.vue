@@ -80,6 +80,8 @@ export default class App extends Vue {
   private faviconElement: HTMLLinkElement
   private stuckTimeout: number
   private mainPair: string
+  // coin of the main pair (ex: BTC for BTCUSD), shown in the tab title
+  private mainCoin: string
   private favicons: { up?: string; down?: string }
 
   get isBooted() {
@@ -166,13 +168,29 @@ export default class App extends Vue {
 
       this.price = formatMarketPrice(price, this.mainPair)
 
-      window.document.title = this.mainPair + ' ' + this.price
+      window.document.title = this.mainCoin + ' ' + this.formatTitlePrice(price)
     } else {
       this.price = null
       this.updateFavicon('neutral')
 
-      window.document.title = this.mainPair ? this.mainPair : 'Crypto'
+      window.document.title = this.mainCoin || 'Crypto'
     }
+  }
+
+  /**
+   * tab title price: BTC as a whole number, other coins 1 decimal max
+   * (coins under $1 keep their precision, ex: PEPE 0.0000123)
+   */
+  formatTitlePrice(price: number) {
+    if (this.mainCoin === 'BTC') {
+      return Math.round(price).toString()
+    }
+
+    if (price >= 1) {
+      return (Math.round(price * 10) / 10).toString()
+    }
+
+    return formatMarketPrice(price, this.mainPair)
   }
 
   async startUpdatingPrice() {
@@ -302,6 +320,11 @@ export default class App extends Vue {
     this.mainMarkets = Object.keys(markets)
       .filter(id => markets[id].local === this.mainPair)
       .map(id => markets[id].exchange + ':' + markets[id].pair)
+
+    const mainMarket = Object.values(markets).find(
+      (market: any) => market.local === this.mainPair
+    ) as any
+    this.mainCoin = (mainMarket && mainMarket.base) || this.mainPair
 
     this.mainPrices = {}
   }
