@@ -9,12 +9,11 @@
     <dropdown ref="menuDropdown">
       <button
         type="button"
-        class="dropdown-item"
+        class="dropdown-item dropdown-item--space-between"
         @click.stop="$refs.panesDropdown.toggle($event.currentTarget)"
       >
-        <i class="icon-dashboard -center mr8"></i>
         <span class="mr4">Pane</span>
-        <i class="icon-plus mlauto"></i>
+        <i class="icon-dashboard"></i>
       </button>
       <dropdown
         ref="panesDropdown"
@@ -25,20 +24,14 @@
           class="dropdown-item dropdown-item--space-between"
           @click="addPane('chart')"
         >
-          <div>
-            <div>Chart</div>
-            <div class="dropdown-item__subtitle">Live Chart</div>
-          </div>
+          <span class="mr4">Chart</span>
           <i class="icon-plus" />
         </button>
         <button
           class="dropdown-item dropdown-item--space-between"
           @click="addPane('trades-lite')"
         >
-          <div>
-            <div>Trade</div>
-            <div class="dropdown-item__subtitle">Live trades feed</div>
-          </div>
+          <span class="mr4">Trade</span>
           <i class="icon-plus" />
         </button>
       </dropdown>

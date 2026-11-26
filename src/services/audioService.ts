@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import Tuna from 'tunajs'
 import store from '../store'
 import {
   findClosingBracketMatchIndex,
@@ -76,53 +75,8 @@ export const audioDefaultParameters = {
 class AudioService {
   static savedAudioBuffers = {}
 
-  filtersOptions = {
-    PingPongDelay: {
-      wetLevel: 0.5, //0 to 1
-      feedback: 0.01, //0 to 1
-      delayTimeLeft: 175, //1 to 10000 (milliseconds)
-      delayTimeRight: 100 //1 to 10000 (milliseconds)
-    },
-    HighPassFilter: {
-      frequency: 700, //20 to 22050
-      Q: 10, //0.001 to 100
-      gain: -10, //-40 to 40 (in decibels)
-      filterType: 'highpass', //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
-      bypass: 0
-    },
-    LowPassFilter: {
-      frequency: 1500, //20 to 22050
-      Q: 1, //0.001 to 100
-      gain: 0, //-40 to 40 (in decibels)
-      filterType: 'lowpass', //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
-      bypass: 0
-    },
-    Compressor: {
-      threshold: -1, //-100 to 0
-      makeupGain: 1, //0 and up (in decibels)
-      attack: 1, //0 to 1000
-      release: 0, //0 to 3000
-      ratio: 4, //1 to 20
-      knee: 5, //0 to 40
-      automakeup: true, //true/false
-      bypass: 0
-    },
-    Delay: {
-      feedback: 0.33, //0 to 1+
-      delayTime: 400 //1 to 10000 milliseconds
-    },
-    Chorus: {
-      rate: 1.5, //0.01 to 8+
-      feedback: 0.4, //0 to 1+
-      depth: 0.7, //0 to 1
-      delay: 0.0045, //0 to 1
-      bypass: 0 //the value 1 starts the effect as bypassed, 0 or 1
-    }
-  }
-
   context: AudioContext
   private releaseUserGesture: () => void
-  tuna: any
 
   output: any
   count = 0
@@ -173,50 +127,12 @@ class AudioService {
       this.output = null
     }
 
-    this.tuna = new Tuna(this.context)
+    // sounds -> volume -> speakers
+    this.gainNode = this.context.createGain()
+    this.gainNode.gain.value = store.state.settings.audioVolume
+    this.gainNode.connect(this.context.destination)
 
-    const effects = []
-
-    for (const id in this.filtersOptions) {
-      if (!store.state.settings.audioFilters[id]) {
-        continue
-      }
-
-      let name = id
-
-      if (id === 'HighPassFilter' || id === 'LowPassFilter') {
-        name = 'Filter'
-      }
-
-      effects.push(new this.tuna[name](this.filtersOptions[id]))
-    }
-
-    this.gainNode = new this.tuna.Gain({
-      gain: store.state.settings.audioVolume
-    })
-
-    effects.push(this.gainNode)
-
-    if (effects.length) {
-      let source
-
-      for (const effect of effects) {
-        if (source) {
-          source.connect(effect)
-        }
-
-        source = effect
-      }
-
-      source.connect(this.context.destination)
-
-      console.debug(`[sfx] created output with ${effects.length} effect(s)`)
-
-      this.output = effects[0]
-    } else {
-      console.debug(`[sfx] created output (no effect)`)
-      this.output = this.context.destination
-    }
+    this.output = this.gainNode
   }
 
   setVolume(gain: number) {

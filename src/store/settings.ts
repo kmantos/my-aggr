@@ -19,7 +19,6 @@ import { getTimeframeForHuman } from '@/utils/helpers'
 import { isTouchSupported } from '@/utils/touchevent'
 import { ACCENT_COLOR } from '@/utils/constants'
 
-export type AudioFilters = { [id: string]: boolean }
 export interface SettingsState {
   preferQuoteCurrencySize?: boolean
   calculateSlippage?: SlippageMode
@@ -33,7 +32,6 @@ export interface SettingsState {
   timezoneOffset?: number
   useAudio?: boolean
   audioVolume?: number
-  audioFilters?: AudioFilters
   settings?: string[]
   sections?: string[]
   disableAnimations?: boolean
@@ -59,7 +57,11 @@ const state = Object.assign(
   {
     _id: 'settings'
   },
-  DEFAULTS_STATE
+  DEFAULTS_STATE,
+  {
+    // charts use the local time by default
+    timezoneOffset: new Date().getTimezoneOffset() * 60000 * -1
+  }
 ) as SettingsState
 
 const actions = {
@@ -409,10 +411,6 @@ const mutations = {
   },
   SET_AUDIO_VOLUME(state, value) {
     state.audioVolume = value
-  },
-  SET_AUDIO_FILTER(state, { id, value }: { id: string; value: boolean }) {
-    state.audioFilters[id] = value
-    audioService.reconnect()
   },
   SET_BACKGROUND_COLOR(state, value) {
     state.backgroundColor = value

@@ -31,24 +31,6 @@
         <input
           type="checkbox"
           class="form-control"
-          :checked="animationsEnabled"
-          @change="$store.commit('settings/TOGGLE_ANIMATIONS')"
-        />
-        <div></div>
-        <span>
-          {{
-            animationsEnabled
-              ? 'UI animations are enabled ✨'
-              : 'UI animations are disabled 🚀'
-          }}
-        </span>
-      </label>
-    </div>
-    <div class="form-group mb8">
-      <label class="checkbox-control -animations">
-        <input
-          type="checkbox"
-          class="form-control"
           :checked="locked"
           @change="$store.commit('panes/TOGGLE_LAYOUT')"
         />
@@ -102,10 +84,6 @@ import TransitionHeight from '@/components/framework/TransitionHeight.vue'
 })
 export default class OtherSettings extends Vue {
   responsiveEnabled: boolean = null
-
-  get animationsEnabled() {
-    return !this.$store.state.settings.disableAnimations
-  }
 
   get autoHideHeaders() {
     return this.$store.state.settings.autoHideHeaders

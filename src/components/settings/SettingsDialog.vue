@@ -143,6 +143,23 @@
       </table>
     </ToggableSection>
 
+    <div class="settings-general">
+      <audio-settings />
+      <div class="form-group column mt16">
+        <color-picker-control
+          :value="backgroundColor"
+          label="Background color"
+          @input="
+            $store.dispatch('settings/setColor', {
+              type: 'BACKGROUND',
+              value: $event
+            })
+          "
+        ></color-picker-control>
+        <label class="-fill -center ml8">Background color</label>
+      </div>
+    </div>
+
     <ToggableSection
       v-if="currentWorkspace"
       id="settings-trades"
@@ -267,90 +284,6 @@
       <alerts-settings />
     </ToggableSection>
 
-    <ToggableSection
-      id="settings-audio"
-      title="Audio"
-      description="main volume"
-      inset
-    >
-      <audio-settings />
-    </ToggableSection>
-
-    <ToggableSection
-      id="settings-colors"
-      title="Colors"
-      description="background, buy/sell color"
-      inset
-    >
-      <div class="form-group column mb8">
-        <color-picker-control
-          :value="backgroundColor"
-          label="Background color"
-          @input="
-            $store.dispatch('settings/setColor', {
-              type: 'BACKGROUND',
-              value: $event
-            })
-          "
-        ></color-picker-control>
-        <label class="-fill -center ml8">Background color</label>
-      </div>
-      <div class="form-group column mb8">
-        <color-picker-control
-          :value="textColor"
-          label="App text color"
-          @input="
-            $store.dispatch('settings/setColor', {
-              type: 'TEXT',
-              value: $event
-            })
-          "
-        ></color-picker-control>
-        <label for="" class="-fill -center ml8"
-          >Text color
-          <a
-            ><i
-              class="icon-cross text-small"
-              v-if="textColor"
-              @click="
-                $store.dispatch('settings/setColor', {
-                  type: 'TEXT',
-                  value: null
-                })
-              "
-            ></i></a
-        ></label>
-      </div>
-      <div class="form-group column mb8">
-        <color-picker-control
-          :value="buyColor"
-          label="Buy color"
-          @close="regenerateSwatch"
-          @input="
-            $store.dispatch('settings/setColor', {
-              type: 'BUY',
-              value: $event
-            })
-          "
-        ></color-picker-control>
-        <label class="-fill -center ml8">Buy color</label>
-      </div>
-      <div class="form-group column mb8">
-        <color-picker-control
-          :value="sellColor"
-          label="Sell color"
-          @close="regenerateSwatch"
-          @input="
-            $store.dispatch('settings/setColor', {
-              type: 'SELL',
-              value: $event
-            })
-          "
-        ></color-picker-control>
-        <label class="-fill -center ml8">Sell color</label>
-      </div>
-    </ToggableSection>
-
     <ToggableSection id="settings-other" title="Other" inset>
       <other-settings />
     </ToggableSection>
@@ -444,18 +377,6 @@ export default {
 
     backgroundColor() {
       return this.$store.state.settings.backgroundColor
-    },
-
-    textColor() {
-      return this.$store.state.settings.textColor
-    },
-
-    buyColor() {
-      return this.$store.state.settings.buyColor
-    },
-
-    sellColor() {
-      return this.$store.state.settings.sellColor
     },
 
     aggregationLength() {
@@ -713,61 +634,17 @@ export default {
         this.workspaceDropdownTrigger = event.currentTarget
         this.workspaceDropdownId = workspaceId
       }
-    },
-
-    async regenerateSwatch(colorDidChanged) {
-      if (!colorDidChanged) {
-        return
-      }
-
-      if (
-        await dialogService.confirm({
-          message: `Generate thresholds colors ? 
-          <i
-            class="icon-info -lower ml4" 
-            title="Will override every thresholds color with global buy / sell colors" 
-          />`,
-          html: true,
-          ok: 'Yes please',
-          cancel: 'No thanks'
-        })
-      ) {
-        const buyColor = this.$store.state.settings.buyColor
-        const sellColor = this.$store.state.settings.sellColor
-
-        for (const paneId in this.$store.state.panes.panes) {
-          if (/^trades/.test(this.$store.state.panes.panes[paneId].type)) {
-            this.$store.dispatch(`${paneId}/generateSwatch`, {
-              color: buyColor,
-              side: 'buy',
-              baseVariance: 0.25
-            })
-
-            this.$store.dispatch(`${paneId}/generateSwatch`, {
-              color: sellColor,
-              side: 'sell',
-              baseVariance: 0.25
-            })
-
-            // force refresh
-            this.$store.state[paneId].thresholds = JSON.parse(
-              JSON.stringify(this.$store.state[paneId].thresholds)
-            )
-            this.$store.commit(paneId + '/SET_THRESHOLD_COLOR', {})
-          }
-        }
-
-        this.$store.commit(
-          `settings/SET_BACKGROUND_COLOR`,
-          this.$store.state.settings.backgroundColor
-        )
-      }
     }
   }
 }
 </script>
 
 <style lang="scss">
+.settings-general {
+  padding: 1rem;
+  border-bottom: 1px solid var(--theme-background-150);
+}
+
 .settings-footer__version {
   opacity: 0.75;
   line-height: 1;

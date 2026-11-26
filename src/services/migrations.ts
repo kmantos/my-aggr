@@ -920,5 +920,19 @@ export const workspaceUpgrades = {
         delete state.showHistograms
       }
     }
+  },
+  32: (workspace: Workspace) => {
+    // simpler settings: UI animations always on, charts in local time, app
+    // text / buy / sell colors back to defaults, no audio effects
+    const settings =
+      workspace.states.settings || (workspace.states.settings = {})
+
+    settings.disableAnimations = false
+    settings.timezoneOffset = new Date().getTimezoneOffset() * 60000 * -1
+
+    delete settings.textColor
+    delete settings.buyColor
+    delete settings.sellColor
+    delete settings.audioFilters
   }
 }
