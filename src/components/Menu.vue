@@ -1,12 +1,20 @@
 <template>
-  <div id="menu" class="menu" :class="{ '-open': open }">
+  <div
+    id="menu"
+    class="menu"
+    :class="{ '-open': open, '-idle': idle && !menuOpened }"
+  >
     <button
       class="menu__button btn"
       @click="$refs.menuDropdown.toggle($event.currentTarget)"
     >
       <i class="icon-menu"></i>
     </button>
-    <dropdown ref="menuDropdown">
+    <dropdown
+      ref="menuDropdown"
+      @opened="menuOpened = true"
+      @closed="menuOpened = false"
+    >
       <button
         type="button"
         class="dropdown-item dropdown-item--space-between"
@@ -71,12 +79,41 @@ export default class Menu extends Vue {
   isFullscreen = false
   open = false
 
+  // the button hides after 5s without mouse / touch activity
+  idle = false
+  menuOpened = false
+  private idleTimeout: number
+
   mounted() {
     document.addEventListener(
       'webkitfullscreenchange',
       this.handleFullScreenChange
     )
     document.addEventListener('fullscreenchange', this.handleFullScreenChange)
+
+    for (const event of ['mousemove', 'touchstart', 'keydown']) {
+      document.addEventListener(event, this.wakeUp, { passive: true })
+    }
+
+    this.wakeUp()
+  }
+
+  beforeDestroy() {
+    for (const event of ['mousemove', 'touchstart', 'keydown']) {
+      document.removeEventListener(event, this.wakeUp)
+    }
+
+    clearTimeout(this.idleTimeout)
+  }
+
+  wakeUp() {
+    this.idle = false
+
+    clearTimeout(this.idleTimeout)
+
+    this.idleTimeout = window.setTimeout(() => {
+      this.idle = true
+    }, 5000)
   }
 
   showSettings() {
@@ -148,7 +185,13 @@ export default class Menu extends Vue {
   right: 1.5rem;
   z-index: 10;
 
+  &.-idle .menu__button {
+    opacity: 0;
+    pointer-events: none;
+  }
+
   .menu__button {
+    transition: opacity 0.3s ease-out;
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;
