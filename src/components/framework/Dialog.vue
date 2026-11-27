@@ -6,7 +6,6 @@
       currentSize && `dialog--${currentSize}`,
       contrasted && `dialog--contrasted`,
       borderless && `dialog--borderless`,
-      moved && `dialog--moved`,
       mask && 'dialog--mask'
     ]"
   >
@@ -18,24 +17,13 @@
       @click.stop
       @mousedown="onMouseDown"
     >
-      <i
-        v-if="resizable"
-        class="dialog__resize icon-up-thin"
-        @mousedown="handleResize"
-        @touchstart="handleResize"
-      ></i>
-      <header
-        v-if="$slots.header"
-        class="dialog__header-wrapper"
-        @mousedown="handleDrag"
-        @touchstart="handleDrag"
-      >
+      <header v-if="$slots.header" class="dialog__header-wrapper">
         <slot name="cover"></slot>
         <div class="dialog__header">
           <slot name="header"></slot>
           <button
             type="button"
-            class="dialog__close btn -link -text -no-grab"
+            class="dialog__close btn -link -text"
             @click="close"
           >
             <i class="icon-cross"></i>
@@ -56,10 +44,13 @@
 </template>
 
 <script lang="ts">
-import dialogService, { DialogPosition } from '@/services/dialogService'
+import dialogService from '@/services/dialogService'
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { getEventCords } from '../../utils/helpers'
 
+/**
+ * Popup frame: centered, fixed (not draggable, not resizable), its size comes
+ * from the `size` prop (full screen on phones / car screens, see dialog.scss)
+ */
 @Component({
   name: 'Dialog',
   props: {
@@ -74,10 +65,6 @@ import { getEventCords } from '../../utils/helpers'
     borderless: {
       type: Boolean,
       default: false
-    },
-    resizable: {
-      type: Boolean,
-      default: true
     },
     size: {
       type: String,
@@ -100,27 +87,19 @@ import { getEventCords } from '../../utils/helpers'
 export default class Dialog extends Vue {
   size: string
   closeOnEscape: boolean
-  delta = { x: 0, y: 0 }
   impliedSize = null
+  // small / medium / large, from the rendered width (responsive layouts)
   currentSize = null
-  moved = false
 
   private _deinteractionTimeout: number
   private _windowResizeTimeout: number
-  private _handleTranslateMove: (event: any) => void
-  private _handleTranslateRelease: () => void
-  private _handleResizeMove: (event: any) => void
-  private _handleResizeRelease: () => void
   private _handleEscKey: (event: any) => void
   private _handleWindowResize: (event: any) => void
-  private _resizeOrigin: any
 
   $refs!: {
     content: HTMLElement
     body: HTMLElement
   }
-  position: DialogPosition = {}
-  private _persistTimeout: NodeJS.Timeout
 
   created() {
     if (this.size) {
@@ -128,21 +107,12 @@ export default class Dialog extends Vue {
     }
   }
 
-  // ex: pane dialogs widen while their Sources tab is open
   @Watch('size')
   onSizeChange(size: string) {
     this.impliedSize = size
   }
 
   async mounted() {
-    const parentDialog = this.$parent as any
-    if (this.$parent && parentDialog.dialogId) {
-      this.setPosition(
-        dialogService.dialogPositions[parentDialog.dialogId],
-        true
-      )
-    }
-
     if (this.closeOnEscape) {
       this.bindEscKey()
     }
@@ -154,17 +124,8 @@ export default class Dialog extends Vue {
 
     this.$emit('mounted')
   }
+
   beforeDestroy() {
-    this.persistPosition()
-
-    if (this._handleTranslateRelease) {
-      this._handleTranslateRelease()
-    }
-
-    if (this._handleResizeRelease) {
-      this._handleResizeRelease()
-    }
-
     if (this._handleEscKey) {
       document.removeEventListener('keydown', this._handleEscKey)
     }
@@ -174,71 +135,8 @@ export default class Dialog extends Vue {
     }
   }
 
-  persistPosition() {
-    const dialogPosition = this.position
-    const parentDialog = this.$parent as any
-
-    if (parentDialog && parentDialog.dialogId) {
-      dialogService.dialogPositions[parentDialog.dialogId] = {
-        x: dialogPosition.x,
-        y: dialogPosition.y,
-        w: dialogPosition.w,
-        h: dialogPosition.h
-      }
-    }
-  }
-
-  handleDrag(event) {
-    if (
-      this._handleTranslateRelease ||
-      event.button === 2 ||
-      event.target.classList.contains('-no-grab') ||
-      event.target.parentElement.classList.contains('-no-grab')
-    ) {
-      return
-    }
-
-    const lastMove = Object.assign({}, this.delta)
-    const startPosition = getEventCords(event)
-    const startOffset = this.$refs.content.offsetTop
-    const minY = startOffset * -1
-
-    this._handleTranslateMove = evnt => {
-      this.moved = true
-      const endPosition = getEventCords(evnt)
-
-      const x = lastMove.x + endPosition.x - startPosition.x
-      const y = Math.max(minY, lastMove.y + endPosition.y - startPosition.y)
-
-      this.delta.x = x
-      this.delta.y = y
-
-      this.setPosition(
-        {
-          x,
-          y
-        },
-        true
-      )
-    }
-
-    this._handleTranslateRelease = () => {
-      document.removeEventListener('mousemove', this._handleTranslateMove)
-      document.removeEventListener('mouseup', this._handleTranslateRelease)
-      document.removeEventListener('touchmove', this._handleTranslateMove)
-      document.removeEventListener('touchend', this._handleTranslateRelease)
-      window.removeEventListener('blur', this._handleTranslateRelease)
-
-      delete this._handleTranslateRelease
-    }
-
-    document.addEventListener('mousemove', this._handleTranslateMove)
-    document.addEventListener('mouseup', this._handleTranslateRelease)
-    document.addEventListener('touchmove', this._handleTranslateMove)
-    document.addEventListener('touchend', this._handleTranslateRelease)
-    window.addEventListener('blur', this._handleTranslateRelease)
-  }
-
+  // a click that started inside the dialog (ex: text selection) and ended on
+  // the mask doesn't close it
   onMouseDown() {
     if (this._deinteractionTimeout) {
       clearTimeout(this._deinteractionTimeout)
@@ -268,99 +166,6 @@ export default class Dialog extends Vue {
 
   close() {
     this.$emit('clickOutside')
-  }
-
-  handleResize(event) {
-    this._resizeOrigin = getEventCords(event)
-
-    const padding = parseInt(getComputedStyle(this.$refs.body).padding)
-
-    this.setPosition({
-      w: this.$refs.content.clientWidth,
-      h: this.$refs.body.clientHeight - padding * 2
-    })
-
-    this._handleResizeMove = event => {
-      const coordinates = getEventCords(event)
-
-      const dialogWidth =
-        parseInt(this.$refs.content.style.width) +
-        (coordinates.x - this._resizeOrigin.x) * 2
-      const dialogHeight =
-        parseInt(this.$refs.body.style.height) +
-        (coordinates.y - this._resizeOrigin.y) * 2
-
-      this.setPosition(
-        {
-          w: dialogWidth,
-          h: dialogHeight
-        },
-        true
-      )
-
-      this._resizeOrigin = coordinates
-    }
-
-    this._handleResizeRelease = () => {
-      document.removeEventListener('mousemove', this._handleResizeMove)
-      document.removeEventListener('mouseup', this._handleResizeRelease)
-      document.removeEventListener('touchmove', this._handleResizeMove)
-      document.removeEventListener('touchend', this._handleResizeRelease)
-      window.removeEventListener('blur', this._handleResizeRelease)
-
-      document.body.classList.remove('-unselectable')
-      delete this._handleResizeRelease
-    }
-
-    document.addEventListener('mousemove', this._handleResizeMove)
-    document.addEventListener('mouseup', this._handleResizeRelease)
-    document.addEventListener('touchmove', this._handleResizeMove)
-    document.addEventListener('touchend', this._handleResizeRelease)
-    window.addEventListener('blur', this._handleResizeRelease)
-
-    document.body.classList.add('-unselectable')
-  }
-
-  savePosition(position) {
-    this.position = {
-      ...this.position,
-      ...position
-    }
-  }
-
-  setPosition(position, savePosition?: boolean) {
-    if (!position) {
-      return
-    }
-
-    if (typeof position.w === 'number' && typeof position.h === 'number') {
-      this.lockSize(position)
-      this.detectSize(position.w)
-    }
-
-    if (typeof position.x === 'number' && typeof position.y === 'number') {
-      this.$refs.content.style.transform = `translate(${position.x}px, ${position.y}px)`
-      this.delta.x = Math.round(position.x)
-      this.delta.y = Math.round(position.y)
-    }
-
-    if (savePosition) {
-      if (
-        typeof position.w === 'number' &&
-        typeof position.h === 'number' &&
-        (position.w !== this.position?.w || position.h !== this.position?.h)
-      ) {
-        this.$emit('resize')
-      }
-
-      this.savePosition(position)
-    }
-
-    if (this._persistTimeout) {
-      clearTimeout(this._persistTimeout)
-
-      this._persistTimeout = setTimeout(() => this.persistPosition(), 100)
-    }
   }
 
   bindEscKey() {
@@ -397,20 +202,6 @@ export default class Dialog extends Vue {
     }
 
     window.addEventListener('resize', this._handleWindowResize)
-  }
-
-  lockSize(position) {
-    if (!position) {
-      position = {
-        w: this.$refs.content.clientWidth,
-        h: this.$refs.body.clientHeight
-      }
-    }
-    this.$refs.content.style.maxWidth = '100vw'
-    this.$refs.body.style.maxHeight = '100vh'
-    this.$refs.content.style.width = position.w + 'px'
-    this.$refs.body.style.height = position.h + 'px'
-    this.moved = true
   }
 
   detectSize(w) {

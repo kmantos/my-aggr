@@ -8,7 +8,6 @@
     <Dialog
       v-if="dialogOpened"
       class="connection-issue-dialog"
-      :resizable="false"
       @clickOutside="hide"
     >
       <template v-slot:header>

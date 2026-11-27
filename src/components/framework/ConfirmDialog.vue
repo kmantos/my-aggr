@@ -1,5 +1,5 @@
 <template>
-  <Dialog ref="dialog" @clickOutside="close" size="small" :resizable="false">
+  <Dialog ref="dialog" @clickOutside="close" size="small">
     <template v-slot:header>
       <div class="dialog__title">{{ title }}</div>
     </template>

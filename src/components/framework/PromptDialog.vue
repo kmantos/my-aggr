@@ -1,10 +1,5 @@
 <template>
-  <Dialog
-    @clickOutside="close"
-    size="small"
-    :resizable="markdown"
-    @resize="resizeEditor"
-  >
+  <Dialog @clickOutside="close" size="small">
     <template v-slot:header>
       <div class="dialog__title">{{ action }}</div>
     </template>
@@ -109,11 +104,6 @@ export default {
   methods: {
     submit() {
       this.close(this.value)
-    },
-    resizeEditor() {
-      if (this.$refs.editor && this.$refs.editor.resize) {
-        this.$refs.editor.resize()
-      }
     }
   }
 }

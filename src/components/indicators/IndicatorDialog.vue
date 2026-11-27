@@ -10,7 +10,6 @@
     :close-on-escape="false"
     :cover="savedPreview"
     @clickOutside="close"
-    @resize="onResize"
     contrasted
   >
     <template #cover>
@@ -34,7 +33,7 @@
         v-if="unsavedChanges"
         title="Rollback changes"
         v-tippy
-        class="btn ml8 -text -no-grab indicator-dialog__action"
+        class="btn ml8 -text indicator-dialog__action"
         @click="undoIndicator"
       >
         <i class="icon-eraser"></i><span class="ml8">Discard</span>
@@ -43,7 +42,7 @@
       <button
         title="Save changes"
         v-tippy
-        class="btn ml8 -no-grab indicator-dialog__action"
+        class="btn ml8 indicator-dialog__action"
         :class="[!unsavedChanges && '-text', unsavedChanges && '-green']"
         @click="saveIndicator"
       >
@@ -894,9 +893,6 @@ export default {
       if (this.$refs.editor) {
         this.$refs.editor.resize()
       }
-    },
-    onResize() {
-      this.resizeEditor()
     },
     async revertChanges(op: 'reset' | 'revert') {
       if (op === 'reset') {

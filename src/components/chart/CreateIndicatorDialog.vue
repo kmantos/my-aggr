@@ -1,10 +1,5 @@
 <template>
-  <Dialog
-    @clickOutside="close"
-    class="create-indicator-dialog"
-    size="small"
-    :resizable="false"
-  >
+  <Dialog @clickOutside="close" class="create-indicator-dialog" size="small">
     <template v-slot:header>
       <div class="dialog__title">New indicator</div>
     </template>

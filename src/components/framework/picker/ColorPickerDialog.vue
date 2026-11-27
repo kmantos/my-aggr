@@ -3,7 +3,6 @@
     @mousedown.native.stop
     @clickOutside="close"
     class="color-picker-dialog"
-    :resizable="false"
     :mask="false"
     size="small"
     borderless

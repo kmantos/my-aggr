@@ -4,16 +4,8 @@ import store from '@/store'
 import ConfirmDialog from '@/components/framework/ConfirmDialog.vue'
 import PromptDialog from '@/components/framework/PromptDialog.vue'
 
-export interface DialogPosition {
-  x?: number
-  y?: number
-  w?: number
-  h?: number
-}
-
 class DialogService {
   mountedComponents: { [id: string]: any } = {}
-  dialogPositions: { [id: string]: any } = {}
   isInteracting = false
   hasDialogOpened = false
   pickerInstance: any

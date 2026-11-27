@@ -5,7 +5,6 @@
         v-if="dialogOpened"
         class="edit-resource-dialog"
         @clickOutside="hide"
-        @resize="resizeEditor"
       >
         <template v-slot:header>
           <div class="d-flex">
@@ -245,11 +244,6 @@ export default {
 
       this.clearPreview()
       this.hasDeletedPreview = true
-    },
-    resizeEditor() {
-      if (this.$refs.editor) {
-        this.$refs.editor.resize()
-      }
     }
   }
 }
