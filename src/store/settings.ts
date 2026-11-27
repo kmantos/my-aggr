@@ -17,6 +17,7 @@ import aggregatorService from '@/services/aggregatorService'
 import audioService from '@/services/audioService'
 import { getTimeframeForHuman } from '@/utils/helpers'
 import { isTouchSupported } from '@/utils/touchevent'
+import { IS_CAR_BROWSER } from '@/utils/constants'
 import { ACCENT_COLOR } from '@/utils/constants'
 
 export interface SettingsState {
@@ -47,6 +48,7 @@ export interface SettingsState {
   showAlertsLabel: boolean
   alertSound: string
   showResolution: boolean
+  pauseTradesOnHover: boolean
   chartRefreshRate: number
   showCountdown: boolean
   flipCharts: boolean
@@ -61,7 +63,14 @@ const state = Object.assign(
   DEFAULTS_STATE,
   {
     // charts use the local time by default
-    timezoneOffset: new Date().getTimezoneOffset() * 60000 * -1
+    timezoneOffset: new Date().getTimezoneOffset() * 60000 * -1,
+    // trades panes pause on hover on PC only (a tap shouldn't pause them on
+    // phones / car screens)
+    pauseTradesOnHover: !(
+      isTouchSupported() ||
+      IS_CAR_BROWSER ||
+      (window.innerWidth >= 768 && window.innerHeight < 500)
+    )
   }
 ) as SettingsState
 
@@ -498,6 +507,9 @@ const mutations = {
   },
   TOGGLE_RESOLUTION(state) {
     state.showResolution = !state.showResolution
+  },
+  TOGGLE_PAUSE_TRADES_ON_HOVER(state) {
+    state.pauseTradesOnHover = !state.pauseTradesOnHover
   },
   SET_INDICATOR_DIALOG_NAVIGATION(state, value) {
     state.indicatorDialogNavigation = JSON.stringify(value)

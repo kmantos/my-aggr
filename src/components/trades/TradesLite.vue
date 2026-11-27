@@ -1057,6 +1057,11 @@ export default class TradesLite extends Mixins(PaneMixin) {
       return
     }
 
+    // setting (default: on for PC, off for phones / car screens)
+    if (!this.$store.state.settings.pauseTradesOnHover) {
+      return
+    }
+
     this.paused = 1
 
     this.blurHandler = this.onBlur.bind(this)
