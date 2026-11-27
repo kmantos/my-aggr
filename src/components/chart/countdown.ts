@@ -174,18 +174,22 @@ export default class CandleCountdown {
 
     const background = this.getLabelColor(options, bar)
     const font = `${fontSize}px ${layout.fontFamily}`
+    // same box as the price label: lightweight-charts rounds the label width
+    // to device pixels (measured on screen: label = text box + 2.5px)
+    const dpr = window.devicePixelRatio || 1
+    const textBoxWidth = Math.max(
+      this.getLabelWidth(api.priceFormatter().format(price), font, fontSize),
+      this.getLabelWidth(text, font, fontSize)
+    )
     const labelWidth = Math.min(
-      scaleWidth,
-      Math.max(
-        this.getLabelWidth(api.priceFormatter().format(price), font, fontSize),
-        this.getLabelWidth(text, font, fontSize)
-      )
+      scaleWidth + 1,
+      Math.round((textBoxWidth + 2.5) * dpr) / dpr
     )
 
     // labels are drawn from the chart side of the price scale
     const left =
       side === 'right'
-        ? this.chart.chartElement.clientWidth - scaleWidth
+        ? this.chart.chartElement.clientWidth - scaleWidth - 1
         : scaleWidth - labelWidth - 1 // left scale border
 
     return {
