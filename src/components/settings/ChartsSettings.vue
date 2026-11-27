@@ -42,6 +42,18 @@
         <input
           type="checkbox"
           class="form-control"
+          :checked="showPriceWatermark"
+          @change="$store.commit('settings/TOGGLE_PRICE_WATERMARK')"
+        />
+        <div></div>
+        <span class="-inline">Show price in the background</span>
+      </label>
+    </div>
+    <div class="form-group mb8">
+      <label class="checkbox-control">
+        <input
+          type="checkbox"
+          class="form-control"
           :checked="flipCharts"
           @change="$store.commit('settings/TOGGLE_CHART_FLIP')"
         />
@@ -79,6 +91,10 @@ export default class ChartsSettings extends Vue {
 
   get showCountdown() {
     return this.$store.state.settings.showCountdown
+  }
+
+  get showPriceWatermark() {
+    return this.$store.state.settings.showPriceWatermark
   }
 
   get flipCharts() {

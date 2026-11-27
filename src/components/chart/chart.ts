@@ -600,7 +600,10 @@ export default class Chart {
     }
 
     element.textContent = text
-    element.style.display = text ? 'flex' : 'none'
+    element.style.display =
+      text && store.state.settings.showPriceWatermark !== false
+        ? 'flex'
+        : 'none'
     element.style.color = color
     element.style.fontFamily = getDefaultFontFamily()
     // vertically centered on the candles area (above the time scale)

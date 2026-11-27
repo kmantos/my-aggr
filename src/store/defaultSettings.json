@@ -139,5 +139,6 @@
   "showResolution": false,
   "chartRefreshRate": 1000,
   "showCountdown": true,
-  "flipCharts": false
+  "flipCharts": false,
+  "showPriceWatermark": true
 }

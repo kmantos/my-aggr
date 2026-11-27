@@ -50,6 +50,7 @@ export interface SettingsState {
   chartRefreshRate: number
   showCountdown: boolean
   flipCharts: boolean
+  showPriceWatermark: boolean
   indicatorDialogNavigation?: string
 }
 
@@ -491,6 +492,9 @@ const mutations = {
   },
   TOGGLE_CHART_FLIP(state) {
     state.flipCharts = !state.flipCharts
+  },
+  TOGGLE_PRICE_WATERMARK(state) {
+    state.showPriceWatermark = !state.showPriceWatermark
   },
   TOGGLE_RESOLUTION(state) {
     state.showResolution = !state.showResolution

@@ -137,6 +137,9 @@ export default class ChartControl {
         case 'settings/TOGGLE_CHART_FLIP':
           this.chart.applyFlip()
           break
+        case 'settings/TOGGLE_PRICE_WATERMARK':
+          this.chart.updatePriceWatermark(true)
+          break
         case 'settings/SET_CHART_REFRESH_RATE':
           this.chart.clearQueue()
           this.chart.setupQueue()
