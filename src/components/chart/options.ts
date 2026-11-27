@@ -493,6 +493,9 @@ export function getSerieOptions(indicator, plot, priceScale?) {
           }
         }
       : {}),
-    ...customPlotOptions
+    ...customPlotOptions,
+    // no built-in last value label: the chart draws its own price box
+    // (price + candle countdown, see priceLabel.ts)
+    lastValueVisible: false
   }
 }

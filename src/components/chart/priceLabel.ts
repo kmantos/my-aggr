@@ -16,7 +16,7 @@ const LABEL_PADDING_RATIO = 2.5 / 12
 const LABEL_HORIZONTAL_PADDING_RATIO = 5 / 12
 const LABEL_TICK_LENGTH = 5
 
-interface CountdownBox {
+interface PriceLabelBox {
   text: string
   top: number
   left: number
@@ -28,13 +28,14 @@ interface CountdownBox {
 }
 
 /**
- * Candle close countdown displayed under the price series' last value label
- * (on the price axis), moving along with it.
+ * The chart's last price box on the price axis (one element, built here, the
+ * chart's own last value labels are disabled): price, and the candle close
+ * countdown under it (unless disabled in settings), moving along with the price.
  *
  * - time bars: time left until the bar closes (mm:ss, hh:mm:ss or Xd HHh)
  * - tick / volume / bps bars: progress toward closing the bar (e.g. 37/100)
  */
-export default class CandleCountdown {
+export default class PriceLabel {
   private element: HTMLDivElement
   private frame: number
   private rendered: string
@@ -47,7 +48,7 @@ export default class CandleCountdown {
     this.detach()
 
     this.element = document.createElement('div')
-    this.element.className = 'chart-countdown'
+    this.element.className = 'chart-price-label'
     this.element.style.display = 'none'
     this.chart.chartElement.appendChild(this.element)
 
@@ -73,7 +74,7 @@ export default class CandleCountdown {
     this.frame = requestAnimationFrame(this.loop)
   }
 
-  private render(box: CountdownBox | null) {
+  private render(box: PriceLabelBox | null) {
     const key = box ? JSON.stringify(box) : ''
 
     if (key === this.rendered || !this.element) {
@@ -93,23 +94,20 @@ export default class CandleCountdown {
     style.left = box.left + 'px'
     style.width = box.width + 'px'
     style.fontSize = box.fontSize + 'px'
-    style.lineHeight = box.fontSize + 'px'
-    style.padding = box.fontSize * LABEL_PADDING_RATIO + 'px 0'
+    // one row per line (price, countdown), same height as a price label
+    style.lineHeight = box.fontSize * (1 + LABEL_PADDING_RATIO * 2) + 'px'
+    style.padding = '0'
     style.fontFamily = box.fontFamily
     style.backgroundColor = box.background
     style.color = box.color
     this.element.textContent = box.text
   }
 
-  private compute(): CountdownBox | null {
+  private compute(): PriceLabelBox | null {
     const chartInstance = this.chart.chartInstance
     const paneState = store.state[this.chart.paneId] as ChartPaneState
 
-    if (
-      !chartInstance ||
-      !paneState ||
-      store.state.settings.showCountdown === false
-    ) {
+    if (!chartInstance || !paneState) {
       return null
     }
 
@@ -121,7 +119,7 @@ export default class CandleCountdown {
 
     const options = api.options() as any
 
-    if (options.visible === false || options.lastValueVisible === false) {
+    if (options.visible === false) {
       return null
     }
 
@@ -153,11 +151,10 @@ export default class CandleCountdown {
       return null
     }
 
-    const text = this.getText()
-
-    if (!text) {
-      return null
-    }
+    const priceText = api.priceFormatter().format(price)
+    // countdown under the price (unless disabled in settings)
+    const countdownText =
+      store.state.settings.showCountdown === false ? null : this.getText()
 
     const layout = chartInstance.options().layout
     const fontSize = layout.fontSize
@@ -165,26 +162,22 @@ export default class CandleCountdown {
     const scaleWidth = chartInstance.priceScale(side).width()
     const paneHeight =
       this.chart.chartElement.clientHeight - chartInstance.timeScale().height()
-    const top = Math.round(coordinate + labelHeight / 2)
+    // price row centered on the price line
+    const top = Math.round(coordinate - labelHeight / 2)
 
-    // hide when the price label is off screen
-    if (!scaleWidth || coordinate < 0 || top + labelHeight > paneHeight) {
+    // hide when the price is off screen
+    if (!scaleWidth || coordinate < 0 || coordinate > paneHeight) {
       return null
     }
 
     const background = this.getLabelColor(options, bar)
     const font = `${fontSize}px ${layout.fontFamily}`
-    // same box as the price label: lightweight-charts rounds the label width
-    // to device pixels (measured on screen: label = text box + 2.5px)
-    const dpr = window.devicePixelRatio || 1
     const textBoxWidth = Math.max(
-      this.getLabelWidth(api.priceFormatter().format(price), font, fontSize),
-      this.getLabelWidth(text, font, fontSize)
+      this.getLabelWidth(priceText, font, fontSize),
+      countdownText ? this.getLabelWidth(countdownText, font, fontSize) : 0
     )
-    const labelWidth = Math.min(
-      scaleWidth + 1,
-      Math.round((textBoxWidth + 2.5) * dpr) / dpr
-    )
+    const labelWidth = Math.min(scaleWidth + 1, textBoxWidth + 2)
+    const text = countdownText ? priceText + '\n' + countdownText : priceText
 
     // labels are drawn from the chart side of the price scale
     const left =

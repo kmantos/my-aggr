@@ -396,7 +396,6 @@ export default {
       dropdownIndicatorTrigger: null,
       helps: {
         priceScaleId: `Use <u>right</u> for binding indicator to main price scale. Otherwise use it as an id to align multiple indicator on same scale (as overlay)`,
-        lastValueVisible: `Show last value on right axis`,
         priceLineVisible: `Show horizontal line at current value`,
         borderVisible: `Only for candlestick series, enable borders of candles`,
         lineWidth: `Only for line and area series`,

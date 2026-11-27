@@ -322,15 +322,17 @@ export default class ChartComponent extends Mixins(PaneMixin) {
   line-height: 1;
 }
 
-// candle close countdown (see countdown.ts), created outside of vue so not scoped
-.chart-countdown {
+// last price box: price + candle countdown (see priceLabel.ts), created
+// outside of vue so not scoped
+.chart-price-label {
   position: absolute;
   // same weight as the price label above it (drawn on the chart canvas)
   font-weight: normal;
   z-index: 3;
   box-sizing: border-box;
   text-align: center;
-  white-space: nowrap;
+  // price, line break, countdown
+  white-space: pre;
   overflow: hidden;
   pointer-events: none;
   font-variant-numeric: tabular-nums;

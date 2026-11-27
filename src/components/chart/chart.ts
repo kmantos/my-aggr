@@ -69,7 +69,7 @@ import {
 import { Trade } from '@/types/types'
 import ChartControl from './controls'
 import grouping from './grouping'
-import CandleCountdown from './countdown'
+import PriceLabel from './priceLabel'
 import {
   build,
   getBuildedIndicator,
@@ -100,7 +100,7 @@ export default class Chart {
 
   chartCache: ChartCache
   chartControl: ChartControl
-  countdown: CandleCountdown
+  priceLabel: PriceLabel
   chartInstance: IChartApi
   chartElement: HTMLElement
   loadedIndicators: LoadedIndicator[] = []
@@ -309,10 +309,10 @@ export default class Chart {
     }
     this.chartControl.bindEvents()
 
-    if (!this.countdown) {
-      this.countdown = new CandleCountdown(this)
+    if (!this.priceLabel) {
+      this.priceLabel = new PriceLabel(this)
     }
-    this.countdown.attach()
+    this.priceLabel.attach()
   }
 
   /**
@@ -321,8 +321,8 @@ export default class Chart {
   removeChart() {
     console.log(`[chart/${this.paneId}/controller] remove chart`)
 
-    if (this.countdown) {
-      this.countdown.detach()
+    if (this.priceLabel) {
+      this.priceLabel.detach()
     }
 
     this.chartControl.unbindEvents()
