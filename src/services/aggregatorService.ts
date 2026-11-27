@@ -193,13 +193,6 @@ class AggregatorService extends EventEmitter {
     }) as Promise<Ticker[]>
   }
 
-  getTicker(market: string): Promise<Ticker | null> {
-    return this.dispatchAsync({
-      op: 'getTicker',
-      data: market
-    }) as Promise<Ticker | null>
-  }
-
   normalizeDecimals() {
     this.normalizeDecimalsQueue.timeout = null
 

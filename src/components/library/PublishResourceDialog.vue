@@ -117,15 +117,6 @@ export default {
       repoUrl: import.meta.env.VITE_APP_LIB_REPO_URL
     }
   },
-  computed: {
-    prId() {
-      if (!this.output) {
-        return ''
-      }
-
-      return this.output.split('/').pop()
-    }
-  },
   mounted() {
     this.show()
   },

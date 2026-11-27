@@ -4,7 +4,6 @@
     v-model="dropdownTrigger"
     class="editor-reference__dropdown"
     interactive
-    draggable
     @closed="onReferenceDropdownClose"
   >
     <div class="editor-reference__header">

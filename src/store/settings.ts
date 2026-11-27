@@ -27,7 +27,6 @@ export interface SettingsState {
   wsProxyUrl: string
   theme?: string
   backgroundColor?: string
-  textColor?: string
   buyColor?: string
   sellColor?: string
   timezoneOffset?: number
@@ -35,7 +34,6 @@ export interface SettingsState {
   audioVolume?: number
   settings?: string[]
   sections?: string[]
-  disableAnimations?: boolean
   autoHideHeaders?: boolean
   autoHideNames?: boolean
   timeframes?: { label: string; value: string }[]
@@ -114,21 +112,10 @@ const actions = {
       }
     })
   },
-  async setColor(
-    { commit, dispatch, state },
-    { type, value }: { type: string; value: string }
-  ) {
-    state[type.toLowerCase() + 'Color'] = value
-
-    const mutation = `SET_${type.toUpperCase()}_COLOR`
-
-    if (mutation === 'SET_BACKGROUND_COLOR') {
-      dispatch('refreshTheme')
-    }
-
+  setBackgroundColor({ commit, dispatch }, value: string) {
+    commit('SET_BACKGROUND_COLOR', value)
+    dispatch('refreshTheme')
     dispatch('updateCSS')
-
-    commit(mutation, value)
   },
   refreshTheme({ commit, state }) {
     const backgroundRgb = splitColorCode(state.backgroundColor)
@@ -137,10 +124,6 @@ const actions = {
 
     if (theme !== state.theme) {
       commit('SET_CHART_THEME', theme)
-    }
-
-    if (state.textColor) {
-      commit('SET_TEXT_COLOR', '')
     }
   },
   updateCSS({ state }) {
@@ -205,15 +188,8 @@ const actions = {
       `rgba(${background100Rgb[0]}, ${background100Rgb[1]},${background100Rgb[2]}, .2)`
     )
 
-    let textColor = state.textColor
-    let textColorRgb
-
-    if (!textColor) {
-      textColorRgb = getLinearShadeText(backgroundRgb, 0.75)
-      textColor = joinRgba(textColorRgb)
-    } else {
-      textColorRgb = splitColorCode(textColor)
-    }
+    const textColorRgb = getLinearShadeText(backgroundRgb, 0.75)
+    const textColor = joinRgba(textColorRgb)
 
     document.documentElement.style.setProperty(
       '--theme-color-base',
@@ -398,9 +374,6 @@ const mutations = {
       }
     })
   },
-  TOGGLE_ANIMATIONS(state) {
-    state.disableAnimations = !state.disableAnimations
-  },
   TOGGLE_SECTION(state, value) {
     const index = state.sections.indexOf(value)
 
@@ -427,15 +400,6 @@ const mutations = {
   },
   SET_CHART_THEME(state, value) {
     state.theme = value
-  },
-  SET_TEXT_COLOR(state, value) {
-    state.textColor = value
-  },
-  SET_BUY_COLOR(state, value) {
-    state.buyColor = value
-  },
-  SET_SELL_COLOR(state, value) {
-    state.sellColor = value
   },
   SET_TIMEZONE_OFFSET(state, value) {
     state.timezoneOffset = +value || 0

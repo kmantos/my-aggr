@@ -1,9 +1,5 @@
 <template>
-  <div
-    id="menu"
-    class="menu"
-    :class="{ '-open': open, '-idle': idle && !menuOpened }"
-  >
+  <div id="menu" class="menu" :class="{ '-idle': idle && !menuOpened }">
     <button
       class="menu__button btn"
       @click="$refs.menuDropdown.toggle($event.currentTarget)"
@@ -77,7 +73,6 @@ import SettingsDialog from './settings/SettingsDialog.vue'
 })
 export default class Menu extends Vue {
   isFullscreen = false
-  open = false
 
   // the button hides after 5s without mouse / touch activity
   idle = false
@@ -160,17 +155,6 @@ export default class Menu extends Vue {
     }
   }
 
-  toggleMenu() {
-    this.open = !this.open
-
-    if (this.open) {
-      this.isFullscreen =
-        (document as any).webkitIsFullScreen || (document as any).mozFullScreen
-          ? true
-          : false
-    }
-  }
-
   addPane(type: PaneType) {
     this.$store.dispatch('panes/addPane', { type })
   }
@@ -179,7 +163,6 @@ export default class Menu extends Vue {
 
 <style lang="scss">
 .menu {
-  $self: &;
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
@@ -207,13 +190,6 @@ export default class Menu extends Vue {
     &:hover {
       background-color: var(--theme-accent-base);
       border-color: var(--theme-accent-100);
-    }
-  }
-
-  &.-open {
-    #{$self}__button {
-      background-color: var(--theme-accent-base);
-      color: var(--theme-accent-color);
     }
   }
 }

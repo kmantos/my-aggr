@@ -134,36 +134,5 @@ export default class ThresholdDropdown extends Vue {
       font-family: inherit;
     }
   }
-
-  &__close {
-    position: absolute;
-    opacity: 0.5;
-    right: 0;
-    top: 0;
-    padding: 1rem;
-    font-size: 1.125rem;
-    text-decoration: none;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  &__colors {
-    .form-group .form-control {
-      height: auto;
-      width: auto;
-      min-width: 1px;
-      border: 0;
-      font-family: monospace;
-      letter-spacing: -0.1rem;
-      font-size: 0.9rem;
-      font-weight: 400;
-      padding: 1.25rem 1rem;
-    }
-  }
-
-  &.-minimum {
-  }
 }
 </style>

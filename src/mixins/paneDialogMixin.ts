@@ -1,4 +1,3 @@
-import dialogService from '@/services/dialogService'
 import { parseMarket } from '@/services/productsService'
 import { Pane } from '@/store/panes'
 import Vue from 'vue'
@@ -51,16 +50,5 @@ export default class PaneDialogMixin extends Vue {
 
   set name(value: string) {
     this.$store.commit('panes/SET_PANE_NAME', { id: this.paneId, name: value })
-  }
-
-  async renamePane() {
-    const name = await dialogService.prompt({
-      action: 'Rename',
-      input: this.name
-    })
-
-    if (name !== null && name !== this.name) {
-      this.name = name
-    }
   }
 }

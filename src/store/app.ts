@@ -20,10 +20,6 @@ interface NoticeButton {
   click?: () => void
 }
 
-export interface NoticesState {
-  notices: Notice[]
-}
-
 export interface Product {
   id: string
   pair: string

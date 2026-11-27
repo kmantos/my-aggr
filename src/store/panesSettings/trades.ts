@@ -16,8 +16,6 @@ export interface Threshold {
   max?: boolean
 }
 
-export type TradeTypeFilter = 'both' | 'liquidations' | 'trades'
-
 export interface TradesPaneState {
   _id?: string
   liquidations: Threshold[]
@@ -77,30 +75,6 @@ const actions = {
     ) {
       state.liquidations = defaultTresholds.liquidations
     }
-  },
-  updateThreshold(
-    { state, commit },
-    { index, prop, value }: { index: number; prop: string; value: any }
-  ) {
-    const threshold = state.thresholds[index]
-
-    if (!threshold) {
-      throw new Error('No threshold')
-    }
-
-    let payload = {
-      index
-    } as any
-
-    if (value && typeof value === 'object') {
-      payload = { ...payload, ...value }
-    } else {
-      payload.value = value
-    }
-
-    commit('SET_THRESHOLD_' + prop, payload)
-
-    state.thresholds = JSON.parse(JSON.stringify(state.thresholds))
   },
   generateSwatch(
     { state },

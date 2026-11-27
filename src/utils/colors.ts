@@ -405,16 +405,3 @@ export function getLinearShadeText(
     saturation
   )
 }
-
-export function getLogShadeText(
-  color,
-  strength,
-  saturation?: number,
-  threshold = 0
-) {
-  return getLogShade(
-    color,
-    strength * (getColorLuminance(color) > threshold ? -1 : 1),
-    saturation
-  )
-}

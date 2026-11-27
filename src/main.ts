@@ -10,7 +10,6 @@ import Editable from '@/components/framework/Editable.vue'
 import DropdownComponent from '@/components/framework/Dropdown.vue'
 import Presets from '@/components/framework/Presets.vue'
 import autofocus from '@/directives/autofocusDirective'
-import draggableMarket from '@/directives/draggableMarketDirective'
 
 Vue.use(VueTippy, {
   maxWidth: '200px',
@@ -30,7 +29,6 @@ Vue.component('dropdown', DropdownComponent)
 Vue.component('editable', Editable)
 Vue.component('presets', Presets)
 Vue.directive('autofocus', autofocus)
-Vue.directive('draggable-market', draggableMarket)
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {

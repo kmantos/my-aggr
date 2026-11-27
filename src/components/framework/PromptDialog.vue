@@ -63,10 +63,6 @@ export default {
       type: Boolean,
       default: false
     },
-    textarea: {
-      type: Boolean,
-      default: false
-    },
     question: {
       type: String
     },

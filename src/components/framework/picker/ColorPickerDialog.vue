@@ -149,7 +149,6 @@ import {
   conversions,
   copyColorObject,
   formatAsCssColor,
-  isValidHexColor,
   parsePropsColor
 } from '@/utils/picker'
 
@@ -349,20 +348,6 @@ export default {
     },
 
     /**
-     * @param {any} colors
-     * @param {VisibleColorFormat} activeFormat
-     * @returns {{ colors: any, cssColor: string }}
-     */
-    getEventData(colors, activeFormat) {
-      const cssColor = formatAsCssColor(colors[activeFormat], activeFormat)
-
-      return {
-        colors,
-        cssColor
-      }
-    },
-
-    /**
      * @param {ColorFormat} format
      * @param {string | ColorHsl | ColorHsv | ColorHwb | ColorRgb} color
      * @param {boolean} silent
@@ -418,11 +403,6 @@ export default {
       hsvColor.a = value
 
       this.setColor('hsv', hsvColor)
-    },
-    updateHexColorValue(value) {
-      if (isValidHexColor(value)) {
-        this.setColor('hex', value)
-      }
     },
     updateCanvas(colors) {
       if (!this.$el) {

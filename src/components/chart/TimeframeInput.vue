@@ -26,17 +26,7 @@ const TIMEFRAME_TICK = /t$|ticks?$/i
 @Component({
   name: 'TimeframeInput',
   props: {
-    hero: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
     placeholder: {
-      type: String,
-      required: false,
-      default: null
-    },
-    autofocus: {
       type: String,
       required: false,
       default: null
@@ -44,8 +34,6 @@ const TIMEFRAME_TICK = /t$|ticks?$/i
   }
 })
 export default class TimeframeInput extends Vue {
-  disabled
-
   $refs!: {
     input: EditableVue
   }

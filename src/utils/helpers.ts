@@ -170,18 +170,6 @@ export function sleep(duration = 1000): Promise<void> {
   })
 }
 
-export function openBase64InNewTab(data, mimeType) {
-  const byteCharacters = atob(data)
-  const byteNumbers = new Array(byteCharacters.length)
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.charCodeAt(i)
-  }
-  const byteArray = new Uint8Array(byteNumbers)
-  const file = new Blob([byteArray], { type: mimeType + ';base64' })
-  const fileURL = URL.createObjectURL(file)
-  window.open(fileURL)
-}
-
 export function findClosingBracketMatchIndex(
   str,
   pos,
@@ -477,16 +465,6 @@ export function handleFetchError(err): void {
   }
 }
 
-export function handleFetchSuccess(message): void {
-  if (typeof message === 'string') {
-    store.dispatch('app/showNotice', {
-      title: message,
-      type: 'success',
-      timeout: 3000
-    })
-  }
-}
-
 export function getApiUrl(path: string): string {
   let base = import.meta.env.VITE_APP_API_URL
 
@@ -513,35 +491,6 @@ export function getEventCords(event, page = false) {
     x: typeof point[props.x] !== 'undefined' ? point[props.x] : point.offsetX,
     y: typeof point[props.y] !== 'undefined' ? point[props.y] : point.offsetY
   }
-}
-
-export function debounce(func, immediate = false) {
-  let timeout
-  return function (...args) {
-    const later = (...args) => {
-      timeout = null
-
-      if (!immediate) {
-        func(...args)
-      }
-    }
-
-    const callNow = immediate && !timeout
-
-    window.cancelAnimationFrame(timeout)
-
-    timeout = window.requestAnimationFrame(later)
-
-    if (callNow) {
-      func(...args)
-    }
-  }
-}
-
-export function getClosestValue(array, value) {
-  return array.reduce((prev, curr) => {
-    return Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
-  })
 }
 
 export function createComponent(componentModule, props: any = {}): Vue {

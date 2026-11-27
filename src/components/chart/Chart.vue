@@ -183,10 +183,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
     aggregatorService.off('alert', this.onAlert)
   }
 
-  renderChart() {
-    this.chart.renderAll()
-  }
-
   onResize() {
     if (!this.chart) {
       return
@@ -258,32 +254,6 @@ export default class ChartComponent extends Mixins(PaneMixin) {
 
     &:hover {
       opacity: 1;
-    }
-
-    &__title {
-      flex-grow: 1;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      opacity: 0.5;
-      font-size: 0.875em;
-      align-self: flex-end;
-      margin-top: 1rem;
-
-      ~ * {
-        margin-top: 3rem;
-      }
-    }
-
-    &__favorite {
-      &:hover {
-        background-color: var(--theme-color-o20);
-      }
-
-      &.icon-star-filled {
-        background-color: $red;
-        color: white;
-        font-weight: 600;
-      }
     }
   }
 }

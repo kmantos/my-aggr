@@ -41,8 +41,6 @@ export default {
   data: () => ({
     indicators: CACHE,
     query: '',
-    selectedIndicator: null,
-    dropdownTrigger: null,
     isLoading: false
   }),
   async created() {

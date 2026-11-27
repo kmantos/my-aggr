@@ -580,10 +580,6 @@ class WorkspacesService {
     return this.db.get('products', exchangeId)
   }
 
-  deleteProducts(exchangeId: string) {
-    return this.db.delete('products', exchangeId)
-  }
-
   async saveIndicator(indicator: IndicatorSettings, silent = false) {
     const now = Date.now()
 
@@ -773,10 +769,6 @@ class WorkspacesService {
 
   removeColor(color: string) {
     return this.db.delete('colors', color)
-  }
-
-  getAllAlerts() {
-    return this.db.getAll('alerts')
   }
 
   async getAlerts(market: string) {

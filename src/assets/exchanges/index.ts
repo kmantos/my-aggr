@@ -20,7 +20,6 @@ import HYPERLIQUID from './HYPERLIQUID.svg'
 import KRAKEN from './KRAKEN.svg'
 import KUCOIN from './KUCOIN.svg'
 import MEXC from './MEXC.svg'
-import MEXC_FUTURES from './MEXC_FUTURES.svg'
 import OKEX from './OKEX.svg'
 import PHEMEX from './PHEMEX.svg'
 import POLONIEX from './POLONIEX.svg'
@@ -44,7 +43,6 @@ export default {
   DYDX,
   KRAKEN,
   MEXC,
-  MEXC_FUTURES,
   KUCOIN,
   BITGET,
   BITUNIX,

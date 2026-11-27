@@ -76,10 +76,6 @@ button {
     transform: translateY(1px);
   }
 
-  &.-block {
-    width: 100%;
-  }
-
   &.-small {
     font-size: 0.875rem;
     padding: 0.375rem;
@@ -101,12 +97,6 @@ button {
 
   &.-cases {
     text-transform: none;
-  }
-
-  &.-icon {
-    width: 2rem;
-    height: 2rem;
-    text-align: center;
   }
 
   &.-red {

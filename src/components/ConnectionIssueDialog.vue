@@ -265,13 +265,6 @@ export default {
         this.selectedAction = null
       }
     },
-    validate() {
-      if (!this.valid) {
-        return false
-      }
-
-      return true
-    },
     test() {
       if (!this.proxyUrl) {
         return false
@@ -367,10 +360,6 @@ export default {
 
   &__step {
     padding: 0 1rem;
-  }
-
-  &__action {
-    text-transform: none !important;
   }
 }
 </style>

@@ -20,7 +20,6 @@
           :min="0"
           :max="8902"
           :step="1"
-          :label="true"
           :show-completion="true"
           :value="frequency"
           @input="frequency = $event"
@@ -54,7 +53,6 @@
           :min="0"
           :max="2"
           :step="0.01"
-          :label="true"
           :show-completion="true"
           :value="gain"
           @input="gain = $event"
@@ -82,7 +80,6 @@
           :min="0"
           :max="10"
           :step="0.1"
-          :label="true"
           :show-completion="true"
           :value="holdDuration"
           @input="holdDuration = $event"
@@ -134,7 +131,6 @@
               :min="0"
               :max="10"
               :step="0.1"
-              :label="true"
               :show-completion="true"
               class="mt8"
               :value="fadeIn"
@@ -153,7 +149,6 @@
               :min="0"
               :max="10"
               :step="0.1"
-              :label="true"
               :show-completion="true"
               class="mt8"
               :value="fadeOut"
@@ -174,7 +169,6 @@
               :min="0.0001"
               :max="1"
               :step="0.001"
-              :label="true"
               :show-completion="true"
               class="mt8"
               :value="startGain"
@@ -193,7 +187,6 @@
               :min="0.0001"
               :max="1"
               :step="0.001"
-              :label="true"
               :show-completion="true"
               class="mt8"
               :value="endGain"
@@ -212,7 +205,6 @@
             :min="0"
             :max="10"
             :step="0.1"
-            :label="true"
             :show-completion="true"
             class="mt8"
             :value="delay"
@@ -315,7 +307,6 @@ export default {
     osc: null,
     startGain: null,
     endGain: null,
-    startTime: null,
     dynamicGain: true,
     dynamicLength: true,
     uploadedSound: null,

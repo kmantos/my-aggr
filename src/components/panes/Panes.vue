@@ -60,7 +60,6 @@ import { getSiblings } from '@/utils/helpers'
 export default class Panes extends Vue {
   rowHeight = 80
   cols = null
-  breakpoint = null
   layoutReady = false
 
   private _resizeTimeout: number
@@ -205,11 +204,6 @@ export default class Panes extends Vue {
   onItemResized(id, h, w, hPx, wPx) {
     this.resizePane(id, +hPx, +wPx)
     // this.$store.commit('panes/UPDATE_LAYOUT', this.layout)
-  }
-
-  updateItem(id) {
-    const item = this.layout.find(item => item.i === id)
-    this.$store.commit('panes/UPDATE_ITEM', item)
   }
 
   onLayoutUpdated(gridItems: GridItem[]) {

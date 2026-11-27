@@ -3,17 +3,6 @@ import 'vite/client'
 export type SlippageMode = false | 'price' | 'bps'
 export type AggregationLength = 0 | 1 | 10 | 100 | 1000 | -1
 
-declare module 'test.worker' {
-  // You need to change `Worker`, if you specified a different value for the `workerType` option
-  class WebpackWorker extends Worker {
-    constructor()
-  }
-
-  // Uncomment this if you set the `esModule` option to `false`
-  // export = WebpackWorker;
-  export default WebpackWorker
-}
-
 export interface AggregatorPayload {
   op: string
   data?: any
@@ -25,13 +14,6 @@ export interface AggregatorSettings {
   calculateSlippage?: SlippageMode
   preferQuoteCurrencySize?: boolean
   wsProxyUrl?: string
-  buckets?: { [bucketId: string]: string[] }
-}
-
-export interface Market {
-  id: string
-  exchange: string
-  pair: string
 }
 
 export interface Trade {
@@ -53,22 +35,9 @@ export interface AggregatedTrade extends Trade {
   value: number // cumulative price * size
 }
 
-export interface Volumes {
-  timestamp: number
-  vbuy: number
-  vsell: number
-  cbuy: number
-  csell: number
-  lbuy: number
-  lsell: number
-}
-
 export interface Connection {
   exchange: string
   pair: string
-  hit: number
-  timestamp: number
-  bucket?: Volumes
 }
 
 export interface ProductsStorage {

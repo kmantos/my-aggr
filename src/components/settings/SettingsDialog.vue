@@ -259,12 +259,7 @@
         <color-picker-control
           :value="backgroundColor"
           label="Background color"
-          @input="
-            $store.dispatch('settings/setColor', {
-              type: 'BACKGROUND',
-              value: $event
-            })
-          "
+          @input="$store.dispatch('settings/setBackgroundColor', $event)"
         ></color-picker-control>
         <label class="-fill -center ml8">Background color</label>
       </div>
@@ -636,12 +631,6 @@ export default {
   position: relative;
   top: -0.5rem;
   left: 0.25rem;
-  align-self: center;
-}
-
-.settings-footer__divider {
-  opacity: 0.5;
-  line-height: 1;
   align-self: center;
 }
 </style>

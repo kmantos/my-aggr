@@ -113,12 +113,7 @@
           "
           @click="toggleExchange(group)"
         >
-          <img
-            v-if="exchangeLogos[group.exchange]"
-            :src="exchangeLogos[group.exchange]"
-            alt=""
-          />
-          <i v-else :class="'icon-' + group.exchange"></i>
+          <img :src="exchangeLogos[group.exchange]" alt="" />
           <span class="pane-sources__tile-name">{{ group.name }}</span>
           <span class="pane-sources__tile-count"
             >{{ group.selected }}/{{ group.markets.length }}</span
@@ -814,10 +809,6 @@ export default class PaneSources extends Vue {
     font: inherit;
     text-align: left;
     cursor: pointer;
-
-    i {
-      font-size: 1.125rem;
-    }
 
     img {
       width: 1.125rem;

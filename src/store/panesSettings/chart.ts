@@ -35,13 +35,6 @@ export interface IndicatorEditorOptions {
   wordWrap?: IndicatorEditorWordWrapOption
 }
 
-export interface IndicatorNavigationState {
-  tab: string
-  optionsQuery: string
-  columnWidth: number
-  editorOptions: IndicatorEditorOptions
-}
-
 export interface IndicatorSettings {
   id?: string
   libraryId?: string
@@ -69,7 +62,6 @@ export interface ChartPaneState {
   layouting: boolean | string
   timeframe: number
   indicatorsErrors: { [indicatorId: string]: string }
-  showIndicators: boolean
   barSpacing: number
 }
 
@@ -88,7 +80,6 @@ const state = {
     }
   },
   layouting: false,
-  showIndicators: true,
   timeframe: 60,
   barSpacing: null
 } as ChartPaneState
@@ -355,9 +346,6 @@ const actions = {
 } as ActionTree<ChartPaneState, ModulesState>
 
 const mutations = {
-  TOGGLE_INDICATORS(state, value) {
-    state.showIndicators = value
-  },
   SET_INDICATOR_SERIES(state, { id, series }) {
     state.indicators[id].series = series
   },
@@ -392,13 +380,6 @@ const mutations = {
     }
 
     Vue.set(state.indicators[id].options, key, value)
-  },
-  REMOVE_INDICATOR_OPTION(state, { id, key }) {
-    if (!state.indicators[id]) {
-      return
-    }
-
-    Vue.delete(state.indicators[id].options, key)
   },
   SET_INDICATOR_SCRIPT(state, payload) {
     if (typeof payload.value === 'undefined') {

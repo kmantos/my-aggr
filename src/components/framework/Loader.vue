@@ -41,16 +41,6 @@ export default {
   cursor: progress;
   flex-shrink: 0;
 
-  &-wrapper {
-    position: fixed;
-    margin: auto;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: +1000;
-  }
-
   &--small {
     width: 0.75rem;
     height: 0.75rem;

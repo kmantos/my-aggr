@@ -201,7 +201,6 @@ export default {
     sellAudio: '',
     buyError: null,
     sellError: null,
-    showHelp: false,
     focusedSide: null,
     loopingSide: null,
     dropping: null,
@@ -249,10 +248,6 @@ export default {
     }
   },
   methods: {
-    setInput(input, side) {
-      this[side + 'Audio'] = input
-      this.liveAnnotation = null
-    },
     saveInputs() {
       if (!this.validate(true)) {
         return

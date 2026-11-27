@@ -2581,33 +2581,6 @@ export default class Chart {
     this._timeToRecycle = now + 900000
   }
 
-  async createAlertAtPrice(price, timestamp) {
-    if (!store.state.settings.alerts) {
-      if (
-        !(await dialogService.confirm({
-          title: 'Alerts are disabled',
-          message: 'Enable alerts ?',
-          ok: 'Yes please'
-        }))
-      ) {
-        return
-      }
-
-      store.commit('settings/TOGGLE_ALERTS', true)
-    }
-
-    const market = this.mainIndex
-
-    const alert: MarketAlert = {
-      price,
-      market,
-      timestamp,
-      active: false
-    }
-
-    alertService.createAlert(alert, this.getPrice())
-  }
-
   async refreshChartDimensions() {
     if (!this.chartInstance) {
       return

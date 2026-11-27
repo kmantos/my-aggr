@@ -18,7 +18,7 @@ const footerIdx = variablesContent.indexOf(FOOTER)
 if (headerIdx !== -1 && footerIdx !== -1) {
   const section = variablesContent.slice(headerIdx, footerIdx)
   section.split('\n').forEach(line => {
-    const match = line.match(/\$icon-([^:]+):\s*"\\([^"]+)"/)
+    const match = line.match(/\$icon-([^:]+):\s*["']\\([^"']+)["']/)
     if (match) {
       existingIcons[match[1]] = parseInt(match[2], 16)
     }

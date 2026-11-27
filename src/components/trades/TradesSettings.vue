@@ -192,17 +192,13 @@ import { Component, Vue, Watch } from 'vue-property-decorator'
 import Thresholds from '@/components/settings/Thresholds.vue'
 import { formatAmount } from '@/services/productsService'
 import ToggableSection from '@/components/framework/ToggableSection.vue'
-import ColorPickerControl from '@/components/framework/picker/ColorPickerControl.vue'
 import ThresholdColor from '@/components/trades/ThresholdColor.vue'
-import ToggableGroup from '@/components/framework/ToggableGroup.vue'
 
 @Component({
   components: {
     Thresholds,
     ThresholdColor,
-    ToggableSection,
-    ColorPickerControl,
-    ToggableGroup
+    ToggableSection
   },
   name: 'TradesSettings',
   props: {
@@ -265,22 +261,6 @@ export default class TradesSettings extends Vue {
 
   get muted() {
     return (this.$store.state[this.paneId] as TradesPaneState).muted
-  }
-
-  get thresholdsBuyColor() {
-    return this.thresholds[1].buyColor
-  }
-
-  get thresholdsSellColor() {
-    return this.thresholds[1].sellColor
-  }
-
-  get liquidationsBuyColor() {
-    return this.liquidations[1].buyColor
-  }
-
-  get liquidationsSellColor() {
-    return this.liquidations[1].sellColor
   }
 
   created() {

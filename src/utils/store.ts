@@ -141,17 +141,3 @@ export function waitForStateMutation(getter): Promise<any> {
     })
   })
 }
-
-export function dumpSettings(): { [id: string]: any } {
-  return JSON.parse(
-    JSON.stringify(
-      Object.keys(store.state).reduce((states, id) => {
-        if (store.state[id]._id) {
-          states[id] = store.state[id]
-        }
-
-        return states
-      }, {})
-    )
-  )
-}

@@ -272,45 +272,11 @@ const actions = {
       }
     }
   },
-  setMarketsForAll({ dispatch }, markets: string[]) {
-    return dispatch('refreshMarketsListeners', { markets })
-  },
   setMarketsForPane(
     { dispatch },
     { id, markets }: { id: string; markets: string[] }
   ) {
     return dispatch('refreshMarketsListeners', { id, markets })
-  },
-  async resetPane(
-    { state, rootState },
-    { id, data, type }: { id: string; data?: any; type?: string }
-  ) {
-    const pane = JSON.parse(JSON.stringify(state.panes[id]))
-
-    const currentPaneState = Object.assign(
-      {},
-      rootState[id],
-      data && typeof data === 'object' ? data : {}
-    )
-
-    const layoutItem = state.layout.find(a => a.i === id)
-    const originalPaneType = layoutItem.type
-    layoutItem.type = 'div'
-
-    const paneItem = state.panes[id]
-    paneItem.type = type || originalPaneType
-
-    this.unregisterModule(id)
-
-    await workspacesService.removeState(id)
-
-    if (currentPaneState) {
-      await workspacesService.saveState(id, currentPaneState)
-    }
-
-    await registerModule(id, {}, true, pane)
-
-    layoutItem.type = type || originalPaneType
   },
   setZoom({ commit, dispatch }, { id, zoom }: { id: string; zoom: number }) {
     commit('SET_PANE_ZOOM', { id, zoom })

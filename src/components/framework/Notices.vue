@@ -1,10 +1,5 @@
 <template>
-  <transition-height
-    :name="transitionGroupName"
-    tag="div"
-    class="notices"
-    width-auto
-  >
+  <transition-height name="slide-notice" tag="div" class="notices" width-auto>
     <div
       v-for="notice in notices"
       :key="notice.id"
@@ -36,18 +31,6 @@ import TransitionHeight from './TransitionHeight.vue'
 export default class Notices extends Vue {
   get notices(): Notice[] {
     return this.$store.state.app.notices
-  }
-
-  get disableAnimations() {
-    return this.$store.state.settings.disableAnimations
-  }
-
-  get transitionGroupName() {
-    if (!this.disableAnimations) {
-      return 'slide-notice'
-    } else {
-      return null
-    }
   }
 
   onClick(notice) {

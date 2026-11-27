@@ -230,11 +230,5 @@ export default {
       height: 75vh;
     }
   }
-
-  &__loader {
-    .loader {
-      margin-top: 2rem;
-    }
-  }
 }
 </style>

@@ -22,3 +22,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# icon font generator by-products (npm run svg2font)
+src/assets/fonts/icon.scss
+src/assets/fonts/icon.symbol.svg

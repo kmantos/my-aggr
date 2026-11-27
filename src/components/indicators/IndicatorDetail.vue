@@ -7,7 +7,6 @@
           :id="indicator.id"
           :preview="indicator.preview"
           :path="indicator.imagePath"
-          :is-installed="isInstalled"
           @close="close"
         ></IndicatorPreview>
         <div class="indicator-detail__content">
@@ -108,7 +107,6 @@
           <btn
             v-if="communityTabEnabled"
             class="dropdown-item -cases"
-            :loading="isPublishing"
             @click="publish"
           >
             <i class="icon-external-link-square-alt"></i>
@@ -129,7 +127,6 @@
               v-for="item in versions"
               :key="item.sha"
               class="dropdown-item -cases"
-              :loading="isPublishing"
               @click="installIndicator(item.sha)"
             >
               {{ item.date }}
@@ -172,11 +169,9 @@ export default {
     return {
       opened: false,
       isInstalling: false,
-      isPublishing: false,
       isFetchingVersions: false,
       menuDropdownTrigger: null,
       versionsDropdownTrigger: null,
-      imageObjectUrl: null,
       fetchedVersions: null,
       dateIndex: 0,
       communityTabEnabled: !!import.meta.env.VITE_APP_LIB_URL,

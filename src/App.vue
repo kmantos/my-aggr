@@ -4,7 +4,6 @@
     id="app"
     :data-prefered-sizing-currency="preferedSizingCurrency"
     :class="{
-      '-no-animations': disableAnimations,
       '-auto-hide-headers': autoHideHeaders,
       '-auto-hide-names': autoHideNames,
       '-light': theme === 'light'
@@ -117,10 +116,6 @@ export default class App extends Vue {
 
   get preferedSizingCurrency() {
     return this.$store.state.settings.preferQuoteCurrencySize ? 'quote' : 'base'
-  }
-
-  get disableAnimations() {
-    return this.$store.state.settings.disableAnimations
   }
 
   async mounted() {

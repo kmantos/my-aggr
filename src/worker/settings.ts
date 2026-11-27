@@ -4,6 +4,5 @@ export default {
   calculateSlippage: null,
   aggregationLength: null,
   preferQuoteCurrencySize: null,
-  wsProxyUrl: null,
-  buckets: {}
+  wsProxyUrl: null
 } as AggregatorSettings

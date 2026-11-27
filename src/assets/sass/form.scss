@@ -146,13 +146,6 @@
   cursor: pointer;
   margin-right: auto;
 
-  &.-rip input ~ div {
-    &:before,
-    &:after {
-      content: $icon-skull;
-    }
-  }
-
   &.-aggr input ~ div {
     &:before {
       content: $icon-ms;
@@ -160,17 +153,6 @@
 
     &:after {
       content: $icon-cross;
-    }
-  }
-
-  &.-sort input ~ div {
-    &:before {
-      content: $icon-up;
-    }
-
-    &:after {
-      content: $icon-down;
-      transform: none;
     }
   }
 

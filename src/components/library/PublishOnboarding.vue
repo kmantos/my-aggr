@@ -182,14 +182,6 @@ export default {
     margin: -1rem -1rem 0 -1rem;
   }
 
-  &__actions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    padding: 2rem;
-  }
-
   &-picto {
     $item: &;
     counter-increment: count;
@@ -270,10 +262,6 @@ export default {
         color: var(--theme-accent-200);
         transform: translateY(-5%);
       }
-    }
-
-    &--done {
-      --outline-color: var(--theme-accent-base);
     }
   }
 

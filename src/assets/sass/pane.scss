@@ -56,10 +56,6 @@
       > .vue-resizable-handle {
         display: block;
       }
-
-      .toolbar {
-        display: flex;
-      }
     }
 
     &.vue-grid-placeholder {
@@ -236,102 +232,4 @@
       }
     }
   }
-}
-
-.chart-overlay {
-  display: none;
-  position: absolute;
-  z-index: 3;
-  top: 1.5em;
-  left: 0;
-  bottom: 0;
-  margin-top: 0.25em;
-  margin-left: 0.25em;
-  flex-direction: column;
-  justify-content: flex-start;
-  pointer-events: none;
-
-  .pane.-small & {
-    top: 1.429em;
-    margin-top: 0;
-    margin-left: 0;
-  }
-
-  > div {
-    flex-shrink: 0;
-    flex-basis: 0;
-  }
-
-  &__panel {
-    display: flex;
-    flex-direction: column-reverse;
-    justify-content: flex-end;
-    align-items: flex-start;
-
-    > div {
-      pointer-events: all;
-      position: relative;
-    }
-
-    &:not(:last-child) {
-      .chart-overlay__content {
-        padding-bottom: 0.25em;
-
-        .pane.-small & {
-          padding-bottom: 0.125em;
-        }
-
-        .pane.-extra-small & {
-          padding-bottom: 0;
-        }
-      }
-    }
-  }
-
-  &__content {
-    padding: 0;
-    margin: 0;
-
-    .btn {
-      padding: 0.25em;
-      font-size: 0.875em;
-    }
-  }
-
-  &__head {
-    cursor: pointer;
-    user-select: none;
-    place-self: flex-start;
-    padding: 0.125em 0.25em;
-    display: flex;
-    align-items: center;
-    gap: 0.25em;
-    line-height: 1;
-    color: var(--theme-color-50);
-
-    &:hover {
-      color: var(--theme-color-base);
-    }
-
-    .pane.-small &,
-    .pane.-extra-small & {
-      padding: 0.125em 0.125em 0.125em 0.25em;
-    }
-
-    &:first-child {
-      .icon-up-thin {
-        display: inline-block;
-        transform: rotateZ(180deg);
-      }
-    }
-  }
-
-  &__title {
-    height: 0.875em;
-    line-height: 0.75em;
-  }
-}
-
-body.-dragging-market .pane * {
-  pointer-events: none;
 }

@@ -160,21 +160,6 @@ export const defaultBarOptions = {
   openVisible: true
 }
 
-export const defaultStatsChartOptions = {
-  ...defaultChartOptions,
-  rightPriceScale: {
-    mode: 0
-  },
-  timeScale: {
-    barSpacing: 3,
-    rightOffset: 5,
-    lockVisibleTimeRangeOnResize: true,
-    rightBarStaysOnScroll: true,
-    borderColor: 'transparent',
-    timeVisible: true
-  }
-}
-
 export const plotTypesMap = {
   cloudarea: 'cloud-area',
   brokenarea: 'broken-area'

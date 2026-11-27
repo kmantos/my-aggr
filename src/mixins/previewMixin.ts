@@ -4,8 +4,6 @@ import { getEventCords } from '@/utils/helpers'
 import { isTouchSupported } from '@/utils/touchevent'
 
 const PREVIEW_SIZE = {
-  originalWidth: 500,
-  originalHeight: 100,
   displayWidth: 300,
   displayHeight: 100
 }

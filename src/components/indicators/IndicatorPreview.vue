@@ -33,10 +33,6 @@ export default {
     },
     preview: {
       default: null
-    },
-    isInstalled: {
-      type: Boolean,
-      default: false
     }
   },
   components: {

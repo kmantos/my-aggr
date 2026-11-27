@@ -44,9 +44,6 @@ export default {
     }
   },
   computed: {
-    showAlerts() {
-      return this.$store.state.settings.alerts
-    },
     size() {
       const surface = this.position.width * this.position.height
 
@@ -86,15 +83,7 @@ export default {
       return 3
     }
   },
-  methods: {
-    toggleTimeframeDropdown(event) {
-      if (this.timeframeDropdownTrigger) {
-        this.timeframeDropdownTrigger = null
-      } else {
-        this.timeframeDropdownTrigger = event.currentTarget
-      }
-    }
-  }
+  methods: {}
 }
 </script>
 <style lang="scss" scoped>

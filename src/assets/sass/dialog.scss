@@ -177,10 +177,6 @@
     text-overflow: ellipsis;
     color: var(--theme-color-base);
 
-    &.-editable {
-      cursor: text;
-    }
-
     code {
       text-transform: none;
     }
@@ -197,16 +193,6 @@
 
     #{$self}--small & {
       padding: 0.5rem;
-    }
-  }
-
-  .dialog__controls {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
-
-    > * {
-      margin-left: 15px;
     }
   }
 

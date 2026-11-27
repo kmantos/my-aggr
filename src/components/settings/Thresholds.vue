@@ -231,19 +231,6 @@ export default class Thresholds extends Vue {
 }
 
 .thresholds-table {
-  &__color {
-    border: 0 !important;
-    width: 2.25rem;
-    transition: box-shadow 0.2s $ease-out-expo;
-    cursor: pointer;
-
-    &.-active {
-      box-shadow: 0 0 0 0.5rem rgba(white, 0.2);
-      position: relative;
-      z-index: 1;
-    }
-  }
-
   &__threshold {
     display: flex;
     align-items: center;

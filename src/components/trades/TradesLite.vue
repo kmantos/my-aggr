@@ -29,7 +29,6 @@ import {
 } from '../../utils/colors'
 
 import PaneHeader from '@/components/panes/PaneHeader.vue'
-import dialogService from '../../services/dialogService'
 import audioService, { AudioFunction } from '../../services/audioService'
 import logos from '@/assets/exchanges'
 import { Trade } from '../../types/types'
@@ -316,15 +315,6 @@ export default class TradesLite extends Mixins(PaneMixin) {
     }
 
     return paneSettings.thresholds
-  }
-
-  async openSettings() {
-    dialogService.open(
-      (await import('@/components/trades/TradesDialog.vue')).default,
-      {
-        paneId: this.paneId
-      }
-    )
   }
 
   async prepareTypeFilter(checkRequirements?: boolean) {

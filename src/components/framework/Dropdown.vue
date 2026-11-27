@@ -64,10 +64,6 @@ export default {
       type: Boolean,
       required: false,
       default: false
-    },
-    draggable: {
-      type: Boolean,
-      default: false
     }
   },
   watch: {
@@ -481,12 +477,6 @@ export default {
 
     &--narrow {
       padding-block: 0.375rem;
-    }
-
-    &__subtitle {
-      opacity: 0.5;
-      font-size: 0.875em;
-      margin-top: 0.25em;
     }
 
     &__emoji {

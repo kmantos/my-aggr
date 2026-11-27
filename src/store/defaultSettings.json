@@ -3,7 +3,6 @@
   "aggregationLength": 1,
   "calculateSlippage": null,
   "wsProxyUrl": null,
-  "disableAnimations": false,
   "autoHideHeaders": true,
   "autoHideNames": true,
   "theme": "dark",

@@ -44,8 +44,6 @@ export default {
   name: 'Slider',
   props: {
     gradient: { type: Array, default: null },
-    colorCode: { type: Boolean, default: false },
-    label: { type: Boolean, default: false },
     // value bubble over the handle while hovering / dragging
     tooltip: { type: Boolean, default: true },
     disabled: { type: Boolean, default: false },
@@ -150,7 +148,6 @@ export default {
       this.pendingDblClick = true
 
       this.updateSize()
-      this.track.classList.add('slider--dragging')
       this.ticking = false
 
       this.updateHandleValue(event)
@@ -174,7 +171,6 @@ export default {
       }
     },
     release() {
-      this.track.classList.remove('slider--dragging')
       document.removeEventListener('mousemove', this._dragHandler)
       document.removeEventListener('touchmove', this._dragHandler)
       document.removeEventListener('mouseup', this._releaseHandler)
@@ -265,38 +261,6 @@ export default {
     opacity: 0.5;
     pointer-events: none;
   }
-
-  &:hover,
-  &--dragging {
-    .slider__label {
-      visibility: visible;
-      opacity: 1;
-    }
-  }
-}
-
-.slider__input {
-  margin-bottom: 0;
-  padding: 0.3em;
-  margin-left: 0.2em;
-  max-width: 70px;
-  width: 20%;
-  border: 0;
-  text-align: center;
-  font-size: 12px;
-  -webkit-appearance: none;
-  -moz-appearance: textfield;
-
-  &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  &:focus {
-    outline: none;
-    border-color: $blue;
-  }
 }
 
 .slider__track {
@@ -335,40 +299,6 @@ export default {
 
   &:active {
     cursor: grabbing;
-  }
-}
-
-.slider__label {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  z-index: 999;
-  padding: 0.5rem;
-  min-width: 1rem;
-  border-radius: 4px;
-  filter: drop-shadow(-1em -1em 3em var(--theme-background-base));
-  color: white;
-  background-color: rgba(black, 0.75);
-  text-align: center;
-  font-size: 14px;
-  line-height: 1rem;
-  transform: translate(-50%, 0);
-  white-space: nowrap;
-  visibility: hidden;
-  opacity: 0;
-
-  &:before {
-    position: absolute;
-    bottom: -0.5rem;
-    left: 50%;
-    display: block;
-    width: 0;
-    height: 0;
-    border-width: 0.5rem 0.5rem 0 0.5rem;
-    border-style: solid;
-    border-color: rgba(black, 0.75) transparent transparent transparent;
-    content: '';
-    transform: translate3d(-50%, 0, 0);
   }
 }
 

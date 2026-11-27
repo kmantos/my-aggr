@@ -367,10 +367,6 @@ export default class PriceScale extends Vue {
     }
   }
 
-  &__mode .dropdown__options {
-    color: var(--theme-color-base);
-  }
-
   &__size {
     display: none;
     position: absolute;

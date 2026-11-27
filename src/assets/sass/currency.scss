@@ -1,6 +1,4 @@
-.icon-currency,
-.icon-quote,
-.icon-base {
+.icon-currency {
   top: 1px;
   position: relative;
 }
@@ -8,14 +6,6 @@
 #app {
   .icon-currency:before {
     content: $icon-dollar;
-  }
-
-  .icon-quote:before {
-    content: $icon-dollar;
-  }
-
-  .icon-base:before {
-    content: $icon-coin;
   }
 
   &[data-prefered-sizing-currency='base'] {

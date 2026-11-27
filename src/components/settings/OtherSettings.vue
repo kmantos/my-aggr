@@ -95,8 +95,6 @@ import TransitionHeight from '@/components/framework/TransitionHeight.vue'
   }
 })
 export default class OtherSettings extends Vue {
-  responsiveEnabled: boolean = null
-
   get autoHideHeaders() {
     return this.$store.state.settings.autoHideHeaders
   }

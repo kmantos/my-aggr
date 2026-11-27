@@ -22,11 +22,6 @@
     color: var(--theme-sell-color);
   }
 
-  &.-invert {
-    background-color: var(--theme-background-50);
-    color: var(--theme-color-100);
-  }
-
   &.-green {
     background-color: var(--theme-buy-100);
     color: var(--theme-buy-color);
@@ -38,11 +33,6 @@
     box-shadow: inset 0 0 0 0.0714285714em currentColor;
     color: currentColor;
     font-weight: 400;
-  }
-
-  &.-solid {
-    background-color: var(--theme-color-base);
-    color: var(--theme-background-base);
   }
 
   &.-inline {

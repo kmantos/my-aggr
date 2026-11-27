@@ -49,9 +49,6 @@ export default {
     paneId: null
   }),
   computed: {
-    paneName() {
-      return this.$store.state.panes.panes[this.paneId].name || this.paneId
-    },
     timeframeForHuman() {
       return getTimeframeForHuman(this.newTimeframe)
     },
