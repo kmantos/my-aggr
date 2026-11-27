@@ -3,19 +3,21 @@
     @clickOutside="close"
     class="settings-dialog"
     contentClass="settings"
-    size="medium"
+    size="wide"
   >
     <template #header>
       <div class="dialog__title">Settings</div>
     </template>
-    <ToggableSection
-      v-if="currentWorkspace"
-      id="settings-workspaces"
-      title="Workspaces"
-      description="templates"
-      :badge="workspaces.length"
-      inset
-    >
+    <template v-slot:subheader>
+      <tabs :value="tab" @input="tab = $event">
+        <tab name="general">General</tab>
+        <tab name="workspaces">Workspaces</tab>
+        <tab name="data">Data</tab>
+        <tab name="charts">Charts</tab>
+        <tab name="alerts">Alerts</tab>
+      </tabs>
+    </template>
+    <div v-if="tab === 'workspaces' && currentWorkspace" class="settings-tab">
       <div class="column mt16">
         <button
           type="button"
@@ -141,32 +143,9 @@
           </tr>
         </tbody>
       </table>
-    </ToggableSection>
-
-    <div class="settings-general">
-      <audio-settings />
-      <div class="form-group column mt16">
-        <color-picker-control
-          :value="backgroundColor"
-          label="Background color"
-          @input="
-            $store.dispatch('settings/setColor', {
-              type: 'BACKGROUND',
-              value: $event
-            })
-          "
-        ></color-picker-control>
-        <label class="-fill -center ml8">Background color</label>
-      </div>
     </div>
 
-    <ToggableSection
-      v-if="currentWorkspace"
-      id="settings-trades"
-      title="Data"
-      description="aggregation, slippage, currency"
-      inset
-    >
+    <div v-if="tab === 'data'" class="settings-tab">
       <div class="form-group column">
         <label
           class="checkbox-control -aggr -auto flex-grow-1"
@@ -264,29 +243,33 @@
           </span>
         </label>
       </div>
-    </ToggableSection>
+    </div>
 
-    <ToggableSection
-      id="settings-charts"
-      title="Charts"
-      description="refresh, countdown, flip"
-      inset
-    >
+    <div v-if="tab === 'charts'" class="settings-tab">
       <charts-settings />
-    </ToggableSection>
+    </div>
 
-    <ToggableSection
-      id="settings-alerts"
-      title="Alerts"
-      description="price alerts look & control"
-      inset
-    >
+    <div v-if="tab === 'alerts'" class="settings-tab">
       <alerts-settings />
-    </ToggableSection>
+    </div>
 
-    <ToggableSection id="settings-other" title="Other" inset>
-      <other-settings />
-    </ToggableSection>
+    <div v-if="tab === 'general'" class="settings-tab">
+      <audio-settings />
+      <div class="form-group column mt16">
+        <color-picker-control
+          :value="backgroundColor"
+          label="Background color"
+          @input="
+            $store.dispatch('settings/setColor', {
+              type: 'BACKGROUND',
+              value: $event
+            })
+          "
+        ></color-picker-control>
+        <label class="-fill -center ml8">Background color</label>
+      </div>
+      <other-settings class="mt16" />
+    </div>
 
     <template v-slot:footer>
       <a
@@ -333,7 +316,8 @@ import OtherSettings from './OtherSettings.vue'
 import ChartsSettings from './ChartsSettings.vue'
 import AlertsSettings from '@/components/alerts/AlertsSettings.vue'
 import ColorPickerControl from '../framework/picker/ColorPickerControl.vue'
-import ToggableSection from '@/components/framework/ToggableSection.vue'
+import Tabs from '@/components/framework/Tabs.vue'
+import Tab from '@/components/framework/Tab.vue'
 import Btn from '@/components/framework/Btn.vue'
 import importService from '@/services/importService'
 import workspacesService from '@/services/workspacesService'
@@ -351,10 +335,12 @@ export default {
     ChartsSettings,
     AlertsSettings,
     ColorPickerControl,
-    ToggableSection
+    Tabs,
+    Tab
   },
   data() {
     return {
+      tab: 'general',
       currentWorkspace: null,
       workspaces: [],
       workspaceDropdownId: null,
@@ -640,9 +626,8 @@ export default {
 </script>
 
 <style lang="scss">
-.settings-general {
+.settings-tab {
   padding: 1rem;
-  border-bottom: 1px solid var(--theme-background-150);
 }
 
 .settings-footer__version {

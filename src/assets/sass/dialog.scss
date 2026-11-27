@@ -315,3 +315,18 @@
     white-space: nowrap;
   }
 }
+
+// pane settings and main settings: one fixed size whatever the tab
+// (phones / car screens keep the full screen dialog)
+@media screen and (min-width: 580px) and (min-height: 421px) {
+  .pane-dialog,
+  .settings-dialog {
+    .dialog__content {
+      height: 80vh;
+    }
+
+    .dialog__body {
+      max-height: none;
+    }
+  }
+}
